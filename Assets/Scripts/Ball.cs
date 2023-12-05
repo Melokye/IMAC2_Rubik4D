@@ -1,65 +1,163 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-public class Ball: MonoBehaviour {
-    [SerializeField]
-    private GameObject[] balls = new GameObject[8];
-    [SerializeField]
-    private GameObject center;
-    [SerializeField]
-    private int number;
+public enum BallColor
+{
+    Orange,
+    Red,
+    Blue,
+    Green,
+    White,
+    Yellow,
+    Purple,
+    Pink
+}
 
-    private void Start() {
-        /*GameObject[] things = GameObject.FindObjectsOfType<GameObject>();
-        Debug.Log(GameObject.FindObjectsOfType<GameObject>());
-        foreach (GameObject ball in things)
-        {
-            Debug.Log(ball.name);
-            if (ball.name.Contains("1_Left"))
-            {
-                balls[0].Append(ball);
-            }
-            if (ball.name.Contains("2_Right"))
-            {
-                balls[1].Append(ball);
-            }
-            if (ball.name.Contains("3_Up"))
-            {
-                balls[2].Append(ball);
-            }
-            if (ball.name.Contains("4_Down"))
-            {
-                balls[3].Append(ball);
-            }
-            if (ball.name.Contains("5_Front"))
-            {
-                balls[4].Append(ball);
-            }
-            if (ball.name.Contains("6_Back"))
-            {
-                balls[5].Append(ball);
-            }
-            if (ball.name.Contains("7_In"))
-            {
-                balls[6].Append(ball);
-            }
-            if (ball.name.Contains("8_Out"))
-            {
-                Debug.Log("hey bro what's up");
-                balls[7].Append(ball);
-            }
-        }*/
+public enum Zone
+{
+    Left,
+    Right,
+    Up,
+    Down,
+    Front,
+    Back,
+    In,
+    Out
+}
+
+public enum RotationAxis
+{
+    X,
+    Y,
+    Z,
+    WX,
+    WY,
+    WZ
+}
+
+public struct MyStruct
+{
+
+}
+
+public class Ball: MonoBehaviour
+{
+    private static float size = 1;
+    private BallColor ballColor = BallColor.Orange;
+    private Zone zone = Zone.Left;
+    private Vector3 position = Vector3.zero;
+    private RotationAxis rotated;
+
+    public Vector3 getPosition()
+    {
+        return position;
+    }
+
+    public void setPosition()
+    {
+        
+    }
+
+    public Zone getZone()
+    {
+        return zone;
+    }
+
+    public void setZone()
+    {
+       
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
-    void Update() {
-        foreach (GameObject ball in balls)
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.X))
         {
-            ball.transform.RotateAround(center.transform.position, Vector3.up, 60 * Time.deltaTime);
+            RotateXAxis();
         }
     }
+
+    void RotateXAxis()
+    {
+
+    }
 }
+
+/*switch (zone)
+        {
+            case Zone.Left:
+                switch (rotated)
+                {
+                    case RotationAxis.Y:
+                        zone = Zone.Back;
+                        break;
+                    case RotationAxis.Z:
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case Zone.Right:
+                switch (rotated)
+                {
+                    case RotationAxis.Y:
+                        break;
+                    case RotationAxis.Z:
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case Zone.Up:
+                switch (rotated)
+                {
+                    case RotationAxis.X:
+                        break;
+                    case RotationAxis.Z:
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case Zone.Down:
+                switch (rotated)
+                {
+                    case RotationAxis.X:
+                        break;
+                    case RotationAxis.Z:
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case Zone.Front:
+                switch (rotated)
+                {
+                    case RotationAxis.X:
+                        break;
+                    case RotationAxis.Y:
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case Zone.Back:
+                switch (rotated)
+                {
+                    case RotationAxis.X:
+                        break;
+                    case RotationAxis.Y:
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+}*/
