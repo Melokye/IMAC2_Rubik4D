@@ -3,10 +3,6 @@
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
 
-# VScode cache
-*.vsconfig
-*.vscode
-
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -30,6 +26,8 @@
 
 # Visual Studio cache directory
 .vs/
+*.vsconfig
+*.vscode
 
 # Gradle cache directory
 .gradle/
