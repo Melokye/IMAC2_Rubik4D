@@ -1,34 +1,44 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using UnityEditor;
 
-using UnityEngine;
-using System.Collections;
+public class ball : MonoBehaviour
+{
+    private bool motion = false;
+    [SerializeField] // TODO need to recuperate auto
+    private GameObject axe;
 
-public class Ball: MonoBehaviour {
-    [SerializeField]
-    private GameObject[] balls = new GameObject[8];
-    [SerializeField]
-    private GameObject center;
-    [SerializeField]
-    private int number;
-
-    private void Start() {
-
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
-    void Update() {
-        foreach (GameObject ball in balls)
-        {
-            Move(ball);
+    void Update()
+    {
+        if (Input.GetKey("mouse 0") && axeSelected()){
+            motion = !motion;
         }
+        
+        if(motion)
+            Move(axe);
     }
 
-    void Move(GameObject ball){
-        ball.transform.RotateAround(center.transform.position, Vector3.up, 60 * Time.deltaTime);
+    bool axeSelected(){
+        GameObject selected = Selection.activeGameObject; // TODO need to find another thing than Selection
+        if(selected != null){
+            print(selected.name); // TODO
+            axe = selected;
+            // TODO check the type of object selected
+            return true;
+        }
+        return false;
+    }
+
+    void Move(GameObject axe){
+        // center.transform.position
+        transform.RotateAround(axe.transform.position, Vector3.up, 60 * Time.deltaTime);
     }
 }
