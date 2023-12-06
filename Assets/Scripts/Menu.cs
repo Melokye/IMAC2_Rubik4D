@@ -4,7 +4,9 @@ using System.Collections;
 // source : https://docs.unity3d.com/2022.3/Documentation/Manual/gui-Basics.html
 
 public class Menu : MonoBehaviour {
-    public int state = 0; // TODO private ?
+    private int state = 0;
+    private int width = 200;
+    private int padding = 10;
 
     void OnGUI ()
     {
@@ -23,44 +25,48 @@ public class Menu : MonoBehaviour {
     }
 
     int mainMenu(){
-        // TODO automate resize
-        GUI.BeginGroup (new Rect (Screen.width / 2 - 50, Screen.height / 2 - 50, 100, 200));
-        
-        // Make a background box
-        GUI.Box(new Rect(0, 0, 100, 125), "");
-
-        // title
-        GUI.Box(new Rect(0,20,100,30), "Rubik4D"); // TODO regroup to a function "title" ?
+        newWindow();
     
         // Make the first button. If it is pressed, Application.Loadlevel (1) will be executed
-        if(GUI.Button(new Rect(10,60,80,20), "Play"))
+        if(GUI.Button(new Rect(padding, 60, width - padding * 2, 20), "Play")) // TODO automate the values
         {
             Application.LoadLevel(1); // TODO to remplace
         }
     
-        // Make the second button.
-        if(GUI.Button(new Rect(10,90,80,20), "Credit")) 
-        {
+        if(GUI.Button(new Rect(padding, 90, width - padding * 2, 20), "Credit")) 
             return 1; // TODO need ajustement ?
-        }
-
-        GUI.EndGroup ();
+        
+        closeWindow();
         return 0;
     }
 
     int credit(){
-        GUI.BeginGroup (new Rect (Screen.width / 2 - 50, Screen.height / 2 - 50, 100, 200));
-        
-        GUI.Box(new Rect(0, 0, 100, 200), "");
-        GUI.Box(new Rect(0,20,100,30), "Rubik4D");
+        newWindow();
     
-        GUI.Box(new Rect(10,60,80,20), "Tutors");
-        GUI.Box(new Rect(10,60,80,20), "Vincent NOZICK");
-        
-        if(GUI.Button(new Rect(10,90,80,20), "Return")) 
+        GUI.Box(new Rect(padding, 60, width - padding * 2, 20), "Tutors");
+        GUI.Box(new Rect(padding, 90, width - padding * 2, 20), "Vincent NOZICK");
+        // TODO complete the credit
+        // TODO animate ?
+
+        if(GUI.Button(new Rect(padding, 120, width - padding * 2, 20), "Return"))
             return 0;
 
-        GUI.EndGroup();
+        closeWindow();
         return 1;
+    }
+
+    void newWindow(){ // TODO param nb button to display ?
+        // center the box
+        GUI.BeginGroup (new Rect (Screen.width / 2 - width / 2, Screen.height / 2 - 50, width, 200));
+
+        // Make a background box
+        GUI.Box(new Rect(0, 0, width, 150), "");
+
+        // title
+        GUI.Box(new Rect(0,20,width,30), "Rubik4D");
+    }
+
+    void closeWindow(){
+        GUI.EndGroup();
     }
 }
