@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 143437078}
   - component: {fileID: 143437081}
   - component: {fileID: 143437080}
-  - component: {fileID: 143437079}
   m_Layer: 0
   m_Name: 1_Left_0
   m_TagString: Untagged
@@ -157,18 +156,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1213334238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &143437079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 143437077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92be2f7d92b243d4aa9740a81833ee63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!23 &143437080
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -596,13 +583,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.16455077, y: -0.16027468, z: 0.027108433, w: 0.97288245}
-  m_LocalPosition: {x: 3.66, y: 4.29, z: -10}
+  m_LocalRotation: {x: 0.5257891, y: -0.13754956, z: 0.086619586, w: 0.83493894}
+  m_LocalPosition: {x: 1.64, y: 7.81, z: -4.86}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 19.2, y: -18.71, z: 0}
+  m_LocalEulerAnglesHint: {x: 64.4, y: -18.71, z: 0}
 --- !u!4 &963577941 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f862257c77cb8cd4cb6671a635ee85a8, type: 3}
@@ -1860,7 +1847,6 @@ GameObject:
   - component: {fileID: 3733154742882581542}
   - component: {fileID: 6284578531606475770}
   - component: {fileID: 3330205406550256100}
-  - component: {fileID: 6284578531606475771}
   m_Layer: 0
   m_Name: 1_Left_0
   m_TagString: Untagged
@@ -2026,18 +2012,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5156203062393421361}
   m_Mesh: {fileID: 2545792978703539237, guid: f862257c77cb8cd4cb6671a635ee85a8, type: 3}
---- !u!114 &6284578531606475771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5156203062393421361}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92be2f7d92b243d4aa9740a81833ee63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &7212786418560418010
 Transform:
   m_ObjectHideFlags: 0

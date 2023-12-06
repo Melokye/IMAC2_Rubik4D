@@ -3,11 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.GridBrushBase;
 
 public enum RotationAxis {
     X,
@@ -27,12 +23,7 @@ public class GameManager : MonoBehaviour {
     private Transform currentAxis;
     private bool cubeMoving = false;
     private Dictionary<Transform, Vector3> positionBuffer = new Dictionary<Transform, Vector3>();
-
-
-    //[SerializeField]
-    //private GameObject center;
-    //[SerializeField]
-    //private int number;
+    private int direction = 1;
 
     private void Start() {
         positions = balls.Select(o => o.transform.position).ToArray();
@@ -64,41 +55,52 @@ public class GameManager : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.X) && !cubeMoving) {
-            print("X");
-            MoveCubes(positionsX, RotationAxis.X);
-            currentAxis = circles[(int)RotationAxis.X];
-            cubeMoving = true;
-        }
-        if (Input.GetKeyDown(KeyCode.Y) && !cubeMoving) {
-            print("Y");
-            MoveCubes(positionsY, RotationAxis.Y);
-            currentAxis = circles[(int)RotationAxis.Y];
-            cubeMoving = true;
-        }
-        if (Input.GetKeyDown(KeyCode.W) && !cubeMoving) {
-            print("Z");
-            MoveCubes(positionsZ, RotationAxis.Z);
-            currentAxis = circles[(int)RotationAxis.Z];
-            cubeMoving = true;
+        if (!cubeMoving) {
+            if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                direction = -direction;
+            }
+            if (Input.GetKeyDown(KeyCode.X)) {
+                AddCubes(positionsX);
+                currentAxis = circles[(int)RotationAxis.X];
+                cubeMoving = true;
+            }
+            if (Input.GetKeyDown(KeyCode.Y)) {
+                AddCubes(positionsY);
+                currentAxis = circles[(int)RotationAxis.Y];
+                cubeMoving = true;
+            }
+            if (Input.GetKeyDown(KeyCode.W)) {
+                AddCubes(positionsZ);
+                currentAxis = circles[(int)RotationAxis.Z];
+                cubeMoving = true;
+            }
         }
     }
 
-    void MoveCubes(Vector3[] positions, RotationAxis axis) {
+    void AddCubes(Vector3[] positions) {
         for (int i = 0; i < positions.Length; i++) {
             foreach (Transform cube in cubes) {
                 if (Vector3.Distance(positions[i], cube.position) < Vector3.kEpsilon) {
-                    if (i == positions.Length - 1) {
-                        positionBuffer.Add(cube, positions[0]);
+                    if (direction == 1) {
+                        if (i == positions.Length - 1) {
+                            positionBuffer.Add(cube, positions[0]);
+                        }
+                        else {
+                            positionBuffer.Add(cube, positions[i + 1]);
+                        }
                     }
-                    else {
-                        positionBuffer.Add(cube, positions[i + 1]);
+                    if (direction == -1) {
+                        if (i == 0) {
+                            positionBuffer.Add(cube, positions[positions.Length - 1]);
+                        }
+                        else {
+                            positionBuffer.Add(cube, positions[i - 1]);
+                        }
                     }
                 }
             }
         }
     }
-
     
     private bool IsAllTrue(List<bool> list) {
         for (int i = 0; i < list.Count; i++) {
@@ -116,32 +118,6 @@ public class GameManager : MonoBehaviour {
             }
             else {
                 Vector3 circleAxis = currentAxis.position;
-                /*List<Vector3> startPosition = new List<Vector3>();
-                List<Vector3> endPosition = new List<Vector3>();
-                
-
-                // Calculate the rotation direction based on the axis
-                List<Vector3> rotationDirection = new List<Vector3>();
-
-                // Calculate the angles between the start and end positions
-                List<float> angleStart = new List<float>();
-                List<float> angleEnd = new List<float>();
-
-                int count = 0;
-
-                foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
-                    startPosition.Add(entry.Key.position);
-                    endPosition.Add(entry.Value);
-
-                    // Calculate the rotation direction based on the axis
-                    rotationDirection.Add(Vector3.Cross(startPosition[count] - circleAxis, Vector3.up).normalized);
-
-                    // Calculate the angles between the start and end positions
-                    angleStart.Add(Vector3.SignedAngle(startPosition[count] - circleAxis, rotationDirection[count], Vector3.up));
-                    angleEnd.Add(Vector3.SignedAngle(endPosition[count] - circleAxis, rotationDirection[count], Vector3.up));
-
-                    count++;
-                }*/
                 List<bool> destinationReached = new List<bool>();
                 int count = 0;
                 foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
@@ -151,19 +127,10 @@ public class GameManager : MonoBehaviour {
                 while (!IsAllTrue(destinationReached)) {
                     count = 0;
                     foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
-                        // Calculate the rotation direction based on the axis
-                        Vector3 rotationDirection = Vector3.Cross(entry.Key.position - circleAxis, Vector3.up).normalized;
-
-                        // Calculate the angles between the start and end positions
-                        float angleStart = Vector3.SignedAngle(entry.Key.position - circleAxis, rotationDirection, Vector3.up);
-                        float angleEnd = Vector3.SignedAngle(entry.Value - circleAxis, rotationDirection, Vector3.up);
-                        print(angleStart);
-                        print(angleEnd);
-                        //entry.Key.position = Vector3.Slerp(entry.Key.position - circleAxis,
-                        //    entry.Value - circleAxis, Time.deltaTime * 5f) + circleAxis;
-                        //if (Vector3.Distance(entry.Key.position, entry.Value) < Vector3.kEpsilon) {
+                        RotateAroundTowards(entry.Key, entry.Value, circleAxis, direction, Time.deltaTime * 10f);
+                        if (Vector3.Distance(entry.Key.position, entry.Value) < 500f * Vector3.kEpsilon) {
                             destinationReached[count] = true;
-                        //}
+                        }
                         count++;
                     }
                     yield return null;
@@ -171,14 +138,25 @@ public class GameManager : MonoBehaviour {
 
                 yield return null;
 
-                // Ensure the cubes reach their final positions
-                /*foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
+                foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
                     entry.Key.position = entry.Value;
-                }*/
+                }
 
                 cubeMoving = false;
                 positionBuffer.Clear();
             }
         }
+    }
+
+    private void RotateAroundTowards(Transform a, Vector3 b, Vector3 center, int direction, float t) {
+        float radius = Vector3.Distance(center, b);
+        float a_angle = Mathf.Atan2(a.position.z - center.z, a.position.x - center.x) * Mathf.Rad2Deg;
+        float b_angle = Mathf.Atan2(b.z - center.z, b.x - center.x) * Mathf.Rad2Deg;
+        if (direction * b_angle > direction * a_angle) {
+            b_angle = b_angle - 360 * direction;
+        }
+        a_angle = Mathf.Lerp(a_angle, b_angle, t);
+        a.position = new Vector3(Mathf.Cos(a_angle * Mathf.Deg2Rad) * radius + center.x, a.position.y,
+            Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
     }
 }
