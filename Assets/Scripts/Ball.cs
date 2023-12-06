@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BallColor
-{
+public enum BallColor {
     Orange,
     Red,
     Blue,
@@ -14,8 +13,7 @@ public enum BallColor
     Pink
 }
 
-public enum Zone
-{
+public enum Zone {
     Left,
     Right,
     Up,
@@ -26,8 +24,7 @@ public enum Zone
     Out
 }
 
-public enum RotationAxis
-{
+public enum RotationAxis {
     X,
     Y,
     Z,
@@ -36,55 +33,45 @@ public enum RotationAxis
     WZ
 }
 
-public struct MyStruct
-{
+public struct MyStruct {
 
 }
 
-public class Ball: MonoBehaviour
-{
-    private static float size = 1;
-    private BallColor ballColor = BallColor.Orange;
+public class Ball : MonoBehaviour {
+    //private static float size = 1;
+    //private BallColor ballColor = BallColor.Orange;
     private Zone zone = Zone.Left;
     private Vector3 position = Vector3.zero;
-    private RotationAxis rotated;
+    //private RotationAxis rotated;
 
-    public Vector3 getPosition()
-    {
+    public Vector3 getPosition() {
         return position;
     }
 
-    public void setPosition()
-    {
-        
+    public void setPosition() {
+
     }
 
-    public Zone getZone()
-    {
+    public Zone getZone() {
         return zone;
     }
 
-    public void setZone()
-    {
-       
+    public void setZone() {
+
     }
     // Start is called before the first frame update
-    void Start()
-    {
-        
+    void Start() {
+
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.X))
-        {
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.X)) {
             RotateXAxis();
         }
     }
 
-    void RotateXAxis()
-    {
+    void RotateXAxis() {
 
     }
 }
