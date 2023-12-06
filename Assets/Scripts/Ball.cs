@@ -24,15 +24,6 @@ public enum Zone {
     Out
 }
 
-public enum RotationAxis {
-    X,
-    Y,
-    Z,
-    WX,
-    WY,
-    WZ
-}
-
 public struct MyStruct {
 
 }
