@@ -28,14 +28,6 @@ public class Ball: MonoBehaviour {
         }
     }
 
-    void OnGUI()
-    {
-        if (GUI.Button(new Rect(10, 10, 150, 100), "I am a button"))
-        {
-            print("You clicked the button!");
-        }
-    }
-
     void Move(GameObject ball){
         ball.transform.RotateAround(center.transform.position, Vector3.up, 60 * Time.deltaTime);
     }
