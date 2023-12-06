@@ -5,6 +5,9 @@ using System.Linq;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
+using UnityEngine;
+using System.Collections;
+
 public class Ball: MonoBehaviour {
     [SerializeField]
     private GameObject[] balls = new GameObject[8];
@@ -22,6 +25,14 @@ public class Ball: MonoBehaviour {
         foreach (GameObject ball in balls)
         {
             Move(ball);
+        }
+    }
+
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10, 10, 150, 100), "I am a button"))
+        {
+            print("You clicked the button!");
         }
     }
 
