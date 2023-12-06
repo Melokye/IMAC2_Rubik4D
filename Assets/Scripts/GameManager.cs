@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.GridBrushBase;
 
 public enum RotationAxis {
     X,
@@ -23,8 +24,9 @@ public class GameManager : MonoBehaviour {
     private Vector3[] positionsX;
     private Vector3[] positionsY;
     private Vector3[] positionsZ;
-    List<Dictionary<Transform, Vector3>> positionBuffer = new List<Dictionary<Transform, Vector3>>();
-    List<Transform> circleBuffer = new List<Transform>();
+    private Transform currentAxis;
+    private bool cubeMoving = false;
+    private Dictionary<Transform, Vector3> positionBuffer = new Dictionary<Transform, Vector3>();
 
 
     //[SerializeField]
@@ -55,50 +57,34 @@ public class GameManager : MonoBehaviour {
         foreach (Transform cube in transform.Find("Cubes")) {
             cubes.Add(cube);
         }
-        foreach (Transform circle in transform.Find("Circle")) {
+        foreach (Transform circle in transform.Find("Circles")) {
             circles.Add(circle);
         }
+        StartCoroutine(RotateCubesOverTime(positionBuffer));
     }
 
     void Update() {
-        ProcessAnimations(positionBuffer, circleBuffer);
-        if (Input.GetKeyDown(KeyCode.X)) {
+        if (Input.GetKeyDown(KeyCode.X) && !cubeMoving) {
             print("X");
-            (Dictionary<Transform, Vector3> tempPositions,
-                Transform tempCircle) = MoveCubes(positionsX, RotationAxis.X);
-            positionBuffer.Add(tempPositions);
-            circleBuffer.Add(tempCircle);
+            MoveCubes(positionsX, RotationAxis.X);
+            currentAxis = circles[(int)RotationAxis.X];
+            cubeMoving = true;
         }
-        if (Input.GetKeyDown(KeyCode.Y)) {
+        if (Input.GetKeyDown(KeyCode.Y) && !cubeMoving) {
             print("Y");
-            (Dictionary<Transform, Vector3> tempPositions,
-                Transform tempCircle) = MoveCubes(positionsY, RotationAxis.Y);
-            positionBuffer.Add(tempPositions);
-            circleBuffer.Add(tempCircle);
+            MoveCubes(positionsY, RotationAxis.Y);
+            currentAxis = circles[(int)RotationAxis.Y];
+            cubeMoving = true;
         }
-        if (Input.GetKeyDown(KeyCode.W)) {
+        if (Input.GetKeyDown(KeyCode.W) && !cubeMoving) {
             print("Z");
-            (Dictionary<Transform, Vector3> tempPositions,
-                Transform tempCircle) = MoveCubes(positionsZ, RotationAxis.Z);
-            positionBuffer.Add(tempPositions);
-            circleBuffer.Add(tempCircle);
+            MoveCubes(positionsZ, RotationAxis.Z);
+            currentAxis = circles[(int)RotationAxis.Z];
+            cubeMoving = true;
         }
     }
 
-    void ProcessAnimations(List<Dictionary<Transform, Vector3>> positionBuffer,
-        List<Transform> circleBuffer) {
-        if (positionBuffer.Count == 1) {
-            foreach (KeyValuePair<Transform, Vector3> entry in positionBuffer[0]) {
-                entry.Key.position = entry.Value;
-            }
-            //C = Vector3.Slerp(A - O, B - O, lerpValue) + O;
-            //Vector3.Slerp(circleBuffer[0].position, Vector3.up, 60 * Time.deltaTime);
-        }
-    }
-
-    (Dictionary<Transform, Vector3>, Transform) MoveCubes(Vector3[] positions, RotationAxis axis) {
-        Dictionary<Transform, Vector3> positionBuffer = new Dictionary<Transform, Vector3>();
-        List<Transform> circleBuffer = new List<Transform>();
+    void MoveCubes(Vector3[] positions, RotationAxis axis) {
         for (int i = 0; i < positions.Length; i++) {
             foreach (Transform cube in cubes) {
                 if (Vector3.Distance(positions[i], cube.position) < Vector3.kEpsilon) {
@@ -111,50 +97,88 @@ public class GameManager : MonoBehaviour {
                 }
             }
         }
-        return (positionBuffer, circles[(int)axis]);
-        /*foreach (KeyValuePair<Transform, Vector3> entry in positionBuffer) {
-            entry.Key.RotateAround(circles[(int)axis].position, Vector3.up, 60 * Time.deltaTime);
-            entry.Key.position = entry.Value;
-        }*/
+    }
+
+    
+    private bool IsAllTrue(List<bool> list) {
+        for (int i = 0; i < list.Count; i++) {
+            if (list[i] == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private IEnumerator RotateCubesOverTime(Dictionary<Transform, Vector3> buffer) {
+        while (true) {
+            if (!cubeMoving) {
+                yield return null;
+            }
+            else {
+                Vector3 circleAxis = currentAxis.position;
+                /*List<Vector3> startPosition = new List<Vector3>();
+                List<Vector3> endPosition = new List<Vector3>();
+                
+
+                // Calculate the rotation direction based on the axis
+                List<Vector3> rotationDirection = new List<Vector3>();
+
+                // Calculate the angles between the start and end positions
+                List<float> angleStart = new List<float>();
+                List<float> angleEnd = new List<float>();
+
+                int count = 0;
+
+                foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
+                    startPosition.Add(entry.Key.position);
+                    endPosition.Add(entry.Value);
+
+                    // Calculate the rotation direction based on the axis
+                    rotationDirection.Add(Vector3.Cross(startPosition[count] - circleAxis, Vector3.up).normalized);
+
+                    // Calculate the angles between the start and end positions
+                    angleStart.Add(Vector3.SignedAngle(startPosition[count] - circleAxis, rotationDirection[count], Vector3.up));
+                    angleEnd.Add(Vector3.SignedAngle(endPosition[count] - circleAxis, rotationDirection[count], Vector3.up));
+
+                    count++;
+                }*/
+                List<bool> destinationReached = new List<bool>();
+                int count = 0;
+                foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
+                    destinationReached.Add(false);
+                    count++;
+                }
+                while (!IsAllTrue(destinationReached)) {
+                    count = 0;
+                    foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
+                        // Calculate the rotation direction based on the axis
+                        Vector3 rotationDirection = Vector3.Cross(entry.Key.position - circleAxis, Vector3.up).normalized;
+
+                        // Calculate the angles between the start and end positions
+                        float angleStart = Vector3.SignedAngle(entry.Key.position - circleAxis, rotationDirection, Vector3.up);
+                        float angleEnd = Vector3.SignedAngle(entry.Value - circleAxis, rotationDirection, Vector3.up);
+                        print(angleStart);
+                        print(angleEnd);
+                        //entry.Key.position = Vector3.Slerp(entry.Key.position - circleAxis,
+                        //    entry.Value - circleAxis, Time.deltaTime * 5f) + circleAxis;
+                        //if (Vector3.Distance(entry.Key.position, entry.Value) < Vector3.kEpsilon) {
+                            destinationReached[count] = true;
+                        //}
+                        count++;
+                    }
+                    yield return null;
+                }
+
+                yield return null;
+
+                // Ensure the cubes reach their final positions
+                /*foreach (KeyValuePair<Transform, Vector3> entry in buffer) {
+                    entry.Key.position = entry.Value;
+                }*/
+
+                cubeMoving = false;
+                positionBuffer.Clear();
+            }
+        }
     }
 }
-
-/*GameObject[] things = GameObject.FindObjectsOfType<GameObject>();
-        Debug.Log(GameObject.FindObjectsOfType<GameObject>());
-        foreach (GameObject ball in things)
-        {
-            Debug.Log(ball.name);
-            if (ball.name.Contains("1_Left"))
-            {
-                balls[0].Append(ball);
-            }
-            if (ball.name.Contains("2_Right"))
-            {
-                balls[1].Append(ball);
-            }
-            if (ball.name.Contains("3_Up"))
-            {
-                balls[2].Append(ball);
-            }
-            if (ball.name.Contains("4_Down"))
-            {
-                balls[3].Append(ball);
-            }
-            if (ball.name.Contains("5_Front"))
-            {
-                balls[4].Append(ball);
-            }
-            if (ball.name.Contains("6_Back"))
-            {
-                balls[5].Append(ball);
-            }
-            if (ball.name.Contains("7_In"))
-            {
-                balls[6].Append(ball);
-            }
-            if (ball.name.Contains("8_Out"))
-            {
-                Debug.Log("hey bro what's up");
-                balls[7].Append(ball);
-            }
-        }*/
