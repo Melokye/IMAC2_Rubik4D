@@ -29,7 +29,7 @@ public class ball : MonoBehaviour
     bool axeSelected(){
         GameObject selected = Selection.activeGameObject; // TODO need to find another thing than Selection
         if(selected != null){
-            print(selected.name); // TODO
+            // print(selected.name); // TODO
             axe = selected;
             // TODO check the type of object selected
             return true;
