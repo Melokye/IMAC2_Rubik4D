@@ -9,4 +9,10 @@ public class SC_SideMenu : MonoBehaviour
     {
         SceneManager.LoadScene("Menu");
     }
+
+    // TODO ?
+    // public void CommandBoardButton()
+    // {
+    //     SceneManager.LoadScene("CommandBoard");
+    // }
 }
