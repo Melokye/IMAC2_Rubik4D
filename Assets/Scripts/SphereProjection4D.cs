@@ -33,10 +33,14 @@ public class SphereProjection4D : MonoBehaviour
             print(points[i]);
             GameObject sphere = new GameObject();
             Vector3 spherePos = new Vector3(points[i][0], points[i][1], points[i][2]);
+            Material sphereMat = Resources.Load("Red", typeof(Material)) as Material;
             sphere.AddComponent<MeshFilter>();
             sphere.AddComponent<MeshRenderer>();
             sphere.GetComponent<MeshFilter>().mesh = sphereMesh;
-            Instantiate(sphere, spherePos, Quaternion.identity);
+            sphere.GetComponent<Renderer>().material = sphereMat;
+            sphere.transform.localScale = 0.2f * Vector3.one;
+            sphere.transform.position = spherePos;
+            //Instantiate(sphere, spherePos, Quaternion.identity);
         }
     }
 
