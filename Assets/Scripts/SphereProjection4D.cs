@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,6 +22,8 @@ public class SphereProjection4D : MonoBehaviour
     GameObject container;
     [SerializeField]
     float rotationSpeed = 2f;
+    [SerializeField]
+    int cell = 0;
     [SerializeField]
     int axis1 = 0;
     [SerializeField]
@@ -131,6 +134,15 @@ public class SphereProjection4D : MonoBehaviour
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
                 sticker.transform.position = Projection4DTo3D(_subpoints[i][j]);
+
+                // circle generation from movement trails test
+                /*GameObject trail = new GameObject();
+                trail.name = "TrailRenderer";
+                trail.AddComponent<MeshFilter>();
+                trail.AddComponent<MeshRenderer>();
+                trail.GetComponent<Renderer>().material = stickerMat;
+                trail.AddComponent<MeshTrail>();
+                trail.transform.parent = sticker.transform;*/
             }
         }
 
