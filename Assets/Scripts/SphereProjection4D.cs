@@ -162,6 +162,7 @@ public class SphereProjection4D : MonoBehaviour
             }
             else {
                 int i = 0;
+                int j = 0;
                 UpdateRotationMatrix(axis1, axis2, 90);
                 foreach (Transform child in container.transform) {
                     targets.Add(rotationMatrix * _points[i]);
@@ -178,6 +179,13 @@ public class SphereProjection4D : MonoBehaviour
                         foreach (Transform child in container.transform) {
                             _points[i] = rotationMatrix * _points[i];
                             child.transform.position = Projection4DTo3D(_points[i]);
+                            j = 0;
+                            foreach (Transform subchild in child) {
+                                _subpoints[i][j] = rotationMatrix * _subpoints[i][j];
+                                subchild.transform.position = Projection4DTo3D(_subpoints[i][j]);
+                                print(subchild.transform.position);
+                                j++;
+                            }
                             i++;
                         }
                         yield return null;
@@ -187,6 +195,11 @@ public class SphereProjection4D : MonoBehaviour
                 foreach (Transform child in container.transform) {
                     _points[i] = targets[i];
                     child.transform.position = Projection4DTo3D(_points[i]);
+                    j = 0;
+                    foreach (Transform subchild in child) {
+                        subchild.transform.position = Projection4DTo3D(_subpoints[i][j]);
+                        j++;
+                    }
                     i++;
                 }
                 cubeRotating = false;
