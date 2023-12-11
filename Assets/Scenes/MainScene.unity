@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2337,7 +2337,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1719522813}
-  - component: {fileID: 1719522814}
   m_Layer: 0
   m_Name: CubeHolder
   m_TagString: Untagged
@@ -2363,29 +2362,6 @@ Transform:
   - {fileID: 998355500}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1719522814
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719522812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 923ce03b0fbc3314d93eb08238bbd3b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  balls:
-  - {fileID: 143437077}
-  - {fileID: 441663438}
-  - {fileID: 1631470511}
-  - {fileID: 265939193}
-  - {fileID: 1340843229}
-  - {fileID: 1151858224}
-  - {fileID: 783227601}
-  - {fileID: 1563112803}
-  direction: 1
-  dimension: 1
 --- !u!1 &1780216073
 GameObject:
   m_ObjectHideFlags: 0
@@ -2960,39 +2936,8 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: -1684543897826104800, guid: f862257c77cb8cd4cb6671a635ee85a8, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f862257c77cb8cd4cb6671a635ee85a8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2102178015}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f862257c77cb8cd4cb6671a635ee85a8, type: 3}
---- !u!1 &2102178014 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f862257c77cb8cd4cb6671a635ee85a8, type: 3}
-  m_PrefabInstance: {fileID: 2102178013}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2102178015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2102178014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 923ce03b0fbc3314d93eb08238bbd3b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  balls:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  direction: 1
-  dimension: 1
 --- !u!4 &79826718341899441
 Transform:
   m_ObjectHideFlags: 0
