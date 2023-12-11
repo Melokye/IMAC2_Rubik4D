@@ -11,6 +11,11 @@ public class SC_MainMenu : MonoBehaviour
         SceneManager.LoadScene("MainScene");
     }
 
+    public void Explain4DButton()
+    {
+        // Show Credits Menu
+        SceneManager.LoadScene("what's4D");
+    }
     public void CreditsButton()
     {
         // Show Credits Menu
