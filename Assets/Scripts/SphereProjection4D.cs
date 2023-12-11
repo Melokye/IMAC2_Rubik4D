@@ -5,14 +5,18 @@ using UnityEngine.UIElements;
 
 public class SphereProjection4D : MonoBehaviour
 {
-    List<Vector4> _points = new List<Vector4>();
-    List<Vector4> targets = new List<Vector4>();
-    Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick
-    bool cubeRotating = false;
+    // const attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
+
+    List<Vector4> _points = new List<Vector4>();
+    List<Vector4> targets = new List<Vector4>();
+    
+    Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick (cf. fn UpdateRotationMatrix)
+    bool _cubeRotating = false;
+    
 
     [SerializeField]
     private Mesh sphereMesh;
@@ -41,14 +45,6 @@ public class SphereProjection4D : MonoBehaviour
         new Vector4(0, 1, 0, 0),
         new Vector4(0, 0, 1, 0),
         new Vector4(0, 0, 0, 1));
-
-void UpdateRotationMatrix(int axis1, int axis2, float angle) {
-        rotationMatrix = Matrix4x4.identity;
-        rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis1, axis2] = Mathf.Sin(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -99,30 +95,45 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
 
     // Update is called once per frame
     void Update() {
-        if (!cubeRotating) {
+        if (!_cubeRotating) {
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
                 (axis1, axis2) = (axis2, axis1);
             }
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 targets.Clear();
                 totalRotation = 0;
-                cubeRotating = true;
+                _cubeRotating = true;
             }
         }
     }
 
+    /// <summary>
+    /// "Generate" a new rotationMatrix from two axis
+    /// </summary>
+    /// <param name="axis1"></param>
+    /// <param name="axis2"></param>
+    /// <param name="angle"></param>
+    void UpdateRotationMatrix(int axis1, int axis2, float angle) {
+        rotationMatrix = Matrix4x4.identity;
+        rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis1, axis2] = Mathf.Sin(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
+    }
+
     private IEnumerator Rotate90Degrees() {
         while (true) {
-            if (!cubeRotating) {
+            if (!_cubeRotating) {
                 yield return null;
             }
             else {
                 int i = 0;
                 UpdateRotationMatrix(axis1, axis2, 90);
                 foreach (Transform child in container.transform) {
-                    targets.Add(rotationMatrix * _points[i]);
+                    targets.Add(rotationMatrix * _points[i]); // TODO remplace _point with child
                     i++;
                 }
+
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float rotationSpeedTemp = rotationSpeed;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
@@ -145,7 +156,7 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
                     child.transform.position = Projection4DTo3D(_points[i]);
                     i++;
                 }
-                cubeRotating = false;
+                _cubeRotating = false;
             }
         }
     }
