@@ -16,7 +16,9 @@ public class InputsBuffer : MonoBehaviour
         rotationEngine = GameObject.Find("SphereGenerator");
         handler = rotationEngine.GetComponent<SphereProjection4D>();
         scrambler(ref mixed);
+        inputsBuffer = mixed;
         StartCoroutine(yoMamas());
+        inputing = true;
     }
 
     // Update is called once per frame
@@ -24,9 +26,8 @@ public class InputsBuffer : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R)) {
             List<int> Entry = new List<int>(){rotationEngine.GetComponent<SphereProjection4D>().GetAxis2(),rotationEngine.GetComponent<SphereProjection4D>().GetAxis1()};
-            Debug.Log(Entry[0]);
-            Debug.Log(Entry[1]);
             inputsBuffer.Add(Entry);
+            debugLength(inputsBuffer);
             }
         if (Input.GetKeyDown(KeyCode.M)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
@@ -40,11 +41,7 @@ public class InputsBuffer : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.S)){
             /*un code qui permet d'executer pleins de rotations d'un coup*/
-            foreach(var entry in inputsBuffer){
-                injectInput(in entry);
-                new WaitForSeconds(0.1f);
-            }
-            inputsBuffer.Clear();
+            inputing = true;
             Debug.Log("Done solving");
         }
     }
@@ -57,7 +54,6 @@ public class InputsBuffer : MonoBehaviour
         System.Random rnd = new System.Random();
         for(int cmp = 0 ; cmp < 50 ; cmp++){
             int axis1 = rnd.Next(0,4);
-            Debug.Log(axis1);
             int axis2 = rnd.Next(0,4);
             mixed.Add(new List<int>(){axis1,axis2});
         }
@@ -65,11 +61,10 @@ public class InputsBuffer : MonoBehaviour
 
     public void injectInput(in List<int> command){
         //debugLength(commands);
+        handler.targets.Clear();
         handler.axis1 = command[0];
         handler.axis2 = command[1];
-        handler.targets.Clear();
-        inputing = true;
-        
+
         
     }
 
@@ -80,24 +75,29 @@ public class InputsBuffer : MonoBehaviour
             }
             else {
                 Debug.Log("wtf");
-                int i = 0;
-                handler.UpdateRotationMatrix(handler.axis1,handler.axis2, 90);
-                foreach (Transform child in handler.container.transform) {
-                    handler.targets.Add(handler.rotationMatrix * handler.points[i]);
-                    i++;
-                }
-                i = 0;
-                handler.UpdateRotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
-                while (Vector4.Distance(handler.points[0], handler.targets[0]) > Vector4.kEpsilon) {
-                    i = 0;
+                foreach(var entry in inputsBuffer){
+                    injectInput(in entry);
+                    
+                    int i = 0;
+                    handler.UpdateRotationMatrix(handler.axis1,handler.axis2, 90);
                     foreach (Transform child in handler.container.transform) {
-                        handler.points[i] = handler.rotationMatrix * handler.points[i];
-                        child.transform.position = handler.Projection4DTo3D(handler.points[i]);
+                        handler.targets.Add(handler.rotationMatrix * handler.points[i]);
                         i++;
                     }
-                    yield return null;
+                    i = 0;
+                    handler.UpdateRotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
+                    while (Vector4.Distance(handler.points[0], handler.targets[0]) > Vector4.kEpsilon) {
+                        i = 0;
+                        foreach (Transform child in handler.container.transform) {
+                            handler.points[i] = handler.rotationMatrix * handler.points[i];
+                            child.transform.position = handler.Projection4DTo3D(handler.points[i]);
+                            i++;
+                        }
+                        yield return null;
+                    }
                 }
                 inputing = false;
+                inputsBuffer.Clear();
             }
         }        
     }
