@@ -10,7 +10,7 @@ The Rubik4D is a tutored project for IMAC, an engineer course mixing art and sci
 ### Authors 
 - [Logan ARGOUSE](https://github.com/Oradimi)
 - [Mélodie KOUY](https://github.com/melokye)
-- [Matthieu MACHINEAU]()
+- [Matthieu MACHINEAU](https://github.com/MMeche)
 
 ### Special thanks to 
 - [Hactar](https://ajfarkas.dev/) who helped us a lot in this project 
