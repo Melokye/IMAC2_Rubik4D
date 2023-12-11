@@ -16,19 +16,19 @@ public class InputsBuffer : MonoBehaviour
         rotationEngine = GameObject.Find("SphereGenerator");
         handler = rotationEngine.GetComponent<SphereProjection4D>();
         scrambler(ref mixed);
-        inputsBuffer = mixed;
+        // inputsBuffer = mixed;
         StartCoroutine(yoMamas());
-        inputing = true;
+        // inputing = true;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.R)) {
-            List<int> Entry = new List<int>(){rotationEngine.GetComponent<SphereProjection4D>().GetAxis2(),rotationEngine.GetComponent<SphereProjection4D>().GetAxis1()};
+            List<int> Entry = new List<int>(){handler.GetAxis2(), handler.GetAxis1()};
             inputsBuffer.Add(Entry);
-            debugLength(inputsBuffer);
-            }
+            // debugLength(inputsBuffer); // TODO
+        }
         if (Input.GetKeyDown(KeyCode.M)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
             foreach(var entry in mixed){
@@ -37,12 +37,12 @@ public class InputsBuffer : MonoBehaviour
             inputsBuffer.AddRange(mixed);
             mixed.Clear();
             scrambler(ref mixed);
-            Debug.Log("Done mixing");
+            // Debug.Log("Done mixing"); // TODO
         }
         if (Input.GetKeyDown(KeyCode.S)){
             /*un code qui permet d'executer pleins de rotations d'un coup*/
             inputing = true;
-            Debug.Log("Done solving");
+            // Debug.Log("Done solving"); // TODO
         }
     }
 
@@ -60,12 +60,10 @@ public class InputsBuffer : MonoBehaviour
     }
 
     public void injectInput(in List<int> command){
-        //debugLength(commands);
+        //debugLength(commands); // TODO
         handler.targets.Clear();
         handler.axis1 = command[0];
         handler.axis2 = command[1];
-
-        
     }
 
     IEnumerator yoMamas(){
@@ -74,23 +72,23 @@ public class InputsBuffer : MonoBehaviour
                 yield return null;
             }
             else {
-                Debug.Log("wtf");
+                // Debug.Log("wtf"); // TODO
                 foreach(var entry in inputsBuffer){
                     injectInput(in entry);
                     
                     int i = 0;
                     handler.UpdateRotationMatrix(handler.axis1,handler.axis2, 90);
                     foreach (Transform child in handler.container.transform) {
-                        handler.targets.Add(handler.rotationMatrix * handler.points[i]);
+                        handler.targets.Add(handler.rotationMatrix * handler._points[i]);
                         i++;
                     }
                     i = 0;
                     handler.UpdateRotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
-                    while (Vector4.Distance(handler.points[0], handler.targets[0]) > Vector4.kEpsilon) {
+                    while (Vector4.Distance(handler._points[0], handler.targets[0]) > Vector4.kEpsilon) {
                         i = 0;
                         foreach (Transform child in handler.container.transform) {
-                            handler.points[i] = handler.rotationMatrix * handler.points[i];
-                            child.transform.position = handler.Projection4DTo3D(handler.points[i]);
+                            handler._points[i] = handler.rotationMatrix * handler._points[i];
+                            child.transform.position = handler.Projection4DTo3D(handler._points[i]);
                             i++;
                         }
                         yield return null;

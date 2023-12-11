@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-
   m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
@@ -153,6 +152,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ae37f35d9742fb46afcb1d7ef526db6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _points: []
+  targets: []
+  rotationMatrix:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
+  _cubeRotating: 0
   sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   container: {fileID: 135335976}
   rotationSpeed: 2
@@ -2156,6 +2175,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 588381274}
   m_CullTransparentMesh: 1
+--- !u!1 &665519477
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 665519479}
+  - component: {fileID: 665519478}
+  m_Layer: 0
+  m_Name: TrivialSolver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &665519478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665519477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8dfc3b6c036703b18023167e097db47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationEngine: {fileID: 0}
+--- !u!4 &665519479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665519477}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 357.36084, y: 216.07042, z: -0.03917694}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &669240141
 GameObject:
   m_ObjectHideFlags: 0
@@ -7041,3 +7105,4 @@ SceneRoots:
   - {fileID: 5888080}
   - {fileID: 135335977}
   - {fileID: 202434127}
+  - {fileID: 665519479}
