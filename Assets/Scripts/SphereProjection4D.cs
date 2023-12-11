@@ -19,13 +19,12 @@ public class SphereProjection4D : MonoBehaviour
     [SerializeField]
     GameObject container;
     [SerializeField]
-    float rotationSpeed = 0.1f;
+    float rotationSpeed = 2f;
     [SerializeField]
     int axis1 = 0;
     [SerializeField]
     int axis2 = 1;
-    [SerializeField]
-    private int direction = 1;
+    private float totalRotation = 0;
     
     static float s3 = 1f / Mathf.Sqrt(3f);
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
@@ -88,13 +87,6 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         //shifts.Add(shift8);
 
         container.name = "Container";
-        /*for (int i = 0; i < points.Count; i++) {
-            GameObject parent = new GameObject();
-            parent.transform.parent = container.transform;
-            //Vector3 parentPos = new Vector3(points[i][0], points[i][1], points[i][2]);
-            parent.name = names[i];
-            parent.transform.position = parentPos;*/
-
         for (int j = 0; j < points.Count; j++) {
             GameObject sphere = new GameObject();
             Material sphereMat = Resources.Load(materials[j], typeof(Material)) as Material;
@@ -113,14 +105,14 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         if (!cubeRotating) {
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
-                direction = -direction;
+                (axis1, axis2) = (axis2, axis1);
             }
-            if (Input.GetKeyDown(KeyCode.R)) {
+            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 targets.Clear();
+                totalRotation = 0;
                 cubeRotating = true;
             }
         }
@@ -138,20 +130,36 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
                     targets.Add(rotationMatrix * points[i]);
                     i++;
                 }
-                i = 0;
-                UpdateRotationMatrix(axis1, axis2, rotationSpeed);
-                while (Vector4.Distance(points[0], targets[0]) > Vector4.kEpsilon) {
-                    i = 0;
-                    foreach (Transform child in container.transform) {
-                        points[i] = rotationMatrix * points[i];
-                        child.transform.position = Projection4DTo3D(points[i]);
-                        i++;
+                if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
+                    float rotationSpeedTemp = rotationSpeed;
+                    while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
+                        print(totalRotation);
+                        totalRotation += rotationSpeedTemp;
+                        rotationSpeedTemp = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeedTemp);
+                        totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
+                        i = 0;
+                        UpdateRotationMatrix(axis1, axis2, rotationSpeed);
+                        foreach (Transform child in container.transform) {
+                            points[i] = rotationMatrix * points[i];
+                            child.transform.position = Projection4DTo3D(points[i]);
+                            i++;
+                        }
+                        yield return null;
                     }
-                    yield return null;
+                }
+                i = 0;
+                foreach (Transform child in container.transform) {
+                    points[i] = targets[i];
+                    child.transform.position = Projection4DTo3D(points[i]);
+                    i++;
                 }
                 cubeRotating = false;
             }
         }
+    }
+
+    public static bool IsBetweenRangeExcluded(float value, float value1, float value2) {
+        return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
     }
 
     Vector4 Projection4DTo3D(Vector4 point) {
@@ -180,59 +188,4 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         a.position = new Vector3(Mathf.Cos(a_angle * Mathf.Deg2Rad) * radius + center.x, a.position.y,
             Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
     }
-
-    /*void Controls(GameObject c, int selectedCube) {
-        switch (selectedCube) {
-            case 0:
-                print("Right Selected!!");
-                if (Input.GetKeyDown(KeyCode.X)) {
-                    GameObject center = GameObject.Find(
-                        "/" + container.name + "/" + names[selectedCube]);
-                    foreach (Transform child in c.transform) {
-                        foreach (Transform subchild in child) {
-                            if (subchild.transform.position.x > 0) {
-                                subchild.RotateAround(center.transform.position, Vector3.right, 90f);
-                            }
-                        }
-                    }
-                    selectedCube = -1;
-                }
-                if (Input.GetKeyDown(KeyCode.Y)) {
-                    selectedCube = -1;
-                }
-                if (Input.GetKeyDown(KeyCode.W)) {
-                    selectedCube = -1;
-                }
-                break;
-            case 1:
-
-            case 2:
-
-            case 3:
-
-            case 4:
-
-            case 5:
-
-            case 6:
-
-            case 7:
-
-            default:
-                break;
-        }
-    }
-
-    void Rotate(bool,) {
-
-    }
-
-    int GetPressedNumber() {
-        for (int number = 0; number <= 7; number++) {
-            if (Input.GetKeyDown("[" + number.ToString() + "]"))
-                return number;
-        }
-
-        return -1;
-    }*/
 }
