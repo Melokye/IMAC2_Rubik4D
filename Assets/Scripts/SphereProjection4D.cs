@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 public class SphereProjection4D : MonoBehaviour
 {
     List<Vector4> _points = new List<Vector4>();
+    List<List<Vector4>> _subpoints = new List<List<Vector4>>();
     List<Vector4> targets = new List<Vector4>();
     Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick
     bool cubeRotating = false;
@@ -25,6 +26,8 @@ public class SphereProjection4D : MonoBehaviour
     [SerializeField]
     int axis2 = 1;
     private float totalRotation = 0;
+    [SerializeField]
+    private int puzzleDimension = 2;
 
     static float s3 = 1f / Mathf.Sqrt(3f);
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
@@ -42,7 +45,7 @@ public class SphereProjection4D : MonoBehaviour
         new Vector4(0, 0, 1, 0),
         new Vector4(0, 0, 0, 1));
 
-void UpdateRotationMatrix(int axis1, int axis2, float angle) {
+    void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         rotationMatrix = Matrix4x4.identity;
         rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
         rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
@@ -51,43 +54,39 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
     }
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         // Generate points
         const int nbPoints = 8;
-        const int midPoints = nbPoints / 2;
 
-        for(int i = 0; i < nbPoints; i++){
-            Vector4 point = new Vector4( 0, 0, 0, 0);
-
-            if(i >= midPoints){
-                point[i % (midPoints)] = -1;
-            }else{
-                point[i] = 1;
-            }
-
+        for (int i = 0; i < nbPoints; i++) {
+            Vector4 point = new Vector4(0, 0, 0, 0);
+            print(i);
+            point[Mathf.FloorToInt(i / 2)] = 1 - (2 * (i % 2));
+            print(point);
             _points.Add(point);
+
         }
 
         // Create a GameObject for each point and link them in the GameObject "container"
         container.name = "Container";
 
         for (int i = 0; i < _points.Count; i++) {
-            // TODO warning : lenght of _names and _materials may not be the same as the number of points
-            GameObject sphere = new GameObject();
-            sphere.name = _names[i];
+            // TODO warning : length of _names and _materials may not be the same as the number of points
+            GameObject cell = new GameObject();
+            cell.name = _names[i];
 
-            sphere.AddComponent<MeshFilter>();
-            sphere.GetComponent<MeshFilter>().mesh = sphereMesh;
+            cell.AddComponent<MeshFilter>();
+            cell.GetComponent<MeshFilter>().mesh = sphereMesh;
 
             Material sphereMat = Resources.Load(_materials[i], typeof(Material)) as Material;
-            sphere.AddComponent<MeshRenderer>();
-            sphere.GetComponent<Renderer>().material = sphereMat;
+            cell.AddComponent<MeshRenderer>();
+            cell.GetComponent<Renderer>().material = sphereMat;
 
-            // place theses points in the space
-            sphere.transform.localScale = 0.2f * Vector3.one;
-            sphere.transform.parent = container.transform;
-            sphere.transform.position = Projection4DTo3D(_points[i]);
+            // place these points in the space
+            cell.transform.localScale = 0.2f * Vector3.one;
+            cell.transform.parent = container.transform;
+            cell.transform.position = Projection4DTo3D(_points[i]);
+
         }
 
         // TODO for test purpose, must be deleted later
