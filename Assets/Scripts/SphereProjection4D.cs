@@ -5,13 +5,13 @@ using UnityEngine.UIElements;
 
 public class SphereProjection4D : MonoBehaviour
 {
-    List<Vector4> points = new List<Vector4>();
+    List<Vector4> _points = new List<Vector4>();
     List<Vector4> targets = new List<Vector4>();
-    Matrix4x4 rotationMatrix = Matrix4x4.identity;
+    Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick
     bool cubeRotating = false;
-    List<string> names = new List<string>() {
+    const List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
-    List<string> materials = new List<string>() {
+    const List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
 
     [SerializeField]
@@ -54,61 +54,47 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
     // Start is called before the first frame update
     void Start()
     {
-        Vector4 p1 = new Vector4( 1, 0, 0, 0);
-        Vector4 p2 = new Vector4(-1, 0, 0, 0);
-        Vector4 p3 = new Vector4( 0, 1, 0, 0);
-        Vector4 p4 = new Vector4( 0,-1, 0, 0);
-        Vector4 p5 = new Vector4( 0, 0, 1, 0);
-        Vector4 p6 = new Vector4( 0, 0,-1, 0);
-        Vector4 p7 = new Vector4( 0, 0, 0, 1);
-        Vector4 p8 = new Vector4( 0, 0, 0,-1);
-        /*List<float> shift1 = new List<float>() { -0.1f, 0.1f, 0.1f, 0 };
-        List<float> shift2 = new List<float>() { 0.1f, 0.1f, 0.1f, 0 };
-        List<float> shift3 = new List<float>() { -0.1f, 0.1f, -0.1f, 0 };
-        List<float> shift4 = new List<float>() { 0.1f, 0.1f, -0.1f, 0 };
-        List<float> shift5 = new List<float>() { -0.1f, -0.1f, 0.1f, 0 };
-        List<float> shift6 = new List<float>() { 0.1f, -0.1f, 0.1f, 0 };*/
-        //List<float> shift7 = new List<float>() { -0.1f, -0.1f, -0.1f, 0 };
-        //List<float> shift8 = new List<float>() { 0.1f, -0.1f, -0.1f, 0 };
-        points.Add(p1);
-        points.Add(p2);
-        points.Add(p3);
-        points.Add(p4);
-        points.Add(p5);
-        points.Add(p6);
-        points.Add(p7);
-        points.Add(p8);
-        /*shifts.Add(shift1);
-        shifts.Add(shift2);
-        shifts.Add(shift3);
-        shifts.Add(shift4);
-        shifts.Add(shift5);
-        shifts.Add(shift6);*/
-        //shifts.Add(shift7);
-        //shifts.Add(shift8);
+        // Generate points 
+        const int nbPoints = 8;
+        const int midPoints = nbPoints / 2;
 
-        container.name = "Container";
-        /*for (int i = 0; i < points.Count; i++) {
-            GameObject parent = new GameObject();
-            parent.transform.parent = container.transform;
-            //Vector3 parentPos = new Vector3(points[i][0], points[i][1], points[i][2]);
-            parent.name = names[i];
-            parent.transform.position = parentPos;*/
+        for(int i = 0; i < nbPoints; i++){
+            Vector4 point = new Vector4( 0, 0, 0, 0);
+            
+            if(i >= midPoints){
+                point[i % (midPoints)] = -1;
+            }else{
+                point[i] = 1;
+            }
 
-        for (int j = 0; j < points.Count; j++) {
-            GameObject sphere = new GameObject();
-            Material sphereMat = Resources.Load(materials[j], typeof(Material)) as Material;
-            sphere.AddComponent<MeshFilter>();
-            sphere.AddComponent<MeshRenderer>();
-            sphere.GetComponent<MeshFilter>().mesh = sphereMesh;
-            sphere.GetComponent<Renderer>().material = sphereMat;
-            sphere.name = names[j];
-            sphere.transform.localScale = 0.2f * Vector3.one;
-            sphere.transform.parent = container.transform;
-            sphere.transform.position = Projection4DTo3D(points[j]);
+            _points.Add(point);
         }
 
+        // Create a GameObject for each point and link them in the GameObject "container"
+        container.name = "Container";
+
+        for (int i = 0; i < _points.Count; i++) {
+            // TODO warning : lenght of _names and _materials may not be the same as the number of points
+            GameObject sphere = new GameObject();
+            sphere.name = _names[i];
+
+            sphere.AddComponent<MeshFilter>();
+            sphere.GetComponent<MeshFilter>().mesh = sphereMesh;
+                
+            Material sphereMat = Resources.Load(_materials[i], typeof(Material)) as Material;
+            sphere.AddComponent<MeshRenderer>();
+            sphere.GetComponent<Renderer>().material = sphereMat;
+            
+            // place theses points in the space
+            sphere.transform.localScale = 0.2f * Vector3.one;
+            sphere.transform.parent = container.transform;
+            sphere.transform.position = Projection4DTo3D(_points[i]);
+        }
+
+        // TODO for test purpose, must be deleted later
         UpdateRotationMatrix(axis1, axis2, 0);
+
+        // To make animation
         StartCoroutine(Rotate90Degrees());
     }
 
@@ -135,16 +121,16 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
                 int i = 0;
                 UpdateRotationMatrix(axis1, axis2, 90);
                 foreach (Transform child in container.transform) {
-                    targets.Add(rotationMatrix * points[i]);
+                    targets.Add(rotationMatrix * _points[i]);
                     i++;
                 }
                 i = 0;
                 UpdateRotationMatrix(axis1, axis2, rotationSpeed);
-                while (Vector4.Distance(points[0], targets[0]) > Vector4.kEpsilon) {
+                while (Vector4.Distance(_points[0], targets[0]) > Vector4.kEpsilon) {
                     i = 0;
                     foreach (Transform child in container.transform) {
-                        points[i] = rotationMatrix * points[i];
-                        child.transform.position = Projection4DTo3D(points[i]);
+                        _points[i] = rotationMatrix * _points[i];
+                        child.transform.position = Projection4DTo3D(_points[i]);
                         i++;
                     }
                     yield return null;
@@ -175,64 +161,8 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         if (direction * b_angle > direction * a_angle) {
             b_angle = b_angle - 360 * direction;
         }
-        //print(a.name + ": " + "a_angle: " + a_angle + ", b_angle: " + b_angle);
         a_angle = Mathf.Lerp(a_angle, b_angle, t);
         a.position = new Vector3(Mathf.Cos(a_angle * Mathf.Deg2Rad) * radius + center.x, a.position.y,
             Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
     }
-
-    /*void Controls(GameObject c, int selectedCube) {
-        switch (selectedCube) {
-            case 0:
-                print("Right Selected!!");
-                if (Input.GetKeyDown(KeyCode.X)) {
-                    GameObject center = GameObject.Find(
-                        "/" + container.name + "/" + names[selectedCube]);
-                    foreach (Transform child in c.transform) {
-                        foreach (Transform subchild in child) {
-                            if (subchild.transform.position.x > 0) {
-                                subchild.RotateAround(center.transform.position, Vector3.right, 90f);
-                            }
-                        }
-                    }
-                    selectedCube = -1;
-                }
-                if (Input.GetKeyDown(KeyCode.Y)) {
-                    selectedCube = -1;
-                }
-                if (Input.GetKeyDown(KeyCode.W)) {
-                    selectedCube = -1;
-                }
-                break;
-            case 1:
-
-            case 2:
-
-            case 3:
-
-            case 4:
-
-            case 5:
-
-            case 6:
-
-            case 7:
-
-            default:
-                break;
-        }
-    }
-
-    void Rotate(bool,) {
-
-    }
-
-    int GetPressedNumber() {
-        for (int number = 0; number <= 7; number++) {
-            if (Input.GetKeyDown("[" + number.ToString() + "]"))
-                return number;
-        }
-
-        return -1;
-    }*/
 }
