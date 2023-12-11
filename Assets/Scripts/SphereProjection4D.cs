@@ -9,6 +9,7 @@ public class SphereProjection4D : MonoBehaviour
     List<Vector4> _points = new List<Vector4>();
     List<List<Vector4>> _subpoints = new List<List<Vector4>>();
     List<Vector4> targets = new List<Vector4>();
+    List<List<Vector4>> subtargets = new List<List<Vector4>>();
     Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick
     bool cubeRotating = false;
     List<string> _names = new List<string>() {
@@ -88,7 +89,8 @@ public class SphereProjection4D : MonoBehaviour
         for (int i = 0; i < nbPoints; i++) {
             Vector4 point = new Vector4(0, 0, 0, 0);
             int pointIndex = Mathf.FloorToInt(i * 0.5f);
-            point[pointIndex] = 1 - (2 * (i % 2));
+            int altOne = 1 - (2 * (i % 2));
+            point[pointIndex] = altOne;
             _points.Add(point);
             _subpoints.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
@@ -161,6 +163,7 @@ public class SphereProjection4D : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 targets.Clear();
+                subtargets.Clear();
                 totalRotation = 0;
                 cubeRotating = true;
             }
@@ -178,6 +181,12 @@ public class SphereProjection4D : MonoBehaviour
                 UpdateRotationMatrix(axis1, axis2, 90);
                 foreach (Transform child in container.transform) {
                     targets.Add(rotationMatrix * _points[i]);
+                    subtargets.Add(new List<Vector4>());
+                    j = 0;
+                    foreach (Transform subchild in child) {
+                        subtargets[i].Add(rotationMatrix * _subpoints[i][j]);
+                        j++;
+                    }
                     i++;
                 }
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
@@ -189,13 +198,13 @@ public class SphereProjection4D : MonoBehaviour
                         i = 0;
                         UpdateRotationMatrix(axis1, axis2, rotationSpeed);
                         foreach (Transform child in container.transform) {
-                            _points[i] = rotationMatrix * _points[i];
-                            child.transform.position = Projection4DTo3D(_points[i]);
+                            // The comment out code below may be unnecessary
+                            /*_points[i] = rotationMatrix * _points[i];
+                            child.transform.position = Projection4DTo3D(_points[i]);*/
                             j = 0;
                             foreach (Transform subchild in child) {
                                 _subpoints[i][j] = rotationMatrix * _subpoints[i][j];
                                 subchild.transform.position = Projection4DTo3D(_subpoints[i][j]);
-                                print(subchild.transform.position);
                                 j++;
                             }
                             i++;
@@ -209,6 +218,7 @@ public class SphereProjection4D : MonoBehaviour
                     child.transform.position = Projection4DTo3D(_points[i]);
                     j = 0;
                     foreach (Transform subchild in child) {
+                        _subpoints[i][j] = subtargets[i][j];
                         subchild.transform.position = Projection4DTo3D(_subpoints[i][j]);
                         j++;
                     }
@@ -229,15 +239,17 @@ public class SphereProjection4D : MonoBehaviour
         return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
     }
 
-    List<float> AddFloatList(List<float> a, List<float> b) {
+    // Old unused function may be reused later on
+    /*List<float> AddFloatList(List<float> a, List<float> b) {
         List<float> result = new List<float>();
         for (int i = 0; i < a.Count; i++) {
             result.Add(a[i] + b[i]);
         }
         return result;
-    }
+    }*/
 
-    private void RotateAroundTowards(Transform a, Vector3 b, Vector3 center, int direction, float t) {
+    // Old unused function may be reused later on
+    /*private void RotateAroundTowards(Transform a, Vector3 b, Vector3 center, int direction, float t) {
         float radius = Vector3.Distance(center, b);
         float a_angle = Mathf.Atan2(a.position.z - center.z, a.position.x - center.x) * Mathf.Rad2Deg;
         float b_angle = Mathf.Atan2(b.z - center.z, b.x - center.x) * Mathf.Rad2Deg;
@@ -247,5 +259,5 @@ public class SphereProjection4D : MonoBehaviour
         a_angle = Mathf.Lerp(a_angle, b_angle, t);
         a.position = new Vector3(Mathf.Cos(a_angle * Mathf.Deg2Rad) * radius + center.x, a.position.y,
             Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
-    }
+    }*/
 }
