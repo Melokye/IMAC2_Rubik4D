@@ -157,6 +157,7 @@ MonoBehaviour:
   rotationSpeed: 2
   axis1: 0
   axis2: 1
+  puzzleSize: 5
 --- !u!4 &5888080
 Transform:
   m_ObjectHideFlags: 0

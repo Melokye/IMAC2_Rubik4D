@@ -27,7 +27,9 @@ public class SphereProjection4D : MonoBehaviour
     int axis2 = 1;
     private float totalRotation = 0;
     [SerializeField]
-    private int puzzleDimension = 2;
+    private int puzzleSize = 2;
+    private float stickerDistance = 10f;
+    private float stickerSize = 0.2f;
 
     static float s3 = 1f / Mathf.Sqrt(3f);
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
@@ -53,18 +55,52 @@ public class SphereProjection4D : MonoBehaviour
         rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
     }
 
+    // Inserts value in Vector3 at pos, making it a Vector4
+    Vector4 InsertFloat(Vector3 vec, float value, int pos) {
+        pos = Mathf.Clamp(pos, 0, 3);
+        Vector4 result = new Vector4(0, 0, 0, 0);
+        switch (pos) {
+            case 0:
+                result = new Vector4(value, vec.x, vec.y, vec.z);
+                break;
+            case 1:
+                result = new Vector4(vec.x, value, vec.y, vec.z);
+                break;
+            case 2:
+                result = new Vector4(vec.x, vec.y, value, vec.z);
+                break;
+            case 3:
+                result = new Vector4(vec.x, vec.y, vec.z, value);
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
     // Start is called before the first frame update
     void Start() {
         // Generate points
         const int nbPoints = 8;
-
         for (int i = 0; i < nbPoints; i++) {
             Vector4 point = new Vector4(0, 0, 0, 0);
-            print(i);
-            point[Mathf.FloorToInt(i / 2)] = 1 - (2 * (i % 2));
-            print(point);
+            int pointIndex = Mathf.FloorToInt(i * 0.5f);
+            point[pointIndex] = 1 - (2 * (i % 2));
             _points.Add(point);
+            _subpoints.Add(new List<Vector4>());
+            for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
+                Vector3 temp = new Vector3(0, 0, 0);
+                temp.x = Mathf.Lerp(-1f, 1f,
+                    (Mathf.FloorToInt(j / Mathf.Pow(puzzleSize, 2)) % puzzleSize) / (puzzleSize - 1f));
+                temp.y = Mathf.Lerp(-1f, 1f,
+                    (Mathf.FloorToInt(j / puzzleSize) % puzzleSize) / (puzzleSize - 1f));
+                temp.z = Mathf.Lerp(-1f, 1f,
+                    (j % puzzleSize) / (puzzleSize - 1f));
 
+                Vector4 subpoint = new Vector4(0, 0, 0, 0);
+                subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
+                _subpoints[i].Add(subpoint);
+            }
         }
 
         // Create a GameObject for each point and link them in the GameObject "container"
@@ -75,18 +111,27 @@ public class SphereProjection4D : MonoBehaviour
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
-            cell.AddComponent<MeshFilter>();
-            cell.GetComponent<MeshFilter>().mesh = sphereMesh;
-
-            Material sphereMat = Resources.Load(_materials[i], typeof(Material)) as Material;
-            cell.AddComponent<MeshRenderer>();
-            cell.GetComponent<Renderer>().material = sphereMat;
-
             // place these points in the space
-            cell.transform.localScale = 0.2f * Vector3.one;
             cell.transform.parent = container.transform;
             cell.transform.position = Projection4DTo3D(_points[i]);
+            for (int j = 0; j < _subpoints[i].Count; j++) {
+                GameObject sticker = new GameObject();
+                sticker.name = _names[i] + "_" + j;
 
+                // add mesh
+                sticker.AddComponent<MeshFilter>();
+                sticker.GetComponent<MeshFilter>().mesh = sphereMesh;
+
+                // add material
+                Material stickerMat = Resources.Load(_materials[i], typeof(Material)) as Material;
+                sticker.AddComponent<MeshRenderer>();
+                sticker.GetComponent<Renderer>().material = stickerMat;
+
+                // place these points in the space
+                sticker.transform.localScale = stickerSize * Vector3.one;
+                sticker.transform.parent = cell.transform;
+                sticker.transform.position = Projection4DTo3D(_subpoints[i][j]);
+            }
         }
 
         // TODO for test purpose, must be deleted later
@@ -156,7 +201,7 @@ public class SphereProjection4D : MonoBehaviour
     Vector4 Projection4DTo3D(Vector4 point) {
         Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
         temp = cameraRotation * colorAssignment * temp;
-        return new Vector3(temp[0], temp[1], temp[2]) / (temp[3] + 1);
+        return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
     }
 
     List<float> AddFloatList(List<float> a, List<float> b) {
