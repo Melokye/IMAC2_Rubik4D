@@ -9,9 +9,9 @@ public class SphereProjection4D : MonoBehaviour
     List<Vector4> targets = new List<Vector4>();
     Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick
     bool cubeRotating = false;
-    const List<string> _names = new List<string>() {
+    List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
-    const List<string> _materials = new List<string>() {
+    List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
 
     [SerializeField]
@@ -126,7 +126,6 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float rotationSpeedTemp = rotationSpeed;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        print(totalRotation);
                         totalRotation += rotationSpeedTemp;
                         rotationSpeedTemp = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeedTemp);
                         totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
