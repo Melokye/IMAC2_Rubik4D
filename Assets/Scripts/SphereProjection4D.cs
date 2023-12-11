@@ -5,10 +5,10 @@ using UnityEngine.UIElements;
 
 public class SphereProjection4D : MonoBehaviour
 {
-    List<Vector4> points = new List<Vector4>();
-    List<Vector4> targets = new List<Vector4>();
-    Matrix4x4 rotationMatrix = Matrix4x4.identity;
-    bool cubeRotating = false;
+    public List<Vector4> points = new List<Vector4>();
+    public List<Vector4> targets = new List<Vector4>();
+    public Matrix4x4 rotationMatrix = Matrix4x4.identity;
+    public bool cubeRotating = false;
     List<string> names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> materials = new List<string>() {
@@ -18,13 +18,13 @@ public class SphereProjection4D : MonoBehaviour
     private Mesh sphereMesh;
     [SerializeField]
 
-    GameObject container;
+    public GameObject container;
     [SerializeField]
-    float rotationSpeed = 0.1f;
+    public float rotationSpeed = 0.1f;
     [SerializeField]
-    int axis1 = 0;
+    public int axis1 = 0;
     [SerializeField]
-    int axis2 = 1;
+    public int axis2 = 1;
     [SerializeField]
     private int direction = 1;
     
@@ -44,7 +44,7 @@ public class SphereProjection4D : MonoBehaviour
         new Vector4(0, 0, 1, 0),
         new Vector4(0, 0, 0, 1));
 
-void UpdateRotationMatrix(int axis1, int axis2, float angle) {
+    public void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         rotationMatrix = Matrix4x4.identity;
         rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
         rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
@@ -128,7 +128,7 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         }
     }
 
-    private IEnumerator Rotate90Degrees() {
+    public IEnumerator Rotate90Degrees() {
         while (true) {
             if (!cubeRotating) {
                 yield return null;
@@ -156,7 +156,7 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         }
     }
 
-    Vector4 Projection4DTo3D(Vector4 point) {
+    public Vector4 Projection4DTo3D(Vector4 point) {
         Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
         temp = cameraRotation * colorAssignment * temp;
         return new Vector3(temp[0], temp[1], temp[2]) / (temp[3] + 1);
@@ -181,5 +181,13 @@ void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         a_angle = Mathf.Lerp(a_angle, b_angle, t);
         a.position = new Vector3(Mathf.Cos(a_angle * Mathf.Deg2Rad) * radius + center.x, a.position.y,
             Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
+    }
+
+    public int GetAxis1(){
+        return axis1;
+    }
+
+    public int GetAxis2(){
+        return axis2;
     }
 }
