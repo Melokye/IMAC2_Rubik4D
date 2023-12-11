@@ -5,14 +5,18 @@ using UnityEngine.UIElements;
 
 public class SphereProjection4D : MonoBehaviour
 {
-    public List<Vector4> points = new List<Vector4>();
-    public List<Vector4> targets = new List<Vector4>();
-    public Matrix4x4 rotationMatrix = Matrix4x4.identity;
-    public bool cubeRotating = false;
-    List<string> names = new List<string>() {
+    // const attributs
+    List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
-    List<string> materials = new List<string>() {
+    List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
+
+    public List<Vector4> _points = new List<Vector4>();
+    public List<Vector4> targets = new List<Vector4>();
+    
+    public Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick (cf. fn UpdateRotationMatrix)
+    public bool _cubeRotating = false;
+    
 
     [SerializeField]
     private Mesh sphereMesh;
@@ -21,13 +25,13 @@ public class SphereProjection4D : MonoBehaviour
     public GameObject container;
     [SerializeField]
     public float rotationSpeed = 0.1f;
+
     [SerializeField]
     public int axis1 = 0;
     [SerializeField]
     public int axis2 = 1;
-    [SerializeField]
-    private int direction = 1;
-    
+    private float totalRotation = 0;
+
     static float s3 = 1f / Mathf.Sqrt(3f);
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
     static float _s6 = 1f - s6;
@@ -44,6 +48,77 @@ public class SphereProjection4D : MonoBehaviour
         new Vector4(0, 0, 1, 0),
         new Vector4(0, 0, 0, 1));
 
+
+
+  // Start is called before the first frame update
+    void Start()
+    {
+        // Generate points
+        const int nbPoints = 8;
+        const int midPoints = nbPoints / 2;
+
+
+        for(int i = 0; i < nbPoints; i++){
+            Vector4 point = new Vector4( 0, 0, 0, 0);
+
+            if(i >= midPoints){
+                point[i % (midPoints)] = -1;
+            }else{
+                point[i] = 1;
+            }
+
+            _points.Add(point);
+        }
+
+        // Create a GameObject for each point and link them in the GameObject "container"
+        container.name = "Container";
+
+        for (int i = 0; i < _points.Count; i++) {
+            // TODO warning : lenght of _names and _materials may not be the same as the number of points
+            GameObject sphere = new GameObject();
+            sphere.name = _names[i];
+
+            sphere.AddComponent<MeshFilter>();
+            sphere.GetComponent<MeshFilter>().mesh = sphereMesh;
+
+            Material sphereMat = Resources.Load(_materials[i], typeof(Material)) as Material;
+            sphere.AddComponent<MeshRenderer>();
+            sphere.GetComponent<Renderer>().material = sphereMat;
+
+            // place theses points in the space
+            sphere.transform.localScale = 0.2f * Vector3.one;
+            sphere.transform.parent = container.transform;
+            sphere.transform.position = Projection4DTo3D(_points[i]);
+        }
+
+        // TODO for test purpose, must be deleted later
+        UpdateRotationMatrix(axis1, axis2, 0);
+
+        // To make animation
+        StartCoroutine(Rotate90Degrees());
+    }
+
+    // Update is called once per frame
+    void Update() {
+        if (!_cubeRotating) {
+            if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                (axis1, axis2) = (axis2, axis1);
+            }
+            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
+                targets.Clear();
+                totalRotation = 0;
+                _cubeRotating = true;
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// "Generate" a new rotationMatrix from two axis
+    /// </summary>
+    /// <param name="axis1"></param>
+    /// <param name="axis2"></param>
+    /// <param name="angle"></param>
     public void UpdateRotationMatrix(int axis1, int axis2, float angle) {
         rotationMatrix = Matrix4x4.identity;
         rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
@@ -52,108 +127,49 @@ public class SphereProjection4D : MonoBehaviour
         rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Vector4 p1 = new Vector4( 1, 0, 0, 0);
-        Vector4 p2 = new Vector4(-1, 0, 0, 0);
-        Vector4 p3 = new Vector4( 0, 1, 0, 0);
-        Vector4 p4 = new Vector4( 0,-1, 0, 0);
-        Vector4 p5 = new Vector4( 0, 0, 1, 0);
-        Vector4 p6 = new Vector4( 0, 0,-1, 0);
-        Vector4 p7 = new Vector4( 0, 0, 0, 1);
-        Vector4 p8 = new Vector4( 0, 0, 0,-1);
-        /*List<float> shift1 = new List<float>() { -0.1f, 0.1f, 0.1f, 0 };
-        List<float> shift2 = new List<float>() { 0.1f, 0.1f, 0.1f, 0 };
-        List<float> shift3 = new List<float>() { -0.1f, 0.1f, -0.1f, 0 };
-        List<float> shift4 = new List<float>() { 0.1f, 0.1f, -0.1f, 0 };
-        List<float> shift5 = new List<float>() { -0.1f, -0.1f, 0.1f, 0 };
-        List<float> shift6 = new List<float>() { 0.1f, -0.1f, 0.1f, 0 };*/
-        //List<float> shift7 = new List<float>() { -0.1f, -0.1f, -0.1f, 0 };
-        //List<float> shift8 = new List<float>() { 0.1f, -0.1f, -0.1f, 0 };
-
-        points.Add(p1);
-        points.Add(p2);
-        points.Add(p3);
-        points.Add(p4);
-        points.Add(p5);
-        points.Add(p6);
-        points.Add(p7);
-        points.Add(p8);
-        /*shifts.Add(shift1);
-        shifts.Add(shift2);
-        shifts.Add(shift3);
-        shifts.Add(shift4);
-        shifts.Add(shift5);
-        shifts.Add(shift6);*/
-        //shifts.Add(shift7);
-        //shifts.Add(shift8);
-
-        container.name = "Container";
-        /*for (int i = 0; i < points.Count; i++) {
-            GameObject parent = new GameObject();
-            parent.transform.parent = container.transform;
-            //Vector3 parentPos = new Vector3(points[i][0], points[i][1], points[i][2]);
-            parent.name = names[i];
-            parent.transform.position = parentPos;*/
-
-        for (int j = 0; j < points.Count; j++) {
-            GameObject sphere = new GameObject();
-            Material sphereMat = Resources.Load(materials[j], typeof(Material)) as Material;
-            sphere.AddComponent<MeshFilter>();
-            sphere.AddComponent<MeshRenderer>();
-            sphere.GetComponent<MeshFilter>().mesh = sphereMesh;
-            sphere.GetComponent<Renderer>().material = sphereMat;
-            sphere.name = names[j];
-            sphere.transform.localScale = 0.2f * Vector3.one;
-            sphere.transform.parent = container.transform;
-            sphere.transform.position = Projection4DTo3D(points[j]);
-        }
-
-        UpdateRotationMatrix(axis1, axis2, 0);
-        StartCoroutine(Rotate90Degrees());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (!cubeRotating) {
-            if (Input.GetKeyDown(KeyCode.LeftShift)) {
-                direction = -direction;
-            }
-            if (Input.GetKeyDown(KeyCode.R)) {
-                targets.Clear();
-                cubeRotating = true;
-            }
-        }
-    }
-
     public IEnumerator Rotate90Degrees() {
         while (true) {
-            if (!cubeRotating) {
+            if (!_cubeRotating) {
                 yield return null;
             }
             else {
                 int i = 0;
                 UpdateRotationMatrix(axis1, axis2, 90);
                 foreach (Transform child in container.transform) {
-                    targets.Add(rotationMatrix * points[i]);
+                    targets.Add(rotationMatrix * _points[i]); // TODO remplace _point with child
                     i++;
                 }
-                i = 0;
-                UpdateRotationMatrix(axis1, axis2, rotationSpeed);
-                while (Vector4.Distance(points[0], targets[0]) > Vector4.kEpsilon) {
-                    i = 0;
-                    foreach (Transform child in container.transform) {
-                        points[i] = rotationMatrix * points[i];
-                        child.transform.position = Projection4DTo3D(points[i]);
-                        i++;
+
+                if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
+                    float rotationSpeedTemp = rotationSpeed;
+                    while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
+                        totalRotation += rotationSpeedTemp;
+                        rotationSpeedTemp = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeedTemp);
+                        totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
+                        i = 0;
+                        UpdateRotationMatrix(axis1, axis2, rotationSpeed);
+                        foreach (Transform child in container.transform) {
+                            _points[i] = rotationMatrix * _points[i];
+                            child.transform.position = Projection4DTo3D(_points[i]);
+                            i++;
+                        }
+                        yield return null;
                     }
-                    yield return null;
                 }
-                cubeRotating = false;
+                i = 0;
+                foreach (Transform child in container.transform) {
+                    _points[i] = targets[i];
+                    child.transform.position = Projection4DTo3D(_points[i]);
+                    i++;
+                }
+                _cubeRotating = false;
             }
         }
+    }
+
+
+    public static bool IsBetweenRangeExcluded(float value, float value1, float value2) {
+        return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
     }
 
     public Vector4 Projection4DTo3D(Vector4 point) {
@@ -177,11 +193,11 @@ public class SphereProjection4D : MonoBehaviour
         if (direction * b_angle > direction * a_angle) {
             b_angle = b_angle - 360 * direction;
         }
-        //print(a.name + ": " + "a_angle: " + a_angle + ", b_angle: " + b_angle);
         a_angle = Mathf.Lerp(a_angle, b_angle, t);
         a.position = new Vector3(Mathf.Cos(a_angle * Mathf.Deg2Rad) * radius + center.x, a.position.y,
             Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
     }
+
 
     public int GetAxis1(){
         return axis1;
@@ -190,4 +206,5 @@ public class SphereProjection4D : MonoBehaviour
     public int GetAxis2(){
         return axis2;
     }
+
 }
