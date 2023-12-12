@@ -4,6 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+enum Axis { x, y, z, w}
+
 // TODO in project: clean up old useless files and scene
 public class GameManager : MonoBehaviour {
     // TODO const attributs
