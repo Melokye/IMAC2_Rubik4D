@@ -82,6 +82,7 @@ public class GameManager : MonoBehaviour {
                 targets.Clear();
                 subtargets.Clear();
                 totalRotation = 0;
+
                 _cubeRotating = true;
             }
         }
@@ -151,8 +152,6 @@ public class GameManager : MonoBehaviour {
         }
     }
     
-    
-
     // Inserts value in Vector3 at pos, making it a Vector4
     Vector4 InsertFloat(Vector3 vec, float value, int pos) {
         pos = Mathf.Clamp(pos, 0, 3);
@@ -177,7 +176,7 @@ public class GameManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Generate a new rotationMatrix from two axis
+    /// Generate a new rotationMatrix from two axis and an angle
     /// </summary>
     /// <param name="axis1"></param>
     /// <param name="axis2"></param>
@@ -200,9 +199,8 @@ public class GameManager : MonoBehaviour {
             else {
                 DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
-                    float rotationSpeedTemp = rotationSpeed;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        RotateOverTime(rotationSpeedTemp);
+                        RotateOverTime(rotationSpeed);
                         yield return null;
                     }
                 }
