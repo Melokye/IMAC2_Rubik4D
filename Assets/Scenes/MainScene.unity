@@ -232,7 +232,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: W
+  m_text: ZW
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -259,8 +259,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -899,7 +899,7 @@ GameObject:
   - component: {fileID: 184157645}
   - component: {fileID: 184157644}
   m_Layer: 5
-  m_Name: Y
+  m_Name: XY
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -968,7 +968,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 184157645}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 452307259}
+        m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
+        m_MethodName: applyRotation
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 184157642}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &184157645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1616,7 +1628,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: W
+  m_text: YZ
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1643,8 +1655,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1750,7 +1762,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Y
+  m_text: XW
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1777,8 +1789,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1919,6 +1931,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 452307258}
+  - component: {fileID: 452307259}
   m_Layer: 5
   m_Name: Axis
   m_TagString: Untagged
@@ -1951,6 +1964,18 @@ RectTransform:
   m_AnchoredPosition: {x: -160, y: -158}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &452307259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452307257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b1436e6afd58e342affd8a43fd6bf33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &503461998
 GameObject:
   m_ObjectHideFlags: 0
@@ -2554,7 +2579,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Z
+  m_text: XZ
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2581,8 +2606,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2955,7 +2980,7 @@ GameObject:
   - component: {fileID: 740842696}
   - component: {fileID: 740842695}
   m_Layer: 5
-  m_Name: W
+  m_Name: YZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3024,7 +3049,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 740842696}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 452307259}
+        m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
+        m_MethodName: applyRotation
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 740842693}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &740842696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4147,7 +4184,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Z
+  m_text: YW
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4174,8 +4211,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4707,7 +4744,7 @@ GameObject:
   - component: {fileID: 1094799617}
   - component: {fileID: 1094799616}
   m_Layer: 5
-  m_Name: Z (1)
+  m_Name: YW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4776,7 +4813,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1094799617}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 452307259}
+        m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
+        m_MethodName: applyRotation
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1094799614}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1094799617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4986,7 +5035,7 @@ GameObject:
   - component: {fileID: 1205113580}
   - component: {fileID: 1205113579}
   m_Layer: 5
-  m_Name: Y (1)
+  m_Name: XW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5055,7 +5104,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1205113580}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 452307259}
+        m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
+        m_MethodName: applyRotation
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1205113577}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1205113580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5146,7 +5207,7 @@ GameObject:
   - component: {fileID: 1231250861}
   - component: {fileID: 1231250860}
   m_Layer: 5
-  m_Name: W (1)
+  m_Name: ZW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5215,7 +5276,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1231250861}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 452307259}
+        m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
+        m_MethodName: applyRotation
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1231250858}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1231250861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5267,7 +5340,7 @@ GameObject:
   - component: {fileID: 1244285250}
   - component: {fileID: 1244285249}
   m_Layer: 5
-  m_Name: Z
+  m_Name: XZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5336,7 +5409,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1244285250}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 452307259}
+        m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
+        m_MethodName: applyRotation
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1244285247}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1244285250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5640,7 +5725,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1614008653
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5954,7 +6039,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Y
+  m_text: XY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5981,8 +6066,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -6849,8 +6934,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1614008654}
         m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
-        m_MethodName: selectAxe
-        m_Mode: 2
+        m_MethodName: 
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 1998507054}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine

@@ -4,8 +4,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-enum Axis { x, y, z, w}
-
 // TODO in project: clean up old useless files and scene
 public class GameManager : MonoBehaviour {
     // TODO const attributs
@@ -81,13 +79,20 @@ public class GameManager : MonoBehaviour {
                 (axis1, axis2) = (axis2, axis1);
             }
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
-                targets.Clear();
-                subtargets.Clear();
-                totalRotation = 0;
-
-                _cubeRotating = true;
+                launchRotation();
             }
         }
+    }
+
+    /// <summary>
+    /// initialize the data to lauch a rotation
+    /// </summary>
+    public void launchRotation(){
+        targets.Clear();
+        subtargets.Clear();
+        totalRotation = 0;
+
+        _cubeRotating = true;
     }
 
     void GenerateStickerCoordinates() {
@@ -279,13 +284,22 @@ public class GameManager : MonoBehaviour {
         return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
     }
 
-    // TODO for debug purpose ----
     public int GetAxis1() {
         return axis1;
     }
 
     public int GetAxis2() {
         return axis2;
+    }
+
+    /// <summary>
+    /// set the plane based on two axis
+    /// </summary>
+    /// <param name="a1">the first axis</param>
+    /// <param name="a2">the second axis</param>
+    public void setPlane(int a1, int a2){
+        axis1 = a1;
+        axis2 = a2;
     }
 
     // Old unused function may be reused later on
