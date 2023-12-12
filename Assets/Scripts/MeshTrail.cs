@@ -10,8 +10,8 @@ public class MeshTrail : MonoBehaviour {
     //#pragma downcast
 
     public float trailWidth = 0.05f;
-    public float trailLength = 2000f;
-    public bool generate = true;
+    //public float trailLength = 2000f;
+    public bool generate = false;
     public bool devTest = false;
 
     private Mesh mesh;
@@ -47,10 +47,10 @@ public class MeshTrail : MonoBehaviour {
             vertices.Insert(0, vertex1); // Uhhhh
 
             // if max length has been reached discard the last two vertices
-            if (vertices.Count > trailLength * 2 + 2) {
+            /*if (vertices.Count > trailLength * 2 + 2) {
                 vertices.RemoveAt(vertices.Count - 1);
                 vertices.RemoveAt(vertices.Count - 1);
-            }
+            }*/
         }
         else {
             // if trail has been disabled and there are still vertices discard the last two vertices

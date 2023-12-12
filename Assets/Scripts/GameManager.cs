@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
+    List<string> _circle_materials = new List<string>() {
+            "XY", "XZ", "YZ", "XW", "YW", "ZW" };
     // ---
 
     // TODO move in another file? 
@@ -68,6 +70,9 @@ public class GameManager : MonoBehaviour {
         // Create a GameObject for each point and link them in the GameObject "container"
         RenderStickers();
 
+        // Create Empty Objects as children of a few stickers rotating around to make the circles
+        RenderCircles();
+
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }
@@ -120,7 +125,7 @@ public class GameManager : MonoBehaviour {
 
             // place these points in the space
             cell.transform.parent = puzzle.transform;
-            cell.transform.position = Projection4DTo3D(_cells[i]);
+            //cell.transform.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < _stickers[i].Count; j++) {
                 GameObject sticker = new GameObject();
                 sticker.name = _names[i] + "_" + j;
@@ -146,12 +151,118 @@ public class GameManager : MonoBehaviour {
                 trail.AddComponent<MeshRenderer>();
                 trail.GetComponent<Renderer>().material = stickerMat;
                 trail.AddComponent<MeshTrail>();
+                trail.GetComponent<MeshTrail>().generate = true;
                 trail.transform.parent = sticker.transform;*/
             }
         }
     }
-    
-    
+
+    void RenderCircles() {
+        List<Vector4> tempstickers = new List<Vector4>();
+        List<Vector3> vertices = new List<Vector3>();
+        float trailWidth = 0.05f;
+
+        for (int i = 0; i < _stickers[0].Count; i++) {
+            tempstickers.Add(_stickers[0][i]);
+        }
+
+        void TraverseAxis(GameObject tempsticker, int index, int axis1, int axis2, float angle) {
+            tempsticker.transform.position = Projection4DTo3D(tempstickers[index]);
+            vertices.Add(new Vector3(trailWidth, 0, 0) + tempsticker.transform.position);
+            vertices.Add(new Vector3(-trailWidth, 0, 0) + tempsticker.transform.position);
+            tempstickers[index] = RotationMatrix(axis1, axis2, angle) * tempstickers[index];
+        }
+
+        void CreateMesh(List<Vector3> vertices, int axisIndex, int tempstickerIndex) {
+            Mesh mesh = new Mesh();
+            mesh.vertices = vertices.ToArray();
+            int[] triangles = new int[vertices.Count * 3];
+            Vector2[] uvs = new Vector2[vertices.Count];
+
+            for (int i = 1; i < vertices.Count; i++) {
+                if (i % 2 == 0)
+                    uvs[i] = new Vector2(i / (vertices.Count - 2f), 0);
+                else
+                    uvs[i] = new Vector2((i - 1) / (vertices.Count - 2f), 1);
+            }
+
+            mesh.uv = uvs;
+
+            // first triangle
+            triangles[0] = 0;
+            triangles[1] = 2;
+            triangles[2] = 1;
+            int tri = 3;
+
+            for (int i = 1; i < vertices.Count - 2; i++) {
+                if (i % 2 == 0) {
+                    triangles[tri] = i;
+                    triangles[tri + 1] = i + 1;
+                    triangles[tri + 2] = i + 2;
+                }
+                else {
+                    triangles[tri] = i;
+                    triangles[tri + 1] = i + 2;
+                    triangles[tri + 2] = i + 1;
+                }
+                tri += 3;
+            }
+            triangles[tri] = vertices.Count - 2;
+            triangles[tri + 1] = 0;
+            triangles[tri + 2] = 1;
+            tri += 3;
+            triangles[tri] = vertices.Count - 1;
+            triangles[tri + 1] = 1;
+            triangles[tri + 2] = 0;
+
+            mesh.triangles = triangles;
+
+            GameObject circle = new GameObject();
+            circle.name = _circle_materials[axisIndex] + "_" + tempstickerIndex;
+
+            // add mesh
+            circle.AddComponent<MeshFilter>();
+            circle.GetComponent<MeshFilter>().mesh = mesh;
+
+            // add material
+            Material circleMat = Resources.Load(_circle_materials[axisIndex], typeof(Material)) as Material;
+            circle.AddComponent<MeshRenderer>();
+            circle.GetComponent<Renderer>().material = circleMat;
+        }
+
+        for (int i = 0; i < tempstickers.Count; i++) {
+            GameObject tempsticker = new GameObject();
+            for (int j = 0; j < 90; j++) {
+                TraverseAxis(tempsticker, i, 0, 1, 4f);
+            }
+            Destroy(tempsticker);
+            CreateMesh(vertices, 0, i);
+            vertices.Clear();
+            /*for (int j = 0; j < 90; j++) {
+                TraverseAxis(j, 0, 2, 4f);
+            }*/
+        }
+        
+
+        /*for (int i = 0; i < _stickers.Count; i++) {
+            for (int j = 0; j < _stickers[i].Count; j++) {
+                circleRenderer.transform.position = Projection4DTo3D(_stickers[i][j]);
+            }
+        }*/
+
+        /*Transform cell = puzzle.transform.GetChild(0);
+        for (int i = 0; i < cell.childCount; i++) {
+            Transform sticker = cell.GetChild(i);
+            
+            for (int j = 0; j < 360; j+=4) {
+                
+                circleRenderer.transform.position = Projection4DTo3D(_stickers[0][i]);
+            }
+        }*/
+
+
+        
+    }
 
     // Inserts value in Vector3 at pos, making it a Vector4
     Vector4 InsertFloat(Vector3 vec, float value, int pos) {
@@ -243,7 +354,7 @@ public class GameManager : MonoBehaviour {
             Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
             _cells[i] = rotate * _cells[i];
             Transform cell = puzzle.transform.GetChild(i);
-            cell.position = Projection4DTo3D(_cells[i]);
+            //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 // Rotates stickers
@@ -260,7 +371,7 @@ public class GameManager : MonoBehaviour {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
             _cells[i] = targets[i];
             Transform cell = puzzle.transform.GetChild(i);
-            cell.position = Projection4DTo3D(_cells[i]);
+            //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 _stickers[i][j] = subtargets[i][j];

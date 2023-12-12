@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -132,7 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5888080}
-  - component: {fileID: 5888079}
+  - component: {fileID: 5888081}
   m_Layer: 0
   m_Name: SphereGenerator
   m_TagString: Untagged
@@ -140,45 +140,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &5888079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5888078}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ae37f35d9742fb46afcb1d7ef526db6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _points: []
-  targets: []
-  rotationMatrix:
-    e00: 1
-    e01: 0
-    e02: 0
-    e03: 0
-    e10: 0
-    e11: 1
-    e12: 0
-    e13: 0
-    e20: 0
-    e21: 0
-    e22: 1
-    e23: 0
-    e30: 0
-    e31: 0
-    e32: 0
-    e33: 1
-  _cubeRotating: 0
-  sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  container: {fileID: 135335976}
-  rotationSpeed: 2
-  cell: 0
-  axis1: 0
-  axis2: 1
-  puzzleSize: 2
 --- !u!4 &5888080
 Transform:
   m_ObjectHideFlags: 0
@@ -194,6 +155,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5888081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5888078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71725ec4ee5a8e642ab635b2712f8436, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cells: []
+  targets: []
+  puzzle: {fileID: 135335976}
+  axis1: 0
+  axis2: 1
+  sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  puzzleSize: 2
+  rotationSpeed: 2
 --- !u!1 &40552167
 GameObject:
   m_ObjectHideFlags: 0
