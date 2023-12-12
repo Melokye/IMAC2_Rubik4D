@@ -6,29 +6,33 @@ using UnityEngine.UIElements;
 
 public class SphereProjection4D : MonoBehaviour
 {
-    List<Vector4> _points = new List<Vector4>();
-    List<List<Vector4>> _subpoints = new List<List<Vector4>>();
-    List<Vector4> targets = new List<Vector4>();
-    List<List<Vector4>> subtargets = new List<List<Vector4>>();
-    Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick
-    bool cubeRotating = false;
+    // const attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
 
+    public List<Vector4> _points = new List<Vector4>();
+    List<List<Vector4>> _subpoints = new List<List<Vector4>>();
+    public List<Vector4> targets = new List<Vector4>();
+    List<List<Vector4>> subtargets = new List<List<Vector4>>();
+
+    public Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick (cf. fn UpdateRotationMatrix)
+    public bool _cubeRotating = false;
+
+
     [SerializeField]
     private Mesh sphereMesh;
     [SerializeField]
-    GameObject container;
+
+    public GameObject container;
     [SerializeField]
-    float rotationSpeed = 2f;
+    public float rotationSpeed = 0.1f;
+
     [SerializeField]
-    int cell = 0;
+    public int axis1 = 0;
     [SerializeField]
-    int axis1 = 0;
-    [SerializeField]
-    int axis2 = 1;
+    public int axis2 = 1;
     private float totalRotation = 0;
     [SerializeField]
     private int puzzleSize = 2;
@@ -50,37 +54,6 @@ public class SphereProjection4D : MonoBehaviour
         new Vector4(0, 1, 0, 0),
         new Vector4(0, 0, 1, 0),
         new Vector4(0, 0, 0, 1));
-
-    void UpdateRotationMatrix(int axis1, int axis2, float angle) {
-        rotationMatrix = Matrix4x4.identity;
-        rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis1, axis2] = Mathf.Sin(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
-    }
-
-    // Inserts value in Vector3 at pos, making it a Vector4
-    Vector4 InsertFloat(Vector3 vec, float value, int pos) {
-        pos = Mathf.Clamp(pos, 0, 3);
-        Vector4 result = new Vector4(0, 0, 0, 0);
-        switch (pos) {
-            case 0:
-                result = new Vector4(value, vec.x, vec.y, vec.z);
-                break;
-            case 1:
-                result = new Vector4(vec.x, value, vec.y, vec.z);
-                break;
-            case 2:
-                result = new Vector4(vec.x, vec.y, value, vec.z);
-                break;
-            case 3:
-                result = new Vector4(vec.x, vec.y, vec.z, value);
-                break;
-            default:
-                break;
-        }
-        return result;
-    }
 
     // Start is called before the first frame update
     void Start() {
@@ -157,7 +130,7 @@ public class SphereProjection4D : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        if (!cubeRotating) {
+        if (!_cubeRotating) {
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
                 (axis1, axis2) = (axis2, axis1);
             }
@@ -165,14 +138,51 @@ public class SphereProjection4D : MonoBehaviour
                 targets.Clear();
                 subtargets.Clear();
                 totalRotation = 0;
-                cubeRotating = true;
+                _cubeRotating = true;
             }
         }
     }
 
-    private IEnumerator Rotate90Degrees() {
+    // Inserts value in Vector3 at pos, making it a Vector4
+    Vector4 InsertFloat(Vector3 vec, float value, int pos) {
+        pos = Mathf.Clamp(pos, 0, 3);
+        Vector4 result = new Vector4(0, 0, 0, 0);
+        switch (pos) {
+            case 0:
+                result = new Vector4(value, vec.x, vec.y, vec.z);
+                break;
+            case 1:
+                result = new Vector4(vec.x, value, vec.y, vec.z);
+                break;
+            case 2:
+                result = new Vector4(vec.x, vec.y, value, vec.z);
+                break;
+            case 3:
+                result = new Vector4(vec.x, vec.y, vec.z, value);
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// "Generate" a new rotationMatrix from two axis
+    /// </summary>
+    /// <param name="axis1"></param>
+    /// <param name="axis2"></param>
+    /// <param name="angle"></param>
+    public void UpdateRotationMatrix(int axis1, int axis2, float angle) {
+        rotationMatrix = Matrix4x4.identity;
+        rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis1, axis2] = Mathf.Sin(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
+    }
+
+    public IEnumerator Rotate90Degrees() {
         while (true) {
-            if (!cubeRotating) {
+            if (!_cubeRotating) {
                 yield return null;
             }
             else {
@@ -189,6 +199,7 @@ public class SphereProjection4D : MonoBehaviour
                     }
                     i++;
                 }
+
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float rotationSpeedTemp = rotationSpeed;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
@@ -224,19 +235,28 @@ public class SphereProjection4D : MonoBehaviour
                     }
                     i++;
                 }
-                cubeRotating = false;
+                _cubeRotating = false;
             }
         }
     }
+
 
     public static bool IsBetweenRangeExcluded(float value, float value1, float value2) {
         return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
     }
 
-    Vector4 Projection4DTo3D(Vector4 point) {
+    public Vector4 Projection4DTo3D(Vector4 point) {
         Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
         temp = cameraRotation * colorAssignment * temp;
         return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
+    }
+
+    public int GetAxis1(){
+        return axis1;
+    }
+
+    public int GetAxis2(){
+        return axis2;
     }
 
     // Old unused function may be reused later on
