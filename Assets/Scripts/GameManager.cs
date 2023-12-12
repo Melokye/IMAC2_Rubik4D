@@ -4,7 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class SphereProjection4D : MonoBehaviour {
+// TODO in project: clean up old useless files and scene
+public class GameManager : MonoBehaviour {
     // TODO const attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
@@ -12,23 +13,23 @@ public class SphereProjection4D : MonoBehaviour {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
     // ---
 
-    // TODO rename _point into _cell and _subpoints into _stickers 
-    // TODO move in another file? Create a specific struct
-    public List<Vector4> _points = new List<Vector4>();
-    List<List<Vector4>> _subpoints = new List<List<Vector4>>(); 
+    // TODO move in another file? 
+    // TODO Create a specific struct?
+    public List<Vector4> _cells = new List<Vector4>();
+    List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
 
     // TODO delete these "attributes" -> function
     public List<Vector4> targets = new List<Vector4>(); // TODO may not be useful
     List<List<Vector4>> subtargets = new List<List<Vector4>>();
     // ---
     
-    public bool _cubeRotating = false;
+    private bool _cubeRotating = false;
 
-    public GameObject container; // TODO rename it into puzzle
+    public GameObject puzzle;
     
     public int axis1 = 0;
     public int axis2 = 1;
-    private float totalRotation = 0; // TODO not an attribute
+    private float totalRotation = 0; // TODO not an attribute?
     
     // To customize the Rubik
     [SerializeField]
@@ -62,7 +63,7 @@ public class SphereProjection4D : MonoBehaviour {
     void Start() {
         GenerateStickerCoordinates();
 
-        container.name = "Container";
+        puzzle.name = "Container";
 
         // Create a GameObject for each point and link them in the GameObject "container"
         RenderStickers();
@@ -93,8 +94,8 @@ public class SphereProjection4D : MonoBehaviour {
             int pointIndex = Mathf.FloorToInt(i * 0.5f);
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
-            _points.Add(point);
-            _subpoints.Add(new List<Vector4>());
+            _cells.Add(point);
+            _stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
                 temp.x = Mathf.Lerp(-1f, 1f,
@@ -106,21 +107,21 @@ public class SphereProjection4D : MonoBehaviour {
 
                 Vector4 subpoint = new Vector4(0, 0, 0, 0);
                 subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
-                _subpoints[i].Add(subpoint);
+                _stickers[i].Add(subpoint);
             }
         }
     }
 
     void RenderStickers() {
-        for (int i = 0; i < _points.Count; i++) {
+        for (int i = 0; i < _cells.Count; i++) {
             // TODO warning : length of _names and _materials may not be the same as the number of points
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
             // place these points in the space
-            cell.transform.parent = container.transform;
-            cell.transform.position = Projection4DTo3D(_points[i]);
-            for (int j = 0; j < _subpoints[i].Count; j++) {
+            cell.transform.parent = puzzle.transform;
+            cell.transform.position = Projection4DTo3D(_cells[i]);
+            for (int j = 0; j < _stickers[i].Count; j++) {
                 GameObject sticker = new GameObject();
                 sticker.name = _names[i] + "_" + j;
 
@@ -136,7 +137,7 @@ public class SphereProjection4D : MonoBehaviour {
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = Projection4DTo3D(_subpoints[i][j]);
+                sticker.transform.position = Projection4DTo3D(_stickers[i][j]);
 
                 // circle generation from movement trails test
                 /*GameObject trail = new GameObject();
@@ -216,15 +217,15 @@ public class SphereProjection4D : MonoBehaviour {
     /// Determine the destination of each cell and sticker
     /// </summary>
     private void DefineTargets() {
-        // TODO put "container" in param? + return "targets" and "subtargets"?
-        for (int i = 0; i < container.transform.childCount; i++) {
+        // TODO put "puzzle" in param? + return "targets" and "subtargets"?
+        for (int i = 0; i < puzzle.transform.childCount; i++) {
             Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
-            targets.Add(rotate * _points[i]);
+            targets.Add(rotate * _cells[i]);
             subtargets.Add(new List<Vector4>());
             
-            Transform cell = container.transform.GetChild(i);
+            Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
-                subtargets[i].Add(rotate * _subpoints[i][j]);
+                subtargets[i].Add(rotate * _stickers[i][j]);
             }
         }
     }
@@ -237,17 +238,17 @@ public class SphereProjection4D : MonoBehaviour {
         totalRotation += rotationSpeed;
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
         totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
-        for (int i = 0; i < container.transform.childCount; i++) {
+        for (int i = 0; i < puzzle.transform.childCount; i++) {
             // Rotates cells
             Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
-            _points[i] = rotate * _points[i];
-            Transform cell = container.transform.GetChild(i);
-            cell.position = Projection4DTo3D(_points[i]);
+            _cells[i] = rotate * _cells[i];
+            Transform cell = puzzle.transform.GetChild(i);
+            cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 // Rotates stickers
-                _subpoints[i][j] = rotate * _subpoints[i][j];
-                sticker.position = Projection4DTo3D(_subpoints[i][j]);
+                _stickers[i][j] = rotate * _stickers[i][j];
+                sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
         }
     }
@@ -256,14 +257,14 @@ public class SphereProjection4D : MonoBehaviour {
     /// Snaps each cell and sticker to its final position
     /// </summary>
     private void SnapToTargets() {
-        for (int i = 0; i < container.transform.childCount; i++) {
-            _points[i] = targets[i];
-            Transform cell = container.transform.GetChild(i);
-            cell.position = Projection4DTo3D(_points[i]);
+        for (int i = 0; i < puzzle.transform.childCount; i++) {
+            _cells[i] = targets[i];
+            Transform cell = puzzle.transform.GetChild(i);
+            cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                _subpoints[i][j] = subtargets[i][j];
-                sticker.position = Projection4DTo3D(_subpoints[i][j]);
+                _stickers[i][j] = subtargets[i][j];
+                sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
         }
     }

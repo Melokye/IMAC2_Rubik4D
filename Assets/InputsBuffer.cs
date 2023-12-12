@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+// TODO delete _attribute used from GameManager.cs
+// TODO reduce dependancies with GameManager
+
 public class InputsBuffer : MonoBehaviour {
-    SphereProjection4D handler;
+    GameManager handler;
     public GameObject rotationEngine;
     private bool inputing;
     List<List<int>> inputsBuffer = new List<List<int>>(0);
@@ -12,7 +15,7 @@ public class InputsBuffer : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         rotationEngine = GameObject.Find("SphereGenerator");
-        handler = rotationEngine.GetComponent<SphereProjection4D>();
+        handler = rotationEngine.GetComponent<GameManager>();
         Scrambler(ref mixed);
         // inputsBuffer = mixed;
         StartCoroutine(RotationHandler());
@@ -75,18 +78,18 @@ public class InputsBuffer : MonoBehaviour {
                     
                     int i = 0;
                     Matrix4x4 rotate = handler.RotationMatrix(handler.axis1,handler.axis2, 90);
-                    foreach (Transform child in handler.container.transform) {
-                        handler.targets.Add(rotate * handler._points[i]);
+                    foreach (Transform child in handler.puzzle.transform) {
+                        handler.targets.Add(rotate * handler._cells[i]);
                         i++;
                     }
 
                     i = 0;
                     rotate = handler.RotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
-                    while (Vector4.Distance(handler._points[0], handler.targets[0]) > Vector4.kEpsilon) {
+                    while (Vector4.Distance(handler._cells[0], handler.targets[0]) > Vector4.kEpsilon) {
                         i = 0;
-                        foreach (Transform child in handler.container.transform) {
-                            handler._points[i] = rotate * handler._points[i];
-                            child.transform.position = handler.Projection4DTo3D(handler._points[i]);
+                        foreach (Transform child in handler.puzzle.transform) {
+                            handler._cells[i] = rotate * handler._cells[i];
+                            child.transform.position = handler.Projection4DTo3D(handler._cells[i]);
                             i++;
                         }
                         yield return null;
