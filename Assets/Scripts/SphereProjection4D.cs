@@ -4,41 +4,43 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class SphereProjection4D : MonoBehaviour
-{
-    // const attributs
+public class SphereProjection4D : MonoBehaviour {
+    // TODO const attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
+    // ---
 
+    // TODO rename _point into _cell and _subpoints into _stickers 
+    // TODO move in another file? Create a specific struct
     public List<Vector4> _points = new List<Vector4>();
-    List<List<Vector4>> _subpoints = new List<List<Vector4>>();
-    public List<Vector4> targets = new List<Vector4>();
-    List<List<Vector4>> subtargets = new List<List<Vector4>>();
+    List<List<Vector4>> _subpoints = new List<List<Vector4>>(); 
 
-    public Matrix4x4 rotationMatrix = Matrix4x4.identity; // TODO à voir avec M. Nozick (cf. fn UpdateRotationMatrix)
+    // TODO delete these "attributes" -> function
+    public List<Vector4> targets = new List<Vector4>(); // TODO may not be useful
+    List<List<Vector4>> subtargets = new List<List<Vector4>>();
+    // ---
+    
     public bool _cubeRotating = false;
 
-
+    public GameObject container; // TODO rename it into puzzle
+    
+    public int axis1 = 0;
+    public int axis2 = 1;
+    private float totalRotation = 0; // TODO not an attribute
+    
+    // To customize the Rubik
     [SerializeField]
     private Mesh sphereMesh;
-    [SerializeField]
-
-    public GameObject container;
-    [SerializeField]
-    public float rotationSpeed = 0.1f;
-
-    [SerializeField]
-    public int axis1 = 0;
-    [SerializeField]
-    public int axis2 = 1;
-    private float totalRotation = 0;
     [SerializeField]
     private int puzzleSize = 2;
     private float stickerDistance = 10f;
     private float stickerSize = 0.2f;
+    public float rotationSpeed = 2f;
 
+    // to simplify the camera rotation
+    // TODO move it in another file?
     static float s3 = 1f / Mathf.Sqrt(3f);
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
     static float _s6 = 1f - s6;
@@ -49,6 +51,7 @@ public class SphereProjection4D : MonoBehaviour
         new Vector4(-s3, 0f, -s3, -s3),
         new Vector4(0f, 1f, 0f, 0f));
 
+    // secondary rotation matrix to eventually use later
     Matrix4x4 colorAssignment = new Matrix4x4(
         new Vector4(1, 0, 0, 0),
         new Vector4(0, 1, 0, 0),
@@ -57,13 +60,39 @@ public class SphereProjection4D : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
-        // Generate points
+        GenerateStickerCoordinates();
+
+        container.name = "Container";
+
+        // Create a GameObject for each point and link them in the GameObject "container"
+        RenderStickers();
+
+        // Handles rotation in parallel to the Update method
+        StartCoroutine(RotationHandler());
+    }
+
+    // Update is called once per frame
+    void Update() {
+        if (!_cubeRotating) {
+            if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                (axis1, axis2) = (axis2, axis1);
+            }
+            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
+                targets.Clear();
+                subtargets.Clear();
+                totalRotation = 0;
+                _cubeRotating = true;
+            }
+        }
+    }
+
+    void GenerateStickerCoordinates() {
         const int nbPoints = 8;
         for (int i = 0; i < nbPoints; i++) {
             Vector4 point = new Vector4(0, 0, 0, 0);
             int pointIndex = Mathf.FloorToInt(i * 0.5f);
-            int altOne = 1 - (2 * (i % 2));
-            point[pointIndex] = altOne;
+            int altSign = 1 - (2 * (i % 2));
+            point[pointIndex] = altSign;
             _points.Add(point);
             _subpoints.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
@@ -80,10 +109,9 @@ public class SphereProjection4D : MonoBehaviour
                 _subpoints[i].Add(subpoint);
             }
         }
+    }
 
-        // Create a GameObject for each point and link them in the GameObject "container"
-        container.name = "Container";
-
+    void RenderStickers() {
         for (int i = 0; i < _points.Count; i++) {
             // TODO warning : length of _names and _materials may not be the same as the number of points
             GameObject cell = new GameObject();
@@ -120,28 +148,9 @@ public class SphereProjection4D : MonoBehaviour
                 trail.transform.parent = sticker.transform;*/
             }
         }
-
-        // TODO for test purpose, must be deleted later
-        UpdateRotationMatrix(axis1, axis2, 0);
-
-        // To make animation
-        StartCoroutine(Rotate90Degrees());
     }
-
-    // Update is called once per frame
-    void Update() {
-        if (!_cubeRotating) {
-            if (Input.GetKeyDown(KeyCode.LeftShift)) {
-                (axis1, axis2) = (axis2, axis1);
-            }
-            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
-                targets.Clear();
-                subtargets.Clear();
-                totalRotation = 0;
-                _cubeRotating = true;
-            }
-        }
-    }
+    
+    
 
     // Inserts value in Vector3 at pos, making it a Vector4
     Vector4 InsertFloat(Vector3 vec, float value, int pos) {
@@ -167,79 +176,97 @@ public class SphereProjection4D : MonoBehaviour
     }
 
     /// <summary>
-    /// "Generate" a new rotationMatrix from two axis
+    /// Generate a new rotationMatrix from two axis
     /// </summary>
     /// <param name="axis1"></param>
     /// <param name="axis2"></param>
     /// <param name="angle"></param>
-    public void UpdateRotationMatrix(int axis1, int axis2, float angle) {
-        rotationMatrix = Matrix4x4.identity;
+    public Matrix4x4 RotationMatrix(int axis1, int axis2, float angle) {
+        Matrix4x4 rotationMatrix = Matrix4x4.identity;
         rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
         rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
         rotationMatrix[axis1, axis2] = Mathf.Sin(angle * Mathf.Deg2Rad);
         rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
+        return rotationMatrix;
     }
 
-    public IEnumerator Rotate90Degrees() {
+    public IEnumerator RotationHandler() {
         while (true) {
             if (!_cubeRotating) {
-                yield return null;
+                yield return null; 
+                // == continue; in c, to avoid freeze screen when used in coroutine
             }
             else {
-                int i = 0;
-                int j = 0;
-                UpdateRotationMatrix(axis1, axis2, 90);
-                foreach (Transform child in container.transform) {
-                    targets.Add(rotationMatrix * _points[i]);
-                    subtargets.Add(new List<Vector4>());
-                    j = 0;
-                    foreach (Transform subchild in child) {
-                        subtargets[i].Add(rotationMatrix * _subpoints[i][j]);
-                        j++;
-                    }
-                    i++;
-                }
-
+                DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float rotationSpeedTemp = rotationSpeed;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        totalRotation += rotationSpeedTemp;
-                        rotationSpeedTemp = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeedTemp);
-                        totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
-                        i = 0;
-                        UpdateRotationMatrix(axis1, axis2, rotationSpeed);
-                        foreach (Transform child in container.transform) {
-                            // The comment out code below may be unnecessary
-                            /*_points[i] = rotationMatrix * _points[i];
-                            child.transform.position = Projection4DTo3D(_points[i]);*/
-                            j = 0;
-                            foreach (Transform subchild in child) {
-                                _subpoints[i][j] = rotationMatrix * _subpoints[i][j];
-                                subchild.transform.position = Projection4DTo3D(_subpoints[i][j]);
-                                j++;
-                            }
-                            i++;
-                        }
+                        RotateOverTime(rotationSpeedTemp);
                         yield return null;
                     }
                 }
-                i = 0;
-                foreach (Transform child in container.transform) {
-                    _points[i] = targets[i];
-                    child.transform.position = Projection4DTo3D(_points[i]);
-                    j = 0;
-                    foreach (Transform subchild in child) {
-                        _subpoints[i][j] = subtargets[i][j];
-                        subchild.transform.position = Projection4DTo3D(_subpoints[i][j]);
-                        j++;
-                    }
-                    i++;
-                }
+                    
+                SnapToTargets();
                 _cubeRotating = false;
             }
         }
     }
 
+    /// <summary>
+    /// Determine the destination of each cell and sticker
+    /// </summary>
+    private void DefineTargets() {
+        // TODO put "container" in param? + return "targets" and "subtargets"?
+        for (int i = 0; i < container.transform.childCount; i++) {
+            Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
+            targets.Add(rotate * _points[i]);
+            subtargets.Add(new List<Vector4>());
+            
+            Transform cell = container.transform.GetChild(i);
+            for (int j = 0; j < cell.childCount; j++) {
+                subtargets[i].Add(rotate * _subpoints[i][j]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Rotates by 90 degrees with animation
+    /// </summary>
+    /// <param name="rotationSpeed"> </param> 
+    private void RotateOverTime(float rotationSpeed) {
+        totalRotation += rotationSpeed;
+        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
+        totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
+        for (int i = 0; i < container.transform.childCount; i++) {
+            // Rotates cells
+            Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
+            _points[i] = rotate * _points[i];
+            Transform cell = container.transform.GetChild(i);
+            cell.position = Projection4DTo3D(_points[i]);
+            for (int j = 0; j < cell.childCount; j++) {
+                Transform sticker = cell.GetChild(j);
+                // Rotates stickers
+                _subpoints[i][j] = rotate * _subpoints[i][j];
+                sticker.position = Projection4DTo3D(_subpoints[i][j]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Snaps each cell and sticker to its final position
+    /// </summary>
+    private void SnapToTargets() {
+        for (int i = 0; i < container.transform.childCount; i++) {
+            _points[i] = targets[i];
+            Transform cell = container.transform.GetChild(i);
+            cell.position = Projection4DTo3D(_points[i]);
+            for (int j = 0; j < cell.childCount; j++) {
+                Transform sticker = cell.GetChild(j);
+                _subpoints[i][j] = subtargets[i][j];
+                sticker.position = Projection4DTo3D(_subpoints[i][j]);
+            }
+        }
+    }
 
     public static bool IsBetweenRangeExcluded(float value, float value1, float value2) {
         return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
@@ -251,11 +278,11 @@ public class SphereProjection4D : MonoBehaviour
         return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
     }
 
-    public int GetAxis1(){
+    public int GetAxis1() {
         return axis1;
     }
 
-    public int GetAxis2(){
+    public int GetAxis2() {
         return axis2;
     }
 

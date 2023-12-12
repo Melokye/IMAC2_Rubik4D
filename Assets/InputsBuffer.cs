@@ -3,27 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class InputsBuffer : MonoBehaviour
-{
+public class InputsBuffer : MonoBehaviour {
     SphereProjection4D handler;
     public GameObject rotationEngine;
     private bool inputing;
     List<List<int>> inputsBuffer = new List<List<int>>(0);
     List<List<int>> mixed = new List<List<int>>(0);
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         rotationEngine = GameObject.Find("SphereGenerator");
         handler = rotationEngine.GetComponent<SphereProjection4D>();
-        scrambler(ref mixed);
+        Scrambler(ref mixed);
         // inputsBuffer = mixed;
-        StartCoroutine(yoMamas());
+        StartCoroutine(RotationHandler());
         // inputing = true;
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         if (Input.GetKeyDown(KeyCode.R)) {
             List<int> Entry = new List<int>(){handler.GetAxis2(), handler.GetAxis1()};
             inputsBuffer.Add(Entry);
@@ -32,62 +29,63 @@ public class InputsBuffer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
             foreach(var entry in mixed){
-                injectInput(in entry);
+                InjectInput(in entry);
             }
             inputsBuffer.AddRange(mixed);
             mixed.Clear();
-            scrambler(ref mixed);
+            Scrambler(ref mixed);
             // Debug.Log("Done mixing"); // TODO
         }
-        if (Input.GetKeyDown(KeyCode.S)){
+        if (Input.GetKeyDown(KeyCode.S)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
             inputing = true;
             // Debug.Log("Done solving"); // TODO
         }
     }
 
-    public void scrambler(ref List<List<int>> mixed){
+    public void Scrambler(ref List<List<int>> mixed) {
         // Generation of a 50 entries set of inputs.
         // For each entry must be specified 2 values :
         // axis1 (0,1,2,3), axis2 (0,1,2,3)
         // rotation speed will remain untouched.
         System.Random rnd = new System.Random();
-        for(int cmp = 0 ; cmp < 50 ; cmp++){
+        for (int cmp = 0 ; cmp < 50 ; cmp++) {
             int axis1 = rnd.Next(0,4);
             int axis2 = rnd.Next(0,4);
             mixed.Add(new List<int>(){axis1,axis2});
         }
     }
 
-    public void injectInput(in List<int> command){
+    public void InjectInput(in List<int> command) {
         //debugLength(commands); // TODO
         handler.targets.Clear();
         handler.axis1 = command[0];
         handler.axis2 = command[1];
     }
 
-    IEnumerator yoMamas(){
+    private IEnumerator RotationHandler() {
         while (true) {
             if (!inputing) {
                 yield return null;
             }
             else {
                 // Debug.Log("wtf"); // TODO
-                foreach(var entry in inputsBuffer){
-                    injectInput(in entry);
+                foreach (var entry in inputsBuffer) {
+                    InjectInput(in entry);
                     
                     int i = 0;
-                    handler.UpdateRotationMatrix(handler.axis1,handler.axis2, 90);
+                    Matrix4x4 rotate = handler.RotationMatrix(handler.axis1,handler.axis2, 90);
                     foreach (Transform child in handler.container.transform) {
-                        handler.targets.Add(handler.rotationMatrix * handler._points[i]);
+                        handler.targets.Add(rotate * handler._points[i]);
                         i++;
                     }
+
                     i = 0;
-                    handler.UpdateRotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
+                    rotate = handler.RotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
                     while (Vector4.Distance(handler._points[0], handler.targets[0]) > Vector4.kEpsilon) {
                         i = 0;
                         foreach (Transform child in handler.container.transform) {
-                            handler._points[i] = handler.rotationMatrix * handler._points[i];
+                            handler._points[i] = rotate * handler._points[i];
                             child.transform.position = handler.Projection4DTo3D(handler._points[i]);
                             i++;
                         }
@@ -105,7 +103,7 @@ public class InputsBuffer : MonoBehaviour
         foreach(var entry in list){
             cmp++;
         }
-        Debug.Log(cmp);
+        //Debug.Log(cmp);
     }
 
 }
