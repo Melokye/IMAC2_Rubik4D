@@ -277,6 +277,7 @@ public class GameManager : MonoBehaviour {
         return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
     }
 
+    // TODO for debug purpose ----
     public int GetAxis1() {
         return axis1;
     }
