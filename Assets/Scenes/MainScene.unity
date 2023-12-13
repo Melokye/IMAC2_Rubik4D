@@ -5979,7 +5979,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1614008653
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7188,8 +7188,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1614008654}
         m_TargetAssemblyTypeName: CommandBoard, Assembly-CSharp
-        m_MethodName: 
-        m_Mode: 1
+        m_MethodName: findRotation
+        m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1998507054}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
