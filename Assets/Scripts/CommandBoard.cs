@@ -32,6 +32,10 @@ public class CommandBoard : MonoBehaviour{
 
     public void findRotation(GameObject sticker){
         Debug.Log(sticker.name);
+        foreach (string needRotate in handler.whosGunnaRotate(sticker.name)){
+            Debug.Log(needRotate);
+        }
+
         // TODO
     }
 
