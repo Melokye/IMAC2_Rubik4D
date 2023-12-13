@@ -16,24 +16,24 @@ public class GameManager : MonoBehaviour {
             "XY", "XZ", "YZ", "XW", "YW", "ZW" };
     // ---
 
-    // TODO move in another file? 
+    // TODO move in another file?
     // TODO Create a specific struct?
     public List<Vector4> _cells = new List<Vector4>();
-    List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
+    List<List<Vector4>> _stickers = new List<List<Vector4>>();
 
     // TODO delete these "attributes" -> function
     public List<Vector4> targets = new List<Vector4>(); // TODO may not be useful
     List<List<Vector4>> subtargets = new List<List<Vector4>>();
     // ---
-    
+
     private bool _cubeRotating = false;
 
     public GameObject puzzle;
-    
+
     public int axis1 = 0;
     public int axis2 = 1;
     private float totalRotation = 0; // TODO not an attribute?
-    
+
     // To customize the Rubik
     [SerializeField]
     private Mesh sphereMesh;
@@ -85,12 +85,20 @@ public class GameManager : MonoBehaviour {
                 (axis1, axis2) = (axis2, axis1);
             }
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
-                targets.Clear();
-                subtargets.Clear();
-                totalRotation = 0;
-                _cubeRotating = true;
+                launchRotation();
             }
         }
+    }
+
+    /// <summary>
+    /// initialize the data to lauch a rotation
+    /// </summary>
+    public void launchRotation(){
+        targets.Clear();
+        subtargets.Clear();
+        totalRotation = 0;
+
+        _cubeRotating = true;
     }
 
     /// <summary>
@@ -189,7 +197,7 @@ public class GameManager : MonoBehaviour {
 
             // add vertices
             mesh.vertices = vertices.ToArray();
-            
+
             // create uvs
             Vector2[] uvs = new Vector2[vertices.Count];
             for (int i = 1; i < vertices.Count; i++) {
@@ -332,7 +340,7 @@ public class GameManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Generate a new rotationMatrix from two axis
+    /// Generate a new rotationMatrix from two axis and an angle
     /// </summary>
     /// <param name="axis1"></param>
     /// <param name="axis2"></param>
@@ -349,19 +357,18 @@ public class GameManager : MonoBehaviour {
     public IEnumerator RotationHandler() {
         while (true) {
             if (!_cubeRotating) {
-                yield return null; 
+                yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
             }
             else {
                 DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
-                    float rotationSpeedTemp = rotationSpeed;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        RotateOverTime(rotationSpeedTemp);
+                        RotateOverTime(rotationSpeed);
                         yield return null;
                     }
                 }
-                    
+
                 SnapToTargets();
                 _cubeRotating = false;
             }
@@ -377,7 +384,7 @@ public class GameManager : MonoBehaviour {
             Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
             targets.Add(rotate * _cells[i]);
             subtargets.Add(new List<Vector4>());
-            
+
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 subtargets[i].Add(rotate * _stickers[i][j]);
@@ -388,7 +395,7 @@ public class GameManager : MonoBehaviour {
     /// <summary>
     /// Rotates by 90 degrees with animation
     /// </summary>
-    /// <param name="rotationSpeed"> </param> 
+    /// <param name="rotationSpeed"> </param>
     private void RotateOverTime(float rotationSpeed) {
         totalRotation += rotationSpeed;
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
@@ -440,5 +447,15 @@ public class GameManager : MonoBehaviour {
 
     public int GetAxis2() {
         return axis2;
+    }
+
+    /// <summary>
+    /// set the plane based on two axis
+    /// </summary>
+    /// <param name="a1">the first axis</param>
+    /// <param name="a2">the second axis</param>
+    public void setPlane(int a1, int a2){
+        axis1 = a1;
+        axis2 = a2;
     }
 }
