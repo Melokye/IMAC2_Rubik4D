@@ -30,6 +30,11 @@ public class CommandBoard : MonoBehaviour{
         }
     }
 
+    public void findRotation(GameObject sticker){
+        Debug.Log(sticker.name);
+        // TODO
+    }
+
     public void applyRotation(GameObject selected){ // TODO maybe a way to not use param?
         // Extract axis
         List<int> axis = new List<int>();
