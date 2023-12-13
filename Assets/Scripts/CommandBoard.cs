@@ -18,7 +18,7 @@ public class CommandBoard : MonoBehaviour{
     // Update is called once per frame
     void Update(){}
     
-    public Axis giveAxis(char axis){
+    public Axis GiveAxis(char axis){
         switch(axis){
             case 'X' : return Axis.x;
             case 'Y' : return Axis.y;
@@ -30,7 +30,7 @@ public class CommandBoard : MonoBehaviour{
         }
     }
 
-    public void findRotation(GameObject sticker){
+    public void FindRotation(GameObject sticker){
         Debug.Log(sticker.name);
         foreach (string needRotate in handler.whosGunnaRotate(sticker.name)){
             Debug.Log(needRotate);
@@ -39,25 +39,25 @@ public class CommandBoard : MonoBehaviour{
         // TODO
     }
 
-    public void applyRotation(GameObject selected){ // TODO maybe a way to not use param?
+    public void ApplyRotation(GameObject selected){ // TODO maybe a way to not use param?
         // Extract axis
         List<int> axis = new List<int>();
         foreach(char letter in selected.name){
-            axis.Add((int) giveAxis(letter));
+            axis.Add((int) GiveAxis(letter));
         }
         
         // Insert axis in the GameManager
         if(clockwise){
-            handler.setPlane(axis[0], axis[1]);
+            handler.SetPlane(axis[0], axis[1]);
         }else{
-            handler.setPlane(axis[1], axis[0]);
+            handler.SetPlane(axis[1], axis[0]);
         }
 
         // TODO check if a "zone" has been selected before
-        handler.launchRotation();
+        handler.LaunchRotation();
     }
 
-    public void changeClock(){
+    public void ChangeClock(){
         clockwise = !clockwise;
     }
 }

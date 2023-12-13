@@ -5,7 +5,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-// TODO in project: clean up old useless files and scene
 public class GameManager : MonoBehaviour {
     // TODO const attributs
     List<string> _names = new List<string>() {
@@ -40,7 +39,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private int puzzleSize = 2;
     private float stickerDistance = 10f;
-    private float stickerSize = 0.2f;
+    private float stickerSize = 0.015625f;
+    private float trailWidth = 0.0078125f;
     public float rotationSpeed = 2f;
 
     // to simplify the camera rotation
@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour {
                 (axis1, axis2) = (axis2, axis1);
             }
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
-                launchRotation();
+                LaunchRotation();
             }
         }
     }
@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour {
     /// <summary>
     /// initialize the data to lauch a rotation
     /// </summary>
-    public void launchRotation(){
+    public void LaunchRotation(){
         totalRotation = 0;
 
         _cubeRotating = true;
@@ -167,113 +167,132 @@ public class GameManager : MonoBehaviour {
     }
 
     /// <summary>
+    /// Rotate a certain amount around a rotation plane and create vertices
+    /// </summary>
+    /// <param name="stickers"></param>
+    /// <param name="sticker"></param>
+    /// <param name="vertices"></param>
+    /// <param name="index"></param>
+    /// <param name="axis1"></param>
+    /// <param name="axis2"></param>
+    /// <param name="angle"></param>
+    /// <param name="makeVertices"></param>
+    void TraverseAxis(List<Vector4> stickers, GameObject sticker, List<Vector3> vertices, int index, int axis1, int axis2,
+            float angle, bool makeVertices = true) {
+        sticker.transform.position = Projection4DTo3D(stickers[index]);
+        if (makeVertices) {
+            float vertexX = trailWidth * Mathf.Sin(angle);
+            float vertexY = trailWidth * Mathf.Sin(angle);
+            float vertexZ = trailWidth * Mathf.Cos(angle);
+            vertices.Add(new Vector3(vertexX, vertexY, vertexZ) + sticker.transform.position);
+            vertices.Add(new Vector3(-vertexX, vertexY, -vertexZ) + sticker.transform.position);
+            vertices.Add(new Vector3(0, -vertexY, 0) + sticker.transform.position);
+        }
+        stickers[index] = RotationMatrix(axis1, axis2, angle) * stickers[index];
+    }
+
+    /// <summary>
+    /// Create circle mesh from vertices
+    /// </summary>
+    /// <param name="vertices"></param>
+    /// <returns></returns>
+    Mesh CreateCircleMesh(List<Vector3> vertices) {
+        Mesh mesh = new Mesh();
+
+        // add vertices
+        mesh.vertices = vertices.ToArray();
+
+        // create uvs
+        Vector2[] uvs = new Vector2[vertices.Count];
+        for (int i = 1; i < vertices.Count; i++) {
+            if (i % 2 == 0)
+                uvs[i] = new Vector2(i / (vertices.Count - 2f), 0);
+            else
+                uvs[i] = new Vector2((i - 1) / (vertices.Count - 2f), 1);
+        }
+        mesh.uv = uvs;
+
+        // create triangles
+        int[] triangles = new int[vertices.Count * 6];
+        int tri = 0;
+        for (int i = 0; i < vertices.Count * 2; i++) {
+            int shift = Mathf.FloorToInt(i / 6) * 3;
+            int j = i - shift;
+            switch (i % 6) {
+                case 0:
+                    triangles[tri] = (j + 0) % vertices.Count;
+                    triangles[tri + 1] = (j + 1) % vertices.Count;
+                    triangles[tri + 2] = (j + 3) % vertices.Count;
+                    break;
+                case 1:
+                    triangles[tri] = (j + 0) % vertices.Count;
+                    triangles[tri + 1] = (j + 3) % vertices.Count;
+                    triangles[tri + 2] = (j + 2) % vertices.Count;
+                    break;
+                case 2:
+                    triangles[tri] = (j - 1) % vertices.Count;
+                    triangles[tri + 1] = (j + 0) % vertices.Count;
+                    triangles[tri + 2] = (j + 2) % vertices.Count;
+                    break;
+                case 3:
+                    triangles[tri] = (j - 1) % vertices.Count;
+                    triangles[tri + 1] = (j + 2) % vertices.Count;
+                    triangles[tri + 2] = (j + 1) % vertices.Count;
+                    break;
+                case 4:
+                    triangles[tri] = (j - 2) % vertices.Count;
+                    triangles[tri + 1] = (j - 4) % vertices.Count;
+                    triangles[tri + 2] = (j + 1) % vertices.Count;
+                    break;
+                case 5:
+                    triangles[tri] = (j - 5) % vertices.Count;
+                    triangles[tri + 1] = (j - 2) % vertices.Count;
+                    triangles[tri + 2] = (j + 0) % vertices.Count;
+                    break;
+                default:
+                    break;
+            }
+            tri += 3;
+        }
+        mesh.triangles = triangles;
+
+        return mesh;
+    }
+
+    /// <summary>
+    /// Create circle from mesh
+    /// </summary>
+    /// <param name="mesh"></param>
+    /// <param name="axisIndex"></param>
+    /// <param name="tempstickerIndex"></param>
+    /// <returns></returns>
+    GameObject CreateCircle(Mesh mesh, int axisIndex, int tempstickerIndex) {
+        // create gameobject
+        GameObject circle = new GameObject();
+        circle.name = _circle_materials[axisIndex] + "_" + tempstickerIndex;
+
+        // add mesh
+        circle.AddComponent<MeshFilter>();
+        circle.GetComponent<MeshFilter>().mesh = mesh;
+
+        // add material
+        Material circleMat = Resources.Load(_circle_materials[axisIndex], typeof(Material)) as Material;
+        circle.AddComponent<MeshRenderer>();
+        circle.GetComponent<Renderer>().material = circleMat;
+
+        return circle;
+    }
+
+    /// <summary>
     /// Draw the axis circles on the 3D space
     /// </summary>
     void RenderCircles() {
         List<Vector4> tempstickers = new List<Vector4>();
         List<Vector3> vertices = new List<Vector3>();
-        const float trailWidth = 0.015625f;
-
+        
         // copy position from actual stickers
         for (int i = 0; i < _stickers[0].Count; i++) {
             tempstickers.Add(_stickers[0][i]);
-        }
-
-        // rotate a certain amount around a rotation plane to create vertices
-        void TraverseAxis(GameObject tempsticker, int index, int axis1, int axis2,
-                float angle, bool makeVertices = true) {
-            tempsticker.transform.position = Projection4DTo3D(tempstickers[index]);
-            if (makeVertices) {
-                float vertexX = trailWidth * Mathf.Sin(angle);
-                float vertexY = trailWidth * Mathf.Sin(angle);
-                float vertexZ = trailWidth * Mathf.Cos(angle);
-                vertices.Add(new Vector3(vertexX, vertexY, vertexZ) + tempsticker.transform.position);
-                vertices.Add(new Vector3(-vertexX, vertexY, -vertexZ) + tempsticker.transform.position);
-                vertices.Add(new Vector3(0, -vertexY, 0) + tempsticker.transform.position);
-            }
-            tempstickers[index] = RotationMatrix(axis1, axis2, angle) * tempstickers[index];
-        }
-
-        // create circle mesh from vertices
-        Mesh CreateCircleMesh(List<Vector3> vertices) {
-            Mesh mesh = new Mesh();
-
-            // add vertices
-            mesh.vertices = vertices.ToArray();
-
-            // create uvs
-            Vector2[] uvs = new Vector2[vertices.Count];
-            for (int i = 1; i < vertices.Count; i++) {
-                if (i % 2 == 0)
-                    uvs[i] = new Vector2(i / (vertices.Count - 2f), 0);
-                else
-                    uvs[i] = new Vector2((i - 1) / (vertices.Count - 2f), 1);
-            }
-            mesh.uv = uvs;
-
-            // create triangles
-            int[] triangles = new int[vertices.Count * 6];
-            int tri = 0;
-            for (int i = 0; i < vertices.Count * 2; i++) {
-                int shift = Mathf.FloorToInt(i / 6) * 3;
-                int j = i - shift;
-                switch (i % 6) {
-                    case 0:
-                        triangles[tri] = (j + 0) % vertices.Count;
-                        triangles[tri + 1] = (j + 1) % vertices.Count;
-                        triangles[tri + 2] = (j + 3) % vertices.Count;
-                        break;
-                    case 1:
-                        triangles[tri] = (j + 0) % vertices.Count;
-                        triangles[tri + 1] = (j + 3) % vertices.Count;
-                        triangles[tri + 2] = (j + 2) % vertices.Count;
-                        break;
-                    case 2:
-                        triangles[tri] = (j - 1) % vertices.Count;
-                        triangles[tri + 1] = (j + 0) % vertices.Count;
-                        triangles[tri + 2] = (j + 2) % vertices.Count;
-                        break;
-                    case 3:
-                        triangles[tri] = (j - 1) % vertices.Count;
-                        triangles[tri + 1] = (j + 2) % vertices.Count;
-                        triangles[tri + 2] = (j + 1) % vertices.Count;
-                        break;
-                    case 4:
-                        triangles[tri] = (j - 2) % vertices.Count;
-                        triangles[tri + 1] = (j - 4) % vertices.Count;
-                        triangles[tri + 2] = (j + 1) % vertices.Count;
-                        break;
-                    case 5:
-                        triangles[tri] = (j - 5) % vertices.Count;
-                        triangles[tri + 1] = (j - 2) % vertices.Count;
-                        triangles[tri + 2] = (j + 0) % vertices.Count;
-                        break;
-                    default:
-                        break;
-                }
-                tri += 3;
-            }
-            mesh.triangles = triangles;
-
-            return mesh;
-        }
-
-        // create circle from mesh
-        GameObject CreateCircle(Mesh mesh, int axisIndex, int tempstickerIndex) {
-            // create gameobject
-            GameObject circle = new GameObject();
-            circle.name = _circle_materials[axisIndex] + "_" + tempstickerIndex;
-
-            // add mesh
-            circle.AddComponent<MeshFilter>();
-            circle.GetComponent<MeshFilter>().mesh = mesh;
-
-            // add material
-            Material circleMat = Resources.Load(_circle_materials[axisIndex], typeof(Material)) as Material;
-            circle.AddComponent<MeshRenderer>();
-            circle.GetComponent<Renderer>().material = circleMat;
-
-            return circle;
         }
 
         // create circles
@@ -293,14 +312,14 @@ public class GameManager : MonoBehaviour {
                     // rotation j = 2 and j = 5 are only to get on the right circle
                     case 2:
                     case 5:
-                        TraverseAxis(tempsticker, i, rotationAxes[j].Item1,
-                            rotationAxes[j].Item2, 90f, false);
+                        TraverseAxis(tempstickers, tempsticker, vertices, i,
+                            rotationAxes[j].Item1, rotationAxes[j].Item2, 90f, false);
                         break;
                     // other rotations draw the circles
                     default:
                         for (int k = 0; k < 90; k++) {
-                            TraverseAxis(tempsticker, i, rotationAxes[j].Item1,
-                                rotationAxes[j].Item2, 4f);
+                            TraverseAxis(tempstickers, tempsticker, vertices, i,
+                                rotationAxes[j].Item1, rotationAxes[j].Item2, 4f);
                         }
                         Mesh circleMesh = CreateCircleMesh(vertices);
                         GameObject circle = CreateCircle(circleMesh, matChoice[j], i);
@@ -476,7 +495,7 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     /// <param name="a1">the first axis</param>
     /// <param name="a2">the second axis</param>
-    public void setPlane(int a1, int a2){
+    public void SetPlane(int a1, int a2){
         axis1 = a1;
         axis2 = a2;
     }
