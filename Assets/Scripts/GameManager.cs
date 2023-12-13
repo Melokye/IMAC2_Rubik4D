@@ -323,4 +323,52 @@ public class GameManager : MonoBehaviour {
         a.position = new Vector3(Mathf.Cos(a_angle * Mathf.Deg2Rad) * radius + center.x, a.position.y,
             Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
     }*/
+
+    void baseRotation(GameObject sphere, string input){
+        if(input == "y"){
+            rotationMatrix[0, 0] = Mathf.Cos(0.1f);
+            rotationMatrix[2, 0] = -Mathf.Sin(0.1f);
+            rotationMatrix[0, 2] = Mathf.Sin(0.1f);
+            rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+        }
+        if(input == "x"){
+            rotationMatrix[1, 1] = Mathf.Cos(0.1f);
+            rotationMatrix[2, 1] = -Mathf.Sin(0.1f);
+            rotationMatrix[1, 2] = Mathf.Sin(0.1f);
+            rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+        }
+        if(input == "z"){
+            rotationMatrix[0, 0] = Mathf.Cos(0.1f);
+            rotationMatrix[1, 0] = -Mathf.Sin(0.1f);
+            rotationMatrix[0, 1] = Mathf.Sin(0.1f);
+            rotationMatrix[1, 1] = Mathf.Cos(0.1f);
+        }
+        Vector3 sphereCoords = sphere.transform.position;
+        sphereCoords = rotationMatrix * sphereCoords;
+        sphere.transform.position = sphereCoords;
+    }
+
+    void bigRotation(GameObject sphere, string input){
+        List<string> toBeRotated = new List<string>(6);
+        toBeRotated = whosGunnaRotate(sphere.name);
+        foreach(string entry in toBeRotated){
+            baseRotation(GameObject.Find(entry),input);
+        }
+    }
+
+    string whosOpposite(string sphereName){
+        int index = names.IndexOf(sphereName);
+        return (index%2 ==0 ) ? names[index + 1] : names[index - 1];    
+    }
+
+    List<string> whosGunnaRotate(string sphereName){
+        List<string> list = new List<string>();
+        string opposite = whosOpposite(sphereName);
+        foreach(string entry in names){
+            if(entry != sphereName & entry != opposite){
+                list.Add(entry);
+            }
+        }
+        return list;
+    }
 }
