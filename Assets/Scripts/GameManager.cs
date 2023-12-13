@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class GameManager : MonoBehaviour {
+public class GameManager: MonoBehaviour {
     // TODO const attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
@@ -38,7 +36,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private int puzzleSize = 2;
     private float stickerDistance = 10f;
-    private float stickerSize = 0.015625f;
+    private float stickerSize = 0.125f;
     private float trailWidth = 0.0078125f;
     public float rotationSpeed = 2f;
 
@@ -399,17 +397,17 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    string whosOpposite(string sphereName){
+    string whosOpposite(string sphereName) {
         int index = _names.IndexOf(sphereName);
-        return (index%2 == 0 ) ? _names[index + 1] : _names[index - 1];
+        return (index%2 == 0 )? _names[index + 1]: _names[index - 1];
     }
 
-    public List<string> whosGunnaRotate(string sphereName){ // TODO remove public?
+    public List<string> whosGunnaRotate(string sphereName) { // TODO remove public?
         // TODO not complete yet?
         List<string> mustRotate = new List<string>();
         string opposite = whosOpposite(sphereName);
-        foreach(string entry in _names){
-            if(entry != sphereName & entry != opposite){
+        foreach (string entry in _names) {
+            if (entry != sphereName & entry != opposite) {
                 mustRotate.Add(entry);
             }
         }
@@ -442,7 +440,6 @@ public class GameManager : MonoBehaviour {
     /// <param name="rotationSpeed"> </param>
     private void RotateOverTime(float rotationSpeed) {
         Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
-
         totalRotation += rotationSpeed;
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
         totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
@@ -497,25 +494,25 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     /// <param name="a1">the first axis</param>
     /// <param name="a2">the second axis</param>
-    public void SetPlane(int a1, int a2){
+    public void SetPlane (int a1, int a2) {
         axis1 = a1;
         axis2 = a2;
     }
 
-    // void baseRotation(GameObject sphere, string input){
-    //     if(input == "y"){
+    // void BaseRotation(GameObject sphere, string input) {
+    //     if (input == "y") {
     //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
     //         rotationMatrix[2, 0] = -Mathf.Sin(0.1f);
     //         rotationMatrix[0, 2] = Mathf.Sin(0.1f);
     //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
     //     }
-    //     if(input == "x"){
+    //     if (input == "x") {
     //         rotationMatrix[1, 1] = Mathf.Cos(0.1f);
     //         rotationMatrix[2, 1] = -Mathf.Sin(0.1f);
     //         rotationMatrix[1, 2] = Mathf.Sin(0.1f);
     //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
     //     }
-    //     if(input == "z"){
+    //     if (input == "z") {
     //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
     //         rotationMatrix[1, 0] = -Mathf.Sin(0.1f);
     //         rotationMatrix[0, 1] = Mathf.Sin(0.1f);
@@ -526,10 +523,10 @@ public class GameManager : MonoBehaviour {
     //     sphere.transform.position = sphereCoords;
     // }
 
-    // void bigRotation(GameObject sphere, string input){
+    // void BigRotation(GameObject sphere, string input) {
     //     List<string> toBeRotated = new List<string>(6);
     //     toBeRotated = whosGunnaRotate(sphere.name);
-    //     foreach(string entry in toBeRotated){
+    //     foreach (string entry in toBeRotated) {
     //         baseRotation(GameObject.Find(entry),input);
     //     }
     // }

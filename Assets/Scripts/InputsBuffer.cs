@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 // TODO delete _attribute used from GameManager.cs
 // TODO reduce dependancies with GameManager
 // TODO rename file into Solver.cs
-public class InputsBuffer : MonoBehaviour {
+public class InputsBuffer: MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
     private bool inputing;
@@ -102,9 +101,9 @@ public class InputsBuffer : MonoBehaviour {
         }        
     }
 
-    void debugLength(in List<List<int>> list){
+    void DebugLength(in List<List<int>> list) {
         int cmp=0;
-        foreach(var entry in list){
+        foreach (var entry in list) {
             cmp++;
         }
         //Debug.Log(cmp);
