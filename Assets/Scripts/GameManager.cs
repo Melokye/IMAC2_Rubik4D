@@ -15,17 +15,19 @@ public class GameManager : MonoBehaviour {
 
     // TODO move in another file? 
     // TODO Create a specific struct?
+    // TODO remove public
     public List<Vector4> _cells = new List<Vector4>();
     List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
 
     // TODO delete these "attributes" -> function
+    // TODO remove public
     public List<Vector4> targets = new List<Vector4>(); // TODO may not be useful
     List<List<Vector4>> subtargets = new List<List<Vector4>>();
     // ---
     
     private bool _cubeRotating = false;
 
-    public GameObject puzzle;
+    public GameObject puzzle; // TODO generate automatically?
     
     public int axis1 = 0;
     public int axis2 = 1;
@@ -63,9 +65,8 @@ public class GameManager : MonoBehaviour {
     void Start() {
         GenerateStickerCoordinates();
 
-        puzzle.name = "Container";
-
         // Create a GameObject for each point and link them in the GameObject "container"
+        puzzle.name = "Container";
         RenderStickers();
 
         // Handles rotation in parallel to the Update method
@@ -103,6 +104,7 @@ public class GameManager : MonoBehaviour {
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
             _cells.Add(point);
+
             _stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
@@ -160,6 +162,7 @@ public class GameManager : MonoBehaviour {
     }
     
     // Inserts value in Vector3 at pos, making it a Vector4
+    // TODO why?
     Vector4 InsertFloat(Vector3 vec, float value, int pos) {
         pos = Mathf.Clamp(pos, 0, 3);
         Vector4 result = new Vector4(0, 0, 0, 0);
@@ -223,8 +226,10 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     private void DefineTargets() {
         // TODO put "puzzle" in param? + return "targets" and "subtargets"?
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
+        // TODO need change for differents layers
+        Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
+
+        for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
             targets.Add(rotate * _cells[i]);
             subtargets.Add(new List<Vector4>());
             
@@ -324,51 +329,51 @@ public class GameManager : MonoBehaviour {
             Mathf.Sin(a_angle * Mathf.Deg2Rad) * radius + center.z);
     }*/
 
-    void baseRotation(GameObject sphere, string input){
-        if(input == "y"){
-            rotationMatrix[0, 0] = Mathf.Cos(0.1f);
-            rotationMatrix[2, 0] = -Mathf.Sin(0.1f);
-            rotationMatrix[0, 2] = Mathf.Sin(0.1f);
-            rotationMatrix[2, 2] = Mathf.Cos(0.1f);
-        }
-        if(input == "x"){
-            rotationMatrix[1, 1] = Mathf.Cos(0.1f);
-            rotationMatrix[2, 1] = -Mathf.Sin(0.1f);
-            rotationMatrix[1, 2] = Mathf.Sin(0.1f);
-            rotationMatrix[2, 2] = Mathf.Cos(0.1f);
-        }
-        if(input == "z"){
-            rotationMatrix[0, 0] = Mathf.Cos(0.1f);
-            rotationMatrix[1, 0] = -Mathf.Sin(0.1f);
-            rotationMatrix[0, 1] = Mathf.Sin(0.1f);
-            rotationMatrix[1, 1] = Mathf.Cos(0.1f);
-        }
-        Vector3 sphereCoords = sphere.transform.position;
-        sphereCoords = rotationMatrix * sphereCoords;
-        sphere.transform.position = sphereCoords;
-    }
+    // void baseRotation(GameObject sphere, string input){
+    //     if(input == "y"){
+    //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
+    //         rotationMatrix[2, 0] = -Mathf.Sin(0.1f);
+    //         rotationMatrix[0, 2] = Mathf.Sin(0.1f);
+    //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+    //     }
+    //     if(input == "x"){
+    //         rotationMatrix[1, 1] = Mathf.Cos(0.1f);
+    //         rotationMatrix[2, 1] = -Mathf.Sin(0.1f);
+    //         rotationMatrix[1, 2] = Mathf.Sin(0.1f);
+    //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+    //     }
+    //     if(input == "z"){
+    //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
+    //         rotationMatrix[1, 0] = -Mathf.Sin(0.1f);
+    //         rotationMatrix[0, 1] = Mathf.Sin(0.1f);
+    //         rotationMatrix[1, 1] = Mathf.Cos(0.1f);
+    //     }
+    //     Vector3 sphereCoords = sphere.transform.position;
+    //     sphereCoords = rotationMatrix * sphereCoords;
+    //     sphere.transform.position = sphereCoords;
+    // }
 
-    void bigRotation(GameObject sphere, string input){
-        List<string> toBeRotated = new List<string>(6);
-        toBeRotated = whosGunnaRotate(sphere.name);
-        foreach(string entry in toBeRotated){
-            baseRotation(GameObject.Find(entry),input);
-        }
-    }
+    // void bigRotation(GameObject sphere, string input){
+    //     List<string> toBeRotated = new List<string>(6);
+    //     toBeRotated = whosGunnaRotate(sphere.name);
+    //     foreach(string entry in toBeRotated){
+    //         baseRotation(GameObject.Find(entry),input);
+    //     }
+    // }
 
-    string whosOpposite(string sphereName){
-        int index = names.IndexOf(sphereName);
-        return (index%2 ==0 ) ? names[index + 1] : names[index - 1];    
-    }
+    // string whosOpposite(string sphereName){
+    //     int index = names.IndexOf(sphereName);
+    //     return (index%2 ==0 ) ? names[index + 1] : names[index - 1];
+    // }
 
-    List<string> whosGunnaRotate(string sphereName){
-        List<string> list = new List<string>();
-        string opposite = whosOpposite(sphereName);
-        foreach(string entry in names){
-            if(entry != sphereName & entry != opposite){
-                list.Add(entry);
-            }
-        }
-        return list;
-    }
+    // List<string> whosGunnaRotate(string sphereName){
+    //     List<string> list = new List<string>();
+    //     string opposite = whosOpposite(sphereName);
+    //     foreach(string entry in names){
+    //         if(entry != sphereName & entry != opposite){
+    //             list.Add(entry);
+    //         }
+    //     }
+    //     return list;
+    // }
 }
