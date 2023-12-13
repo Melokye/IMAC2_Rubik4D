@@ -62,7 +62,7 @@ public class GameManager: MonoBehaviour {
     /// <summary>
     /// Start is called before the first frame update
     /// </summary>
-    void Start() {
+    void Awake() {
         puzzle = new GameObject();
         puzzle.name = "Puzzle";
 
@@ -75,6 +75,10 @@ public class GameManager: MonoBehaviour {
         // Create GameObjects representing the rotation axes, aesthetic purpose
         RenderCircles();
 
+
+    }
+
+    void Start(){
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }

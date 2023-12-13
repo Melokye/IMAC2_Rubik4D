@@ -72,7 +72,7 @@ public class InputsBuffer: MonoBehaviour {
                 yield return null;
             }
             else {
-                handler.rotationSpeed = 6;
+                handler.rotationSpeed *= 3 ;
                 foreach (var entry in inputsBuffer) {
                     InjectInput(in entry);
                     handler.totalRotation = 0;
@@ -86,7 +86,7 @@ public class InputsBuffer: MonoBehaviour {
                     handler.SnapToTargets(targets);
                 }
                 
-                handler.rotationSpeed = 2;
+                handler.rotationSpeed *= 1/3;
                 inputing = false;
                 inputsBuffer.Clear();
             }
