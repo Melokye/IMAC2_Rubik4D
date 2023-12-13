@@ -16,9 +16,9 @@ public class InputsBuffer : MonoBehaviour
         rotationEngine = GameObject.Find("SphereGenerator");
         handler = rotationEngine.GetComponent<SphereProjection4D>();
         scrambler(ref mixed);
-        inputsBuffer = mixed;
-        StartCoroutine(yoMamas());
-        inputing = true;
+        //inputsBuffer = mixed;
+        StartCoroutine(autoInput());
+        //inputing = true;
     }
 
     // Update is called once per frame
@@ -68,7 +68,7 @@ public class InputsBuffer : MonoBehaviour
         
     }
 
-    IEnumerator yoMamas(){
+    IEnumerator autoInput(){
         while (true) {
             if (!inputing) {
                 yield return null;
