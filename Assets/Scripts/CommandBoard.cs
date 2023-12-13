@@ -2,21 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Axis {x, y, z, w, none}
+public enum Axis { x, y, z, w, none }
 
-public class CommandBoard : MonoBehaviour{
+public class CommandBoard : MonoBehaviour {
     GameManager handler;
     bool clockwise = true;
 
     // Start is called before the first frame update
-    void Start(){
-        // connect the handler with the game manager
-        GameObject tmp = GameObject.Find("SphereGenerator");
+    void Start() {
+        // Connect the handler with the game manager
+        GameObject tmp = GameObject.Find("PuzzleGenerator");
         handler = tmp.GetComponent<GameManager>();
     }
 
     // Update is called once per frame
-    void Update(){}
+    void Update() {}
     
     public Axis GiveAxis(char axis){
         switch(axis){
@@ -25,14 +25,14 @@ public class CommandBoard : MonoBehaviour{
             case 'Z' : return Axis.z;
             case 'W' : return Axis.w;
 
-            // TODO normally we can't acces this line but just in case...
-            default : Debug.Log(axis + " isn't defined"); return Axis.none; 
+            // TODO normally we can't access this line but just in case...
+            default: Debug.Log(axis + " isn't defined"); return Axis.none; 
         }
     }
 
     public void FindRotation(GameObject sticker){
         Debug.Log(sticker.name);
-        foreach (string needRotate in handler.whosGunnaRotate(sticker.name)){
+        foreach (string needRotate in handler.whosGunnaRotate(sticker.name)) {
             Debug.Log(needRotate);
         }
 
