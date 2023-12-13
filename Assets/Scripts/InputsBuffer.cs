@@ -9,7 +9,7 @@ public class InputsBuffer: MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
     private bool inputing;
-    List<List<int>> inputsBuffer = new List<List<int>>(0);
+    public List<List<int>> inputsBuffer = new List<List<int>>(0);
     List<List<int>> mixed = new List<List<int>>(0);
     // Start is called before the first frame update
     void Start() {
@@ -53,8 +53,7 @@ public class InputsBuffer: MonoBehaviour {
         int axis2 = 0;
         System.Random rnd = new System.Random();
         for (int cmp = 0 ; cmp < 50 ; cmp++) {
-            int next_axis1 = rnd.Next(0,4);
-            while(axis1==next_axis1)axis1 = next_axis1;
+            axis1 = rnd.Next(0,4);
             while(axis2==axis1)axis2 = rnd.Next(0,4);
             mixed.Add(new List<int>(){axis1,axis2});
         }

@@ -5,6 +5,7 @@ public enum Axis { x, y, z, w, none }
 
 public class CommandBoard: MonoBehaviour {
     GameManager handler;
+    InputsBuffer buffer;
     bool clockwise = true;
 
     // Start is called before the first frame update
@@ -12,6 +13,9 @@ public class CommandBoard: MonoBehaviour {
         // Connect the handler with the game manager
         GameObject tmp = GameObject.Find("PuzzleGenerator");
         handler = tmp.GetComponent<GameManager>();
+
+        tmp = GameObject.Find("TrivialSolver");
+        buffer = tmp.GetComponent<InputsBuffer>();
     }
 
     // Update is called once per frame
@@ -48,9 +52,11 @@ public class CommandBoard: MonoBehaviour {
         // Insert axis in the GameManager
         if (clockwise) {
             handler.SetPlane(axis[0], axis[1]);
+            buffer.inputsBuffer.Add(new List<int>(){axis[1], axis[0]});
         }
         else {
             handler.SetPlane(axis[1], axis[0]);
+            buffer.inputsBuffer.Add(new List<int>(){axis[0], axis[1]});
         }
 
         // TODO check if a "zone" has been selected before
