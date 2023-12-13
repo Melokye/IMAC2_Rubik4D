@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager: MonoBehaviour {
@@ -46,11 +47,14 @@ public class GameManager: MonoBehaviour {
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
     static float _s6 = 1f - s6;
 
-    Matrix4x4 cameraRotation = new Matrix4x4(
+    static Matrix4x4 specialProjection = new Matrix4x4(
         new Vector4(-s6, 0f, _s6, s3),
         new Vector4(_s6, 0f, -s6, s3),
         new Vector4(-s3, 0f, -s3, -s3),
         new Vector4(0f, 1f, 0f, 0f));
+
+    private int cameraRotationMode = 0;
+    Matrix4x4 cameraRotation = specialProjection;
 
     // secondary rotation matrix to eventually use later
     Matrix4x4 colorAssignment = new Matrix4x4(
@@ -83,20 +87,22 @@ public class GameManager: MonoBehaviour {
     /// Update is called once per frame
     /// </summary>
     void Update() {
-        if (!_cubeRotating) {
-            if (Input.GetKeyDown(KeyCode.LeftShift)) {
-                (axis1, axis2) = (axis2, axis1);
-            }
-            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
-                LaunchRotation();
-            }
+        // TODO: add proper keyboard shortcuts
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !_cubeRotating) {
+            (axis1, axis2) = (axis2, axis1);
+        }
+        if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
+            LaunchRotation();
+        }
+        if (Input.GetKeyDown(KeyCode.P) && !_cubeRotating) {
+            ChangeProjection();
         }
     }
 
     /// <summary>
     /// initialize the data to lauch a rotation
     /// </summary>
-    public void LaunchRotation(){
+    public void LaunchRotation() {
         totalRotation = 0;
 
         _cubeRotating = true;
@@ -341,7 +347,7 @@ public class GameManager: MonoBehaviour {
     /// <returns>Vector4 with value inserted at index pos</returns>
     Vector4 InsertFloat(Vector3 vec, float value, int pos) {
         pos = Mathf.Clamp(pos, 0, 3);
-        Vector4 result = new Vector4(0, 0, 0, 0);
+        Vector4 result = Vector4.zero;
         switch (pos) {
             case 0:
                 result = new Vector4(value, vec.x, vec.y, vec.z);
@@ -456,6 +462,30 @@ public class GameManager: MonoBehaviour {
         }
     }
 
+    private void ChangeProjection() {
+        switch (cameraRotationMode) {
+            case 0:
+                cameraRotationMode = 1;
+                cameraRotation = Matrix4x4.identity;
+                break;
+            case 1:
+            default:
+                cameraRotationMode = 0;
+                cameraRotation = specialProjection;
+                break;
+        }
+        GameObject circleContainer = GameObject.Find("CircleContainer");
+        Destroy(circleContainer);
+        RenderCircles();
+        for (int i = 0; i < puzzle.transform.childCount; i++) {
+            Transform cell = puzzle.transform.GetChild(i);
+            for (int j = 0; j < cell.childCount; j++) {
+                Transform sticker = cell.GetChild(j);
+                sticker.position = Projection4DTo3D(_stickers[i][j]);
+            }
+        }
+    }
+
     /// <summary>
     /// Snaps each cell and sticker to its final position
     /// </summary>
@@ -478,7 +508,18 @@ public class GameManager: MonoBehaviour {
     public Vector4 Projection4DTo3D(Vector4 point) {
         Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
         temp = cameraRotation * colorAssignment * temp;
-        return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
+        Vector3 projected = Vector3.zero;
+        // handle projection to infinity
+        if (temp.w + 1 != 0) {
+            projected = new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
+        }
+        else {
+            projected = new Vector3(
+                Mathf.Sign(temp.x) * Int32.MaxValue,
+                Mathf.Sign(temp.y) * Int32.MaxValue,
+                Mathf.Sign(temp.z) * Int32.MaxValue);
+        }
+        return projected;
     }
 
     public int GetAxis1() {

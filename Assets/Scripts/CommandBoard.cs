@@ -41,7 +41,7 @@ public class CommandBoard: MonoBehaviour {
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
         List<int> axis = new List<int>();
-        foreach(char letter in selected.name) {
+        foreach (char letter in selected.name) {
             axis.Add((int) GiveAxis(letter));
         }
         
