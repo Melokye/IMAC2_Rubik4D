@@ -16,8 +16,7 @@ public class GameManager : MonoBehaviour {
             "XY", "XZ", "YZ", "XW", "YW", "ZW" };
     // ---
 
-    // TODO generate automatically?
-    public GameObject puzzle; 
+    public GameObject puzzle;
     // TODO move in another file? 
     // TODO Create a specific struct?
     // TODO remove public
@@ -66,10 +65,13 @@ public class GameManager : MonoBehaviour {
     /// Start is called before the first frame update
     /// </summary>
     void Start() {
+        puzzle = new GameObject();
+        puzzle.name = "Puzzle";
+
+        // Find the 3D coordinates of the 4D stickers of the puzzle
         GenerateStickerCoordinates();
 
-        // Create a GameObject for each point and link them in the GameObject "container"
-        puzzle.name = "Container";
+        // Create a GameObject for each point and link them in the GameObject "Puzzle"
         RenderStickers();
 
         // Create GameObjects representing the rotation axes, aesthetic purpose

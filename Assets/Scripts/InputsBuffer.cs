@@ -14,7 +14,7 @@ public class InputsBuffer : MonoBehaviour {
     List<List<int>> mixed = new List<List<int>>(0);
     // Start is called before the first frame update
     void Start() {
-        rotationEngine = GameObject.Find("SphereGenerator");
+        rotationEngine = GameObject.Find("PuzzleGenerator");
         handler = rotationEngine.GetComponent<GameManager>();
         Scrambler(ref mixed);
         // inputsBuffer = mixed;
