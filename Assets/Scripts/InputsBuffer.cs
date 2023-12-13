@@ -5,7 +5,7 @@ using System;
 
 // TODO delete _attribute used from GameManager.cs
 // TODO reduce dependancies with GameManager
-
+// TODO rename file into Solver.cs
 public class InputsBuffer : MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
@@ -61,7 +61,7 @@ public class InputsBuffer : MonoBehaviour {
 
     public void InjectInput(in List<int> command) {
         //debugLength(commands); // TODO
-        handler.targets.Clear();
+        // handler.targets.Clear();
         handler.axis1 = command[0];
         handler.axis2 = command[1];
     }
@@ -76,16 +76,17 @@ public class InputsBuffer : MonoBehaviour {
                 foreach (var entry in inputsBuffer) {
                     InjectInput(in entry);
                     
+                    List<Vector4> targets = new List<Vector4>(); // TODO may need debug
                     int i = 0;
                     Matrix4x4 rotate = handler.RotationMatrix(handler.axis1,handler.axis2, 90);
                     foreach (Transform child in handler.puzzle.transform) {
-                        handler.targets.Add(rotate * handler._cells[i]);
+                        targets.Add(rotate * handler._cells[i]);
                         i++;
                     }
 
                     i = 0;
                     rotate = handler.RotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
-                    while (Vector4.Distance(handler._cells[0], handler.targets[0]) > Vector4.kEpsilon) {
+                    while (Vector4.Distance(handler._cells[0], targets[0]) > Vector4.kEpsilon) {
                         i = 0;
                         foreach (Transform child in handler.puzzle.transform) {
                             handler._cells[i] = rotate * handler._cells[i];

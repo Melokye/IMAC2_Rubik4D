@@ -16,25 +16,25 @@ public class GameManager : MonoBehaviour {
             "XY", "XZ", "YZ", "XW", "YW", "ZW" };
     // ---
 
-    // TODO move in another file?
+    // TODO generate automatically?
+    public GameObject puzzle; 
+    // TODO move in another file? 
     // TODO Create a specific struct?
+    // TODO remove public
     public List<Vector4> _cells = new List<Vector4>();
-    List<List<Vector4>> _stickers = new List<List<Vector4>>();
-
-    // TODO delete these "attributes" -> function
-    public List<Vector4> targets = new List<Vector4>(); // TODO may not be useful
-    List<List<Vector4>> subtargets = new List<List<Vector4>>();
-    // ---
-
+    List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
+    
     private bool _cubeRotating = false;
 
-    public GameObject puzzle;
-
+    // TODO for debug / test purpose?
     public int axis1 = 0;
     public int axis2 = 1;
-    private float totalRotation = 0; // TODO not an attribute?
+    // ---
 
-    // To customize the Rubik
+    // TODO not an attribute?
+    private float totalRotation = 0; 
+    
+    // To customize the Rubik // TODO need to be added in a Parameter Menu
     [SerializeField]
     private Mesh sphereMesh;
     [SerializeField]
@@ -62,13 +62,14 @@ public class GameManager : MonoBehaviour {
         new Vector4(0, 0, 1, 0),
         new Vector4(0, 0, 0, 1));
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Start is called before the first frame update
+    /// </summary>
     void Start() {
         GenerateStickerCoordinates();
 
-        puzzle.name = "Container";
-
         // Create a GameObject for each point and link them in the GameObject "container"
+        puzzle.name = "Container";
         RenderStickers();
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
@@ -78,7 +79,9 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(RotationHandler());
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame
+    /// </summary>
     void Update() {
         if (!_cubeRotating) {
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
@@ -94,8 +97,6 @@ public class GameManager : MonoBehaviour {
     /// initialize the data to lauch a rotation
     /// </summary>
     public void launchRotation(){
-        targets.Clear();
-        subtargets.Clear();
         totalRotation = 0;
 
         _cubeRotating = true;
@@ -112,6 +113,7 @@ public class GameManager : MonoBehaviour {
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
             _cells.Add(point);
+
             _stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
@@ -362,35 +364,55 @@ public class GameManager : MonoBehaviour {
                 // == continue; in c, to avoid freeze screen when used in coroutine
             }
             else {
-                DefineTargets();
+                List<List<Vector4>> targets = DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
                         RotateOverTime(rotationSpeed);
                         yield return null;
                     }
                 }
-
-                SnapToTargets();
+                    
+                SnapToTargets(targets);
                 _cubeRotating = false;
             }
         }
     }
 
+    string whosOpposite(string sphereName){
+        int index = _names.IndexOf(sphereName);
+        return (index%2 == 0 ) ? _names[index + 1] : _names[index - 1];
+    }
+
+    public List<string> whosGunnaRotate(string sphereName){ // TODO remove public?
+        // TODO not complete yet?
+        List<string> mustRotate = new List<string>();
+        string opposite = whosOpposite(sphereName);
+        foreach(string entry in _names){
+            if(entry != sphereName & entry != opposite){
+                mustRotate.Add(entry);
+            }
+        }
+        return mustRotate;
+    }
+
     /// <summary>
     /// Determine the destination of each cell and sticker
     /// </summary>
-    private void DefineTargets() {
-        // TODO put "puzzle" in param? + return "targets" and "subtargets"?
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
-            targets.Add(rotate * _cells[i]);
-            subtargets.Add(new List<Vector4>());
+    private List<List<Vector4>> DefineTargets() {
+        // TODO put "puzzle" in param?
+        // TODO need change for differents layers
+        List<List<Vector4>> targets = new List<List<Vector4>>(); // TODO may be simplified with List<Vector4>?
+        Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
 
+        for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
+            targets.Add(new List<Vector4>());
+            
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
-                subtargets[i].Add(rotate * _stickers[i][j]);
+                targets[i].Add(rotate * _stickers[i][j]);
             }
         }
+        return targets;
     }
 
     /// <summary>
@@ -398,18 +420,18 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     /// <param name="rotationSpeed"> </param>
     private void RotateOverTime(float rotationSpeed) {
+        Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
+
         totalRotation += rotationSpeed;
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
         totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
         for (int i = 0; i < puzzle.transform.childCount; i++) {
-            // Rotates cells
-            Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
+            // Rotates cells // TODO not usefull?
             _cells[i] = rotate * _cells[i];
             Transform cell = puzzle.transform.GetChild(i);
             //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                // Rotates stickers
                 _stickers[i][j] = rotate * _stickers[i][j];
                 sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
@@ -419,14 +441,13 @@ public class GameManager : MonoBehaviour {
     /// <summary>
     /// Snaps each cell and sticker to its final position
     /// </summary>
-    private void SnapToTargets() {
+    private void SnapToTargets(List<List<Vector4>> targets) {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
-            _cells[i] = targets[i];
             Transform cell = puzzle.transform.GetChild(i);
             //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                _stickers[i][j] = subtargets[i][j];
+                _stickers[i][j] = targets[i][j];
                 sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
         }
@@ -459,4 +480,36 @@ public class GameManager : MonoBehaviour {
         axis1 = a1;
         axis2 = a2;
     }
+
+    // void baseRotation(GameObject sphere, string input){
+    //     if(input == "y"){
+    //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
+    //         rotationMatrix[2, 0] = -Mathf.Sin(0.1f);
+    //         rotationMatrix[0, 2] = Mathf.Sin(0.1f);
+    //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+    //     }
+    //     if(input == "x"){
+    //         rotationMatrix[1, 1] = Mathf.Cos(0.1f);
+    //         rotationMatrix[2, 1] = -Mathf.Sin(0.1f);
+    //         rotationMatrix[1, 2] = Mathf.Sin(0.1f);
+    //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+    //     }
+    //     if(input == "z"){
+    //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
+    //         rotationMatrix[1, 0] = -Mathf.Sin(0.1f);
+    //         rotationMatrix[0, 1] = Mathf.Sin(0.1f);
+    //         rotationMatrix[1, 1] = Mathf.Cos(0.1f);
+    //     }
+    //     Vector3 sphereCoords = sphere.transform.position;
+    //     sphereCoords = rotationMatrix * sphereCoords;
+    //     sphere.transform.position = sphereCoords;
+    // }
+
+    // void bigRotation(GameObject sphere, string input){
+    //     List<string> toBeRotated = new List<string>(6);
+    //     toBeRotated = whosGunnaRotate(sphere.name);
+    //     foreach(string entry in toBeRotated){
+    //         baseRotation(GameObject.Find(entry),input);
+    //     }
+    // }
 }
