@@ -16,18 +16,14 @@ public class GameManager: MonoBehaviour {
     public GameObject puzzle;
     // TODO move in another file? 
     // TODO Create a specific struct?
-    // TODO remove public
     List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
-    
+
     private bool _cubeRotating = false;
 
     // TODO for debug / test purpose?
     public int axis1 = 0;
     public int axis2 = 1;
     // ---
-
-    // TODO not an attribute?
-    public float totalRotation = 0; 
     
     // To customize the Rubik // TODO need to be added in a Parameter Menu
     [SerializeField]
@@ -96,8 +92,6 @@ public class GameManager: MonoBehaviour {
     /// initialize the data to lauch a rotation
     /// </summary>
     public void LaunchRotation(){
-        totalRotation = 0;
-
         _cubeRotating = true;
     }
 
@@ -381,8 +375,9 @@ public class GameManager: MonoBehaviour {
             else {
                 List<List<Vector4>> targets = DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
+                    float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        RotateOverTime(rotationSpeed);
+                        totalRotation = RotateOverTime(rotationSpeed, totalRotation);
                         yield return null;
                     }
                 }
@@ -434,11 +429,11 @@ public class GameManager: MonoBehaviour {
     /// Rotates by 90 degrees with animation
     /// </summary>
     /// <param name="rotationSpeed"> </param>
-    public void RotateOverTime(float rotationSpeed) {
+    public float RotateOverTime(float rotationSpeed, float totalRotation) {
+        // TODO need optimization?
         Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
-        totalRotation += rotationSpeed;
-        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
-        totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
+        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
+        totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
         for (int i = 0; i < puzzle.transform.childCount; i++) {
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
@@ -447,6 +442,7 @@ public class GameManager: MonoBehaviour {
                 sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
         }
+        return totalRotation;
     }
 
     /// <summary>
