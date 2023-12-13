@@ -59,8 +59,9 @@ public class GameManager : MonoBehaviour {
         new Vector4(0, 0, 1, 0),
         new Vector4(0, 0, 0, 1));
 
-
-    // Start is called before the first frame update
+    /// <summary>
+    /// Start is called before the first frame update
+    /// </summary>
     void Start() {
         GenerateStickerCoordinates();
 
@@ -72,7 +73,9 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(RotationHandler());
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame
+    /// </summary>
     void Update() {
         if (!_cubeRotating) {
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
@@ -218,6 +221,23 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    string whosOpposite(string sphereName){
+        int index = _names.IndexOf(sphereName);
+        return (index%2 == 0 ) ? _names[index + 1] : _names[index - 1];
+    }
+
+    public List<string> whosGunnaRotate(string sphereName){ // TODO remove public?
+        // TODO not complete yet?
+        List<string> mustRotate = new List<string>();
+        string opposite = whosOpposite(sphereName);
+        foreach(string entry in _names){
+            if(entry != sphereName & entry != opposite){
+                mustRotate.Add(entry);
+            }
+        }
+        return mustRotate;
+    }
+
     /// <summary>
     /// Determine the destination of each cell and sticker
     /// </summary>
@@ -358,21 +378,5 @@ public class GameManager : MonoBehaviour {
     //     foreach(string entry in toBeRotated){
     //         baseRotation(GameObject.Find(entry),input);
     //     }
-    // }
-
-    // string whosOpposite(string sphereName){
-    //     int index = names.IndexOf(sphereName);
-    //     return (index%2 ==0 ) ? names[index + 1] : names[index - 1];
-    // }
-
-    // List<string> whosGunnaRotate(string sphereName){
-    //     List<string> list = new List<string>();
-    //     string opposite = whosOpposite(sphereName);
-    //     foreach(string entry in names){
-    //         if(entry != sphereName & entry != opposite){
-    //             list.Add(entry);
-    //         }
-    //     }
-    //     return list;
     // }
 }
