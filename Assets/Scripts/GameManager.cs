@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,6 +23,7 @@ public class GameManager: MonoBehaviour {
     List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
     
     private bool _cubeRotating = false;
+    private bool interrupted = false;
 
     // TODO for debug / test purpose?
     public int axis1 = 0;
@@ -104,8 +106,12 @@ public class GameManager: MonoBehaviour {
     /// </summary>
     public void LaunchRotation() {
         totalRotation = 0;
-
-        _cubeRotating = true;
+        if (_cubeRotating) {
+            interrupted = true;
+        }
+        else {
+            _cubeRotating = true;
+        }
     }
 
     /// <summary>
@@ -391,8 +397,13 @@ public class GameManager: MonoBehaviour {
             else {
                 List<List<Vector4>> targets = DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
+                    List<List<Vector4>> tempstickers = new List<List<Vector4>>(_stickers);
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        RotateOverTime(rotationSpeed);
+                        RotateOverTime(rotationSpeed, tempstickers);
+                        if (interrupted) {
+                            interrupted = false;
+                            break;
+                        }
                         yield return null;
                     }
                 }
@@ -444,7 +455,7 @@ public class GameManager: MonoBehaviour {
     /// Rotates by 90 degrees with animation
     /// </summary>
     /// <param name="rotationSpeed"> </param>
-    private void RotateOverTime(float rotationSpeed) {
+    private void RotateOverTime(float rotationSpeed, List<List<Vector4>> stickers) {
         Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
         totalRotation += rotationSpeed;
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
@@ -456,12 +467,30 @@ public class GameManager: MonoBehaviour {
             //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                _stickers[i][j] = rotate * _stickers[i][j];
+                stickers[i][j] = rotate * stickers[i][j];
+                sticker.position = Projection4DTo3D(stickers[i][j]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Snaps each cell and sticker to its final position
+    /// </summary>
+    private void SnapToTargets(List<List<Vector4>> targets) {
+        for (int i = 0; i < puzzle.transform.childCount; i++) {
+            Transform cell = puzzle.transform.GetChild(i);
+            //cell.position = Projection4DTo3D(_cells[i]);
+            for (int j = 0; j < cell.childCount; j++) {
+                Transform sticker = cell.GetChild(j);
+                _stickers[i][j] = targets[i][j];
                 sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
         }
     }
 
+    /// <summary>
+    /// Toggle between classic projection and special projection
+    /// </summary>
     private void ChangeProjection() {
         switch (cameraRotationMode) {
             case 0:
@@ -481,21 +510,6 @@ public class GameManager: MonoBehaviour {
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Projection4DTo3D(_stickers[i][j]);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Snaps each cell and sticker to its final position
-    /// </summary>
-    private void SnapToTargets(List<List<Vector4>> targets) {
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Transform cell = puzzle.transform.GetChild(i);
-            //cell.position = Projection4DTo3D(_cells[i]);
-            for (int j = 0; j < cell.childCount; j++) {
-                Transform sticker = cell.GetChild(j);
-                _stickers[i][j] = targets[i][j];
                 sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
         }
