@@ -19,9 +19,7 @@ public class GameManager : MonoBehaviour {
     public List<Vector4> _cells = new List<Vector4>();
     List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
 
-    // TODO delete these "attributes" -> function
-    // TODO remove public
-    public List<Vector4> targets = new List<Vector4>(); // TODO may not be useful
+    // TODO delete this "attribute" -> function
     List<List<Vector4>> subtargets = new List<List<Vector4>>();
     // ---
     
@@ -89,7 +87,6 @@ public class GameManager : MonoBehaviour {
     /// initialize the data to lauch a rotation
     /// </summary>
     public void launchRotation(){
-        targets.Clear();
         subtargets.Clear();
         totalRotation = 0;
 
@@ -225,12 +222,11 @@ public class GameManager : MonoBehaviour {
     /// Determine the destination of each cell and sticker
     /// </summary>
     private void DefineTargets() {
-        // TODO put "puzzle" in param? + return "targets" and "subtargets"?
+        // TODO put "puzzle" in param? + return "subtargets"?
         // TODO need change for differents layers
         Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
 
         for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
-            targets.Add(rotate * _cells[i]);
             subtargets.Add(new List<Vector4>());
             
             Transform cell = puzzle.transform.GetChild(i);
@@ -268,7 +264,6 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     private void SnapToTargets() {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
-            _cells[i] = targets[i];
             Transform cell = puzzle.transform.GetChild(i);
             cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
