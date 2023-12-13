@@ -28,7 +28,7 @@ public class GameManager: MonoBehaviour {
     // ---
 
     // TODO not an attribute?
-    private float totalRotation = 0; 
+    public float totalRotation = 0; 
     
     // To customize the Rubik // TODO need to be added in a Parameter Menu
     [SerializeField]
@@ -417,7 +417,7 @@ public class GameManager: MonoBehaviour {
     /// <summary>
     /// Determine the destination of each cell and sticker
     /// </summary>
-    private List<List<Vector4>> DefineTargets() {
+    public List<List<Vector4>> DefineTargets() {
         // TODO put "puzzle" in param?
         // TODO need change for differents layers
         List<List<Vector4>> targets = new List<List<Vector4>>(); // TODO may be simplified with List<Vector4>?
@@ -438,7 +438,7 @@ public class GameManager: MonoBehaviour {
     /// Rotates by 90 degrees with animation
     /// </summary>
     /// <param name="rotationSpeed"> </param>
-    private void RotateOverTime(float rotationSpeed) {
+    public void RotateOverTime(float rotationSpeed) {
         Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
         totalRotation += rotationSpeed;
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
@@ -459,7 +459,7 @@ public class GameManager: MonoBehaviour {
     /// <summary>
     /// Snaps each cell and sticker to its final position
     /// </summary>
-    private void SnapToTargets(List<List<Vector4>> targets) {
+    public void SnapToTargets(List<List<Vector4>> targets) {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
             Transform cell = puzzle.transform.GetChild(i);
             //cell.position = Projection4DTo3D(_cells[i]);
