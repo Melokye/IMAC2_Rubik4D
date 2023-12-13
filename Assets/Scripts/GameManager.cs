@@ -115,13 +115,14 @@ public class GameManager : MonoBehaviour {
             _stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
-                temp.x = Mathf.Lerp(-1f, 1f,
+                if (puzzleSize > 1) {
+                    temp.x = Mathf.Lerp(-1f, 1f,
                     (Mathf.FloorToInt(j / Mathf.Pow(puzzleSize, 2)) % puzzleSize) / (puzzleSize - 1f));
-                temp.y = Mathf.Lerp(-1f, 1f,
-                    (Mathf.FloorToInt(j / puzzleSize) % puzzleSize) / (puzzleSize - 1f));
-                temp.z = Mathf.Lerp(-1f, 1f,
-                    (j % puzzleSize) / (puzzleSize - 1f));
-
+                    temp.y = Mathf.Lerp(-1f, 1f,
+                        (Mathf.FloorToInt(j / puzzleSize) % puzzleSize) / (puzzleSize - 1f));
+                    temp.z = Mathf.Lerp(-1f, 1f,
+                        (j % puzzleSize) / (puzzleSize - 1f));
+                } 
                 Vector4 subpoint = new Vector4(0, 0, 0, 0);
                 subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
                 _stickers[i].Add(subpoint);
