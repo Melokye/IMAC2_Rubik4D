@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager: MonoBehaviour {
-    // TODO const attributs
+    // TODO const static attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> _materials = new List<string>() {
@@ -17,7 +17,6 @@ public class GameManager: MonoBehaviour {
     // TODO move in another file? 
     // TODO Create a specific struct?
     // TODO remove public
-    public List<Vector4> _cells = new List<Vector4>();
     List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
     
     private bool _cubeRotating = false;
@@ -112,7 +111,6 @@ public class GameManager: MonoBehaviour {
             int pointIndex = Mathf.FloorToInt(i * 0.5f);
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
-            _cells.Add(point);
 
             _stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
@@ -136,15 +134,13 @@ public class GameManager: MonoBehaviour {
     /// Draw the circles on the 3D space
     /// </summary>
     void RenderStickers() {
-        for (int i = 0; i < _cells.Count; i++) {
+        for (int i = 0; i < _stickers.Count; i++) {
             // TODO warning : length of _names and _materials may not be the same as the number of points
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
             // place these points in the space
             cell.transform.parent = puzzle.transform;
-            // TODO: next line may be useless
-            //cell.transform.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < _stickers[i].Count; j++) {
                 GameObject sticker = new GameObject();
                 sticker.name = _names[i] + "_" + j;
@@ -444,10 +440,7 @@ public class GameManager: MonoBehaviour {
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
         totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
         for (int i = 0; i < puzzle.transform.childCount; i++) {
-            // Rotates cells // TODO not usefull?
-            _cells[i] = rotate * _cells[i];
             Transform cell = puzzle.transform.GetChild(i);
-            //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 _stickers[i][j] = rotate * _stickers[i][j];
@@ -462,7 +455,6 @@ public class GameManager: MonoBehaviour {
     private void SnapToTargets(List<List<Vector4>> targets) {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
             Transform cell = puzzle.transform.GetChild(i);
-            //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 _stickers[i][j] = targets[i][j];
