@@ -35,14 +35,15 @@ public class CommandBoard : MonoBehaviour {
         if (!handler.GetRotateFlag() & !buffer.GetInputingFlag()) {
             List<Geometry.Axis> axis = new List<Geometry.Axis>();
             foreach (char letter in selected.name) {
-                axis.Add(Geometry.CharToAxis(letter)); 
+                axis.Add(Geometry.CharToAxis(letter));
             }
 
             // Insert axis in the GameManager
             if (clockwise) {
                 handler.SetPlane(Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]));
                 buffer.inputsBuffer.Add(new List<int>() { Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]) });
-            }else {
+            }
+            else {
                 handler.SetPlane(Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]));
                 buffer.inputsBuffer.Add(new List<int>() { Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]) });
             }
@@ -54,20 +55,19 @@ public class CommandBoard : MonoBehaviour {
     public void ChangeClock() {
         clockwise = !clockwise;
     }
-    // TODO Note for handling the 1 layer rotation :
-    // In 2^4 no matter which sticker you select in the cell, it will always rotate the same thing.
+    // TODO Note for handling the 1-layer rotation:
+    // In 2^4n no matter which sticker you select in the cell, it will always rotate the same thing.
     // Only the layer that is the closest to the cell selected will rotate. 
-    // Rotations possible for each cells : 
+    // Rotations possible for each cell: 
     // In : x , y , z      : up circles
-    // Out : x , y ,z      : down circles
-    
-    // Up : z , xw , zw    : inner circles
-    // Down : z , xw , zw  : outter circles
+    // Out : x , y , z     : down circles
 
-    // Left : x , yw , zw  : outter circles
-    // Right : x , yw ,zw  : inner circles
+    // Up : z , xw , zw    : inner circles
+    // Down : z , xw , zw  : outer circles
+
+    // Left : x , yw , zw  : outer circles
+    // Right : x , yw , zw : inner circles
 
     // Front : y , xw , yw : inner circles
-    // Back : y , xw , yw  : outter circles
+    // Back : y , xw , yw  : outer circles
 }
-

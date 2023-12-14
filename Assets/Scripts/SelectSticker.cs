@@ -32,10 +32,10 @@ public class SelectSticker : MonoBehaviour {
         if (handler.GetSelection() != null) {
             SelectSticker tmp = handler.GetSelection();
             tmp.rend.material.color = tmp.baseColor;
-            handler.setterSelection(tmp);
+            handler.SetterSelection(tmp);
         }
         rend.material.color = Color.yellow;
-        handler.setterSelection(this);
+        handler.SetterSelection(this);
         SelectSticker.selectedCoordinates = this.coordinates;
     }
 
@@ -44,9 +44,9 @@ public class SelectSticker : MonoBehaviour {
             SelectSticker tmp = handler.GetSelection();
             if (tmp != null) {
                 tmp.rend.material.color = tmp.baseColor;
-                handler.setterSelection(tmp);
+                handler.SetterSelection(tmp);
             }
-            handler.setterSelection(null);
+            handler.SetterSelection(null);
         }
     }
     public Color GetBaseColor() {

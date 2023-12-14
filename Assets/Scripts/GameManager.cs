@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-public class GameManager: MonoBehaviour { // == main
+public class GameManager : MonoBehaviour { // == main
     // TODO const static attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
@@ -27,7 +26,7 @@ public class GameManager: MonoBehaviour { // == main
     public int axis2 = 1;
     // ---
 
-    // To customize the Rubik // TODO need to be added in a Parameter Menu
+    // To customize the Rubik // TODO needs to be added in a Parameter Menu
     [SerializeField]
     private Mesh sphereMesh;
     private float stickerSize = 0.125f;
@@ -84,7 +83,7 @@ public class GameManager: MonoBehaviour { // == main
     /// <summary>
     /// Start is called automatically before the first frame update
     /// </summary>
-    void Start(){
+    void Start() {
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }
@@ -117,7 +116,7 @@ public class GameManager: MonoBehaviour { // == main
     }
 
     /// <summary>
-    /// initialize the data to lauch a rotation
+    /// Initialize the necessary data to launch a rotation
     /// </summary>
     public void LaunchRotation() {
         _cubeRotating = true;
@@ -125,10 +124,6 @@ public class GameManager: MonoBehaviour { // == main
 
     /// <summary>
     /// Create coordinates for each sticker
-    /// </summary>
-
-    /// <summary>
-    /// Draw the circles on the 3D space
     /// </summary>
     void RenderStickers() {
         for (int i = 0; i < p.NbCells(); i++) {
@@ -153,7 +148,7 @@ public class GameManager: MonoBehaviour { // == main
 
                 // add the Select Scipt
                 sticker.AddComponent<SelectSticker>();
-                sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
+                sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i, j));
                 sticker.AddComponent<MeshCollider>();
 
                 // place these points in the space
@@ -189,7 +184,7 @@ public class GameManager: MonoBehaviour { // == main
         }
 
         // TODO improve reajustement
-        stickers[index] = Geometry.RotationMatrix((Geometry.Axis) axis1, (Geometry.Axis) axis2, angle) * stickers[index];
+        stickers[index] = Geometry.RotationMatrix((Geometry.Axis)axis1, (Geometry.Axis)axis2, angle) * stickers[index];
     }
 
     /// <summary>
@@ -356,13 +351,21 @@ public class GameManager: MonoBehaviour { // == main
         }
     }
 
-    string whosOpposite(string sphereName) {
+    /// <summary>
+    /// Determine which face is the opposite of argument
+    /// </summary>
+    /// <param name="sphereName"></param>
+    /// <returns>Name of the opposing face</returns>
+    string whosOpposite(string sphereName) { // TODO: rename to OppositeCellName
+        // TODO: use sticker term instead of sphere
         int index = _names.IndexOf(sphereName);
         return (index % 2 == 0) ? _names[index + 1] : _names[index - 1];
     }
 
     public List<string> whosGunnaRotate(string sphereName) { // TODO remove public?
         // TODO not complete yet?
+        // TODO rename to FindRotatingStickers
+        // TODO: use sticker term instead of sphere
         List<string> mustRotate = new List<string>();
         string opposite = whosOpposite(sphereName);
         foreach (string entry in _names) {
@@ -398,7 +401,7 @@ public class GameManager: MonoBehaviour { // == main
     /// </summary>
     /// <param name="rotationSpeed"> </param>
     public float RotateOverTime(float rotationSpeed, float totalRotation) {
-        // TODO need optimization?
+        // TODO needs optimization?
         Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), rotationSpeed);
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
         totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
@@ -506,16 +509,16 @@ public class GameManager: MonoBehaviour { // == main
         return _cubeRotating;
     }
 
-    public void setterSelection(SelectSticker selection){
+    public void SetterSelection(SelectSticker selection) {
         selectedSticker = selection;
     }
 
-    public SelectSticker GetSelection(){
+    public SelectSticker GetSelection() {
         return selectedSticker;
     }
 
     /// <summary>
-    /// set the plane based on two axis
+    /// Set the plane based on two axes
     /// </summary>
     /// <param name="a1">the first axis</param>
     /// <param name="a2">the second axis</param>
