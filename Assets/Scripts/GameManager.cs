@@ -167,7 +167,9 @@ public class GameManager: MonoBehaviour { // == main
             vertices.Add(new Vector3(-vertexX, vertexY, -vertexZ) + sticker.transform.position);
             vertices.Add(new Vector3(0, -vertexY, 0) + sticker.transform.position);
         }
-        stickers[index] = Geometry.RotationMatrix(axis1, axis2, angle) * stickers[index];
+
+        // TODO improve reajustement
+        stickers[index] = Geometry.RotationMatrix((Geometry.Axis) axis1, (Geometry.Axis) axis2, angle) * stickers[index];
     }
 
     /// <summary>
@@ -357,7 +359,7 @@ public class GameManager: MonoBehaviour { // == main
         // TODO put "puzzle" in param?
         // TODO need change for differents layers
         List<List<Vector4>> targets = new List<List<Vector4>>(); // TODO may be simplified with List<Vector4>?
-        Matrix4x4 rotate = Geometry.RotationMatrix(axis1, axis2, 90);
+        Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), 90);
 
         for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
             targets.Add(new List<Vector4>());
@@ -376,7 +378,7 @@ public class GameManager: MonoBehaviour { // == main
     /// <param name="rotationSpeed"> </param>
     public float RotateOverTime(float rotationSpeed, float totalRotation) {
         // TODO need optimization?
-        Matrix4x4 rotate = Geometry.RotationMatrix(axis1, axis2, rotationSpeed);
+        Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), rotationSpeed);
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
         totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
         for (int i = 0; i < puzzle.transform.childCount; i++) {
