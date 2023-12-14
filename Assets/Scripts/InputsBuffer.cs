@@ -73,8 +73,8 @@ public class InputsBuffer: MonoBehaviour {
             }
             else {
                 handler.rotationSpeed = 6 ;
-                foreach (var entry in inputsBuffer) {
-                    InjectInput(in entry);
+                for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
+                    InjectInput(inputsBuffer[i]);
                     handler.totalRotation = 0;
                     List<List<Vector4>> targets = handler.DefineTargets();
                     if(GameManager.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
