@@ -167,7 +167,7 @@ public class GameManager: MonoBehaviour { // == main
             vertices.Add(new Vector3(-vertexX, vertexY, -vertexZ) + sticker.transform.position);
             vertices.Add(new Vector3(0, -vertexY, 0) + sticker.transform.position);
         }
-        stickers[index] = RotationMatrix(axis1, axis2, angle) * stickers[index];
+        stickers[index] = Geometry.RotationMatrix(axis1, axis2, angle) * stickers[index];
     }
 
     /// <summary>
@@ -311,22 +311,6 @@ public class GameManager: MonoBehaviour { // == main
         }
     }
 
-
-    /// <summary>
-    /// Generate a new rotationMatrix from two axis and an angle
-    /// </summary>
-    /// <param name="axis1"></param>
-    /// <param name="axis2"></param>
-    /// <param name="angle"></param>
-    public Matrix4x4 RotationMatrix(int axis1, int axis2, float angle) {
-        Matrix4x4 rotationMatrix = Matrix4x4.identity;
-        rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis1, axis2] = Mathf.Sin(angle * Mathf.Deg2Rad);
-        rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
-        return rotationMatrix;
-    }
-
     public IEnumerator RotationHandler() {
         while (true) {
             if (!_cubeRotating) {
@@ -373,7 +357,7 @@ public class GameManager: MonoBehaviour { // == main
         // TODO put "puzzle" in param?
         // TODO need change for differents layers
         List<List<Vector4>> targets = new List<List<Vector4>>(); // TODO may be simplified with List<Vector4>?
-        Matrix4x4 rotate = RotationMatrix(axis1, axis2, 90);
+        Matrix4x4 rotate = Geometry.RotationMatrix(axis1, axis2, 90);
 
         for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
             targets.Add(new List<Vector4>());
@@ -392,7 +376,7 @@ public class GameManager: MonoBehaviour { // == main
     /// <param name="rotationSpeed"> </param>
     public float RotateOverTime(float rotationSpeed, float totalRotation) {
         // TODO need optimization?
-        Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
+        Matrix4x4 rotate = Geometry.RotationMatrix(axis1, axis2, rotationSpeed);
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
         totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
         for (int i = 0; i < puzzle.transform.childCount; i++) {
@@ -499,25 +483,25 @@ public class GameManager: MonoBehaviour { // == main
 
     // void BaseRotation(GameObject sphere, string input) {
     //     if (input == "y") {
-    //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
-    //         rotationMatrix[2, 0] = -Mathf.Sin(0.1f);
-    //         rotationMatrix[0, 2] = Mathf.Sin(0.1f);
-    //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+    //         Geometry.RotationMatrix[0, 0] = Mathf.Cos(0.1f);
+    //         Geometry.RotationMatrix[2, 0] = -Mathf.Sin(0.1f);
+    //         Geometry.RotationMatrix[0, 2] = Mathf.Sin(0.1f);
+    //         Geometry.RotationMatrix[2, 2] = Mathf.Cos(0.1f);
     //     }
     //     if (input == "x") {
-    //         rotationMatrix[1, 1] = Mathf.Cos(0.1f);
-    //         rotationMatrix[2, 1] = -Mathf.Sin(0.1f);
-    //         rotationMatrix[1, 2] = Mathf.Sin(0.1f);
-    //         rotationMatrix[2, 2] = Mathf.Cos(0.1f);
+    //         Geometry.RotationMatrix[1, 1] = Mathf.Cos(0.1f);
+    //         Geometry.RotationMatrix[2, 1] = -Mathf.Sin(0.1f);
+    //         Geometry.RotationMatrix[1, 2] = Mathf.Sin(0.1f);
+    //         Geometry.RotationMatrix[2, 2] = Mathf.Cos(0.1f);
     //     }
     //     if (input == "z") {
-    //         rotationMatrix[0, 0] = Mathf.Cos(0.1f);
-    //         rotationMatrix[1, 0] = -Mathf.Sin(0.1f);
-    //         rotationMatrix[0, 1] = Mathf.Sin(0.1f);
-    //         rotationMatrix[1, 1] = Mathf.Cos(0.1f);
+    //         Geometry.RotationMatrix[0, 0] = Mathf.Cos(0.1f);
+    //         Geometry.RotationMatrix[1, 0] = -Mathf.Sin(0.1f);
+    //         Geometry.RotationMatrix[0, 1] = Mathf.Sin(0.1f);
+    //         Geometry.RotationMatrix[1, 1] = Mathf.Cos(0.1f);
     //     }
     //     Vector3 sphereCoords = sphere.transform.position;
-    //     sphereCoords = rotationMatrix * sphereCoords;
+    //     sphereCoords = Geometry.RotationMatrix * sphereCoords;
     //     sphere.transform.position = sphereCoords;
     // }
 

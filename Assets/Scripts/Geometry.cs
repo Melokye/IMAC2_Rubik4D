@@ -34,5 +34,20 @@ class Geometry
                 break;
         }
         return result;
-    }   
+    }
+
+    /// <summary>
+    /// Generate a new rotationMatrix from two axis and an angle
+    /// </summary>
+    /// <param name="axis1"></param>
+    /// <param name="axis2"></param>
+    /// <param name="angle"></param>
+    public static Matrix4x4 RotationMatrix(int axis1, int axis2, float angle) {
+        Matrix4x4 rotationMatrix = Matrix4x4.identity;
+        rotationMatrix[axis1, axis1] = Mathf.Cos(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis2, axis1] = -Mathf.Sin(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis1, axis2] = Mathf.Sin(angle * Mathf.Deg2Rad);
+        rotationMatrix[axis2, axis2] = Mathf.Cos(angle * Mathf.Deg2Rad);
+        return rotationMatrix;
+    }
 }
