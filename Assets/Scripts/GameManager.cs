@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager: MonoBehaviour { // == main
@@ -65,6 +66,7 @@ public class GameManager: MonoBehaviour { // == main
     void Awake() {
         puzzle = new GameObject();
         puzzle.name = "Puzzle";
+        puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
         p = new Puzzle();
 
         // Find the 3D coordinates of the 4D stickers of the puzzle
@@ -74,7 +76,16 @@ public class GameManager: MonoBehaviour { // == main
         RenderStickers();
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
-        RenderCircles();
+        GameObject circleContainer = RenderCircles("CircleContainer");
+
+        // Creates the dupe puzzle to display the classical view in a UI
+        GameObject puzzleDuplicate = Instantiate(puzzle);
+        puzzleDuplicate.name = "Puzzle_UI";
+        SetLayerAllChildren(puzzleDuplicate.transform, 3); // Change layer for camera view
+        ChangeProjection(); // Change projection to classical view to render the circles
+        GameObject circleContainer_UI = RenderCircles("CircleContainer_UI");
+        ChangeProjection(); // Change back projection for the first Update() frame cycle
+        SetLayerAllChildren(circleContainer_UI.transform, 3);
     }
 
     /// <summary>
@@ -96,9 +107,19 @@ public class GameManager: MonoBehaviour { // == main
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
             }
-            if (Input.GetKeyDown(KeyCode.P)) {
+            // TODO: repair projection swap to swap projection views
+            /*if (Input.GetKeyDown(KeyCode.P)) {
                 ChangeProjection();
-            }
+            }*/
+        }
+        // At all times, there are two puzzle game objects.
+        // The first is the special projection, the second is the classic projection.
+        // The loop below projects the stickers for the first, changes projection,
+        // then projects the stickers for the second, then changes projection back
+        // to prepare for the next frame.
+        foreach (GameObject puzzle in GameObject.FindGameObjectsWithTag("Puzzle")) {
+            PuzzleProjection4DTo3D(puzzle);
+            ChangeProjection();
         }
     }
 
@@ -298,7 +319,7 @@ public class GameManager: MonoBehaviour { // == main
     /// <summary>
     /// Draw the axis circles on the 3D space
     /// </summary>
-    void RenderCircles() {
+    GameObject RenderCircles(string name) {
         List<Vector4> tempstickers = new List<Vector4>();
         List<Vector3> vertices = new List<Vector3>();
 
@@ -315,7 +336,7 @@ public class GameManager: MonoBehaviour { // == main
         };
         List<int> matChoice = new List<int>() { 0, 1, 0, 2, 4, 4, 5, 3 };
         GameObject circleContainer = new GameObject();
-        circleContainer.name = "CircleContainer";
+        circleContainer.name = name;
         for (int i = 0; i < tempstickers.Count; i++) {
             GameObject tempsticker = new GameObject();
             // for all rotations necessary to roam all 6 circles
@@ -342,6 +363,7 @@ public class GameManager: MonoBehaviour { // == main
             }
             Destroy(tempsticker);
         }
+        return circleContainer;
     }
 
     /// <summary>
@@ -461,7 +483,6 @@ public class GameManager: MonoBehaviour { // == main
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 p.setSticker(i, j, rotate * p.GetSticker(i, j));
-                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
         return totalRotation;
@@ -476,7 +497,6 @@ public class GameManager: MonoBehaviour { // == main
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 p.setSticker(i, j, targets[i][j]);
-                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
     }
@@ -496,11 +516,26 @@ public class GameManager: MonoBehaviour { // == main
                 cameraRotation = specialProjection;
                 break;
         }
-        GameObject circleContainer = GameObject.Find("CircleContainer");
-        Destroy(circleContainer);
-        RenderCircles();
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Transform cell = puzzle.transform.GetChild(i);
+        // TODO: find a better way to manage cameraRotation
+
+        // Destroy previous circles
+        // GameObject circleContainer = GameObject.Find("CircleContainer");
+        // Destroy(circleContainer);
+
+        // Render new circles
+        // RenderCircles();
+
+        // Project all 4D stickers to 3D space
+        // PuzzleProjection4DTo3D(gameObject);
+    }
+
+    /// <summary>
+    /// Projects a GameObject and all its 4D children into 3D
+    /// </summary>
+    /// <param name="gameObject"></param>
+    private void PuzzleProjection4DTo3D(GameObject gameObject) {
+        for (int i = 0; i < gameObject.transform.childCount; i++) {
+            Transform cell = gameObject.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 sticker.position = Projection4DTo3D(p.GetSticker(i, j));
@@ -512,11 +547,17 @@ public class GameManager: MonoBehaviour { // == main
         return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
     }
 
+    /// <summary>
+    /// Projects a 4D vector into 3D
+    /// </summary>
+    /// <param name="point"></param>
+    /// <returns></returns>
     public Vector4 Projection4DTo3D(Vector4 point) {
         Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
         temp = cameraRotation * colorAssignment * temp;
         Vector3 projected = Vector3.zero;
-        // handle projection to infinity
+
+        // Handle projection to infinity
         if (temp.w + 1 != 0) {
             projected = new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
         }
@@ -548,6 +589,7 @@ public class GameManager: MonoBehaviour { // == main
     public SelectSticker GetSelection(){
         return selectedSticker;
     }
+
     /// <summary>
     /// set the plane based on two axis
     /// </summary>
@@ -556,6 +598,20 @@ public class GameManager: MonoBehaviour { // == main
     public void SetPlane(int a1, int a2) {
         axis1 = a1;
         axis2 = a2;
+    }
+
+    /// <summary>
+    /// Sets display Layer of a transform and all its children
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="layer"></param>
+    void SetLayerAllChildren(Transform root, int layer) {
+        root.gameObject.layer = layer;
+        var children = root.GetComponentsInChildren<Transform>(includeInactive: true);
+        foreach (var child in children) {
+            //Debug.Log(child.name);
+            child.gameObject.layer = layer;
+        }
     }
 
     // void BaseRotation(GameObject sphere, string input) {
