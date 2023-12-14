@@ -9,7 +9,7 @@ public class InputsBuffer: MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
     private bool inputing;
-    List<List<int>> inputsBuffer = new List<List<int>>(0);
+    public List<List<int>> inputsBuffer = new List<List<int>>(0);
     List<List<int>> mixed = new List<List<int>>(0);
     // Start is called before the first frame update
     void Start() {
@@ -30,18 +30,17 @@ public class InputsBuffer: MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.M)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
-            foreach(var entry in mixed){
-                InjectInput(in entry);
-            }
+            inputsBuffer.Clear();
             inputsBuffer.AddRange(mixed);
             mixed.Clear();
             Scrambler(ref mixed);
+            inputing = true;
             // Debug.Log("Done mixing"); // TODO
         }
         if (Input.GetKeyDown(KeyCode.S)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
             inputing = true;
-            // Debug.Log("Done solving"); // TODO
+            //Debug.Log("Done solving"); // TODO
         }
     }
 
@@ -50,10 +49,12 @@ public class InputsBuffer: MonoBehaviour {
         // For each entry must be specified 2 values :
         // axis1 (0,1,2,3), axis2 (0,1,2,3)
         // rotation speed will remain untouched.
+        int axis1 = 0;
+        int axis2 = 0;
         System.Random rnd = new System.Random();
         for (int cmp = 0 ; cmp < 50 ; cmp++) {
-            int axis1 = rnd.Next(0,4);
-            int axis2 = rnd.Next(0,4);
+            axis1 = rnd.Next(0,4);
+            while(axis2==axis1)axis2 = rnd.Next(0,4);
             mixed.Add(new List<int>(){axis1,axis2});
         }
     }
@@ -71,30 +72,21 @@ public class InputsBuffer: MonoBehaviour {
                 yield return null;
             }
             else {
-                // Debug.Log("wtf"); // TODO
+                handler.rotationSpeed = 6 ;
                 foreach (var entry in inputsBuffer) {
                     InjectInput(in entry);
-                    
-                    List<Vector4> targets = new List<Vector4>(); // TODO may need debug
-                    int i = 0;
-                    Matrix4x4 rotate = handler.RotationMatrix(handler.axis1,handler.axis2, 90);
-                    foreach (Transform child in handler.puzzle.transform) {
-                        targets.Add(rotate * handler._cells[i]);
-                        i++;
-                    }
-
-                    i = 0;
-                    rotate = handler.RotationMatrix(handler.axis1, handler.axis2, handler.rotationSpeed);
-                    while (Vector4.Distance(handler._cells[0], targets[0]) > Vector4.kEpsilon) {
-                        i = 0;
-                        foreach (Transform child in handler.puzzle.transform) {
-                            handler._cells[i] = rotate * handler._cells[i];
-                            child.transform.position = handler.Projection4DTo3D(handler._cells[i]);
-                            i++;
+                    handler.totalRotation = 0;
+                    List<List<Vector4>> targets = handler.DefineTargets();
+                    if(GameManager.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
+                        while(Mathf.Abs(90f - handler.totalRotation) > Mathf.Epsilon){
+                            handler.RotateOverTime(handler.rotationSpeed);
+                            yield return null;
                         }
-                        yield return null;
                     }
+                    handler.SnapToTargets(targets);
                 }
+                
+                handler.rotationSpeed = 2;
                 inputing = false;
                 inputsBuffer.Clear();
             }
@@ -107,6 +99,10 @@ public class InputsBuffer: MonoBehaviour {
             cmp++;
         }
         //Debug.Log(cmp);
+    }
+
+    public bool GetInputingFlag() {
+        return inputing;
     }
 
 }
