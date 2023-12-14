@@ -13,15 +13,14 @@ public class GameManager: MonoBehaviour { // == main
             "XY", "XZ", "YZ", "XW", "YW", "ZW" };
     // ---
 
-    public GameObject puzzle;
-    // TODO move in another file?
-    // TODO Create a specific struct?
+    public GameObject puzzle; // TODO delete it?
     Puzzle p;
 
     private bool _cubeRotating = false;
 
     [SerializeField]
     private SelectSticker selectedSticker;
+
     // TODO for debug / test purpose?
     public int axis1 = 0;
     public int axis2 = 1;
@@ -30,9 +29,6 @@ public class GameManager: MonoBehaviour { // == main
     // To customize the Rubik // TODO need to be added in a Parameter Menu
     [SerializeField]
     private Mesh sphereMesh;
-    [SerializeField]
-    private int puzzleSize = 2;
-    private float stickerDistance = 10f;
     private float stickerSize = 0.125f;
     private float trailWidth = 0.0078125f;
     public float rotationSpeed = 2f;
@@ -67,8 +63,6 @@ public class GameManager: MonoBehaviour { // == main
         puzzle.name = "Puzzle";
         p = new Puzzle();
 
-        // Find the 3D coordinates of the 4D stickers of the puzzle
-        GenerateStickerCoordinates();
 
         // Create a GameObject for each point and link them in the GameObject "Puzzle"
         RenderStickers();
@@ -112,33 +106,6 @@ public class GameManager: MonoBehaviour { // == main
     /// <summary>
     /// Create coordinates for each sticker
     /// </summary>
-    void GenerateStickerCoordinates() {
-        List<List<Vector4>> stickers = new List<List<Vector4>>();
-        const int nbPoints = 8;
-        for (int i = 0; i < nbPoints; i++) {
-            Vector4 point = Vector4.zero;
-            int pointIndex = Mathf.FloorToInt(i * 0.5f);
-            int altSign = 1 - (2 * (i % 2));
-            point[pointIndex] = altSign;
-
-            stickers.Add(new List<Vector4>());
-            for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
-                Vector3 temp = new Vector3(0, 0, 0);
-                if (puzzleSize > 1) {
-                    temp.x = Mathf.Lerp(-1f, 1f,
-                        (Mathf.FloorToInt(j / Mathf.Pow(puzzleSize, 2)) % puzzleSize) / (puzzleSize - 1f));
-                    temp.y = Mathf.Lerp(-1f, 1f,
-                        (Mathf.FloorToInt(j / puzzleSize) % puzzleSize) / (puzzleSize - 1f));
-                    temp.z = Mathf.Lerp(-1f, 1f,
-                        (j % puzzleSize) / (puzzleSize - 1f));
-                }
-                Vector4 subpoint = new Vector4(0, 0, 0, 0);
-                subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
-                stickers[i].Add(subpoint);
-            }
-        }
-        p.UpdateStickers(stickers);
-    }
 
     /// <summary>
     /// Draw the circles on the 3D space
@@ -344,34 +311,6 @@ public class GameManager: MonoBehaviour { // == main
         }
     }
 
-    /// <summary>
-    /// Inserts value in Vector3 at pos, making it a Vector4
-    /// </summary>
-    /// <param name="vec"></param>
-    /// <param name="value"></param>
-    /// <param name="pos"></param>
-    /// <returns>Vector4 with value inserted at index pos</returns>
-    Vector4 InsertFloat(Vector3 vec, float value, int pos) {
-        pos = Mathf.Clamp(pos, 0, 3);
-        Vector4 result = Vector4.zero;
-        switch (pos) {
-            case 0:
-                result = new Vector4(value, vec.x, vec.y, vec.z);
-                break;
-            case 1:
-                result = new Vector4(vec.x, value, vec.y, vec.z);
-                break;
-            case 2:
-                result = new Vector4(vec.x, vec.y, value, vec.z);
-                break;
-            case 3:
-                result = new Vector4(vec.x, vec.y, vec.z, value);
-                break;
-            default:
-                break;
-        }
-        return result;
-    }
 
     /// <summary>
     /// Generate a new rotationMatrix from two axis and an angle
