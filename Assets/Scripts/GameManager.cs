@@ -63,7 +63,6 @@ public class GameManager: MonoBehaviour { // == main
         puzzle.name = "Puzzle";
         p = new Puzzle();
 
-
         // Create a GameObject for each point and link them in the GameObject "Puzzle"
         RenderStickers();
 

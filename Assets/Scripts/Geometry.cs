@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO must need to sort again
 class Geometry
 {
     public enum Axis { x, y, z, w, none }
