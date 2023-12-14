@@ -493,6 +493,9 @@ public class GameManager: MonoBehaviour {
         return axis2;
     }
 
+    public bool GetRotateFlag() {
+        return _cubeRotating;
+    }
     /// <summary>
     /// set the plane based on two axis
     /// </summary>

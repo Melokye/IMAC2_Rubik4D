@@ -101,4 +101,8 @@ public class InputsBuffer: MonoBehaviour {
         //Debug.Log(cmp);
     }
 
+    public bool GetInputingFlag() {
+        return inputing;
+    }
+
 }
