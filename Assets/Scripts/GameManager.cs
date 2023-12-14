@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager: MonoBehaviour {
-    // TODO const attributs
+public class GameManager: MonoBehaviour { // == main
+    // TODO const static attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> _materials = new List<string>() {
@@ -16,10 +16,8 @@ public class GameManager: MonoBehaviour {
     public GameObject puzzle;
     // TODO move in another file? 
     // TODO Create a specific struct?
-    // TODO remove public
-    public List<Vector4> _cells = new List<Vector4>();
-    List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
-    
+    Puzzle p;
+
     private bool _cubeRotating = false;
 
     [SerializeField]
@@ -28,9 +26,6 @@ public class GameManager: MonoBehaviour {
     public int axis1 = 0;
     public int axis2 = 1;
     // ---
-
-    // TODO not an attribute?
-    public float totalRotation = 0; 
     
     // To customize the Rubik // TODO need to be added in a Parameter Menu
     [SerializeField]
@@ -62,11 +57,12 @@ public class GameManager: MonoBehaviour {
         new Vector4(0, 0, 0, 1));
 
     /// <summary>
-    /// Start is called before the first frame update
+    /// Awake is called automatically before the function Start
     /// </summary>
     void Awake() {
         puzzle = new GameObject();
         puzzle.name = "Puzzle";
+        p = new Puzzle();
 
         // Find the 3D coordinates of the 4D stickers of the puzzle
         GenerateStickerCoordinates();
@@ -76,17 +72,18 @@ public class GameManager: MonoBehaviour {
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
         RenderCircles();
-
-
     }
 
+    /// <summary>
+    /// Start is called automatically before the first frame update
+    /// </summary>
     void Start(){
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }
 
     /// <summary>
-    /// Update is called once per frame
+    /// Update is called automatically once per frame
     /// </summary>
     void Update() {
         if (!_cubeRotating) {
@@ -103,8 +100,6 @@ public class GameManager: MonoBehaviour {
     /// initialize the data to lauch a rotation
     /// </summary>
     public void LaunchRotation(){
-        totalRotation = 0;
-
         _cubeRotating = true;
     }
 
@@ -112,15 +107,15 @@ public class GameManager: MonoBehaviour {
     /// Create coordinates for each sticker
     /// </summary>
     void GenerateStickerCoordinates() {
+        List<List<Vector4>> stickers = new List<List<Vector4>>(); 
         const int nbPoints = 8;
         for (int i = 0; i < nbPoints; i++) {
             Vector4 point = new Vector4(0, 0, 0, 0);
             int pointIndex = Mathf.FloorToInt(i * 0.5f);
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
-            _cells.Add(point);
 
-            _stickers.Add(new List<Vector4>());
+            stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
                 if (puzzleSize > 1) {
@@ -133,25 +128,24 @@ public class GameManager: MonoBehaviour {
                 } 
                 Vector4 subpoint = new Vector4(0, 0, 0, 0);
                 subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
-                _stickers[i].Add(subpoint);
+                stickers[i].Add(subpoint);
             }
         }
+        p.UpdateStickers(stickers);
     }
 
     /// <summary>
     /// Draw the circles on the 3D space
     /// </summary>
     void RenderStickers() {
-        for (int i = 0; i < _cells.Count; i++) {
+        for (int i = 0; i < p.NbCells(); i++) {
             // TODO warning : length of _names and _materials may not be the same as the number of points
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
             // place these points in the space
             cell.transform.parent = puzzle.transform;
-            // TODO: next line may be useless
-            //cell.transform.position = Projection4DTo3D(_cells[i]);
-            for (int j = 0; j < _stickers[i].Count; j++) {
+            for (int j = 0; j < p.NbStickers(i); j++) {
                 GameObject sticker = new GameObject();
                 sticker.name = _names[i] + "_" + j;
 
@@ -166,19 +160,20 @@ public class GameManager: MonoBehaviour {
 
                 // add the Select Scipt
                 sticker.AddComponent<SelectSticker>();
-                sticker.GetComponent<SelectSticker>().coordinates = _stickers[i][j];
+                sticker.GetComponent<SelectSticker>().coordinates = p.GetSticker(i,j);
                 sticker.AddComponent<MeshCollider>();
 
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = Projection4DTo3D(_stickers[i][j]);
+                sticker.transform.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
     }
 
     /// <summary>
     /// Rotate a certain amount around a rotation plane and create vertices
+    /// // TODO rephrase the doc + rename fn?
     /// </summary>
     /// <param name="stickers"></param>
     /// <param name="sticker"></param>
@@ -301,9 +296,9 @@ public class GameManager: MonoBehaviour {
         List<Vector4> tempstickers = new List<Vector4>();
         List<Vector3> vertices = new List<Vector3>();
         
-        // copy position from actual stickers
-        for (int i = 0; i < _stickers[0].Count; i++) {
-            tempstickers.Add(_stickers[0][i]);
+        // copy position from actual stickers // TODO?
+        for (int i = 0; i < p.NbStickers(0); i++) {
+            tempstickers.Add(p.GetSticker(0, i));
         }
 
         // create circles
@@ -396,8 +391,9 @@ public class GameManager: MonoBehaviour {
             else {
                 List<List<Vector4>> targets = DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
+                    float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        RotateOverTime(rotationSpeed);
+                        totalRotation = RotateOverTime(rotationSpeed, totalRotation);
                         yield return null;
                     }
                 }
@@ -439,7 +435,7 @@ public class GameManager: MonoBehaviour {
             
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
-                targets[i].Add(rotate * _stickers[i][j]);
+                targets[i].Add(rotate * p.GetSticker(i, j));
             }
         }
         return targets;
@@ -449,35 +445,32 @@ public class GameManager: MonoBehaviour {
     /// Rotates by 90 degrees with animation
     /// </summary>
     /// <param name="rotationSpeed"> </param>
-    public void RotateOverTime(float rotationSpeed) {
+    public float RotateOverTime(float rotationSpeed, float totalRotation) {
+        // TODO need optimization?
         Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
-        totalRotation += rotationSpeed;
-        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
-        totalRotation = Mathf.Clamp(totalRotation, 0f, 90f);
+        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
+        totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
         for (int i = 0; i < puzzle.transform.childCount; i++) {
-            // Rotates cells // TODO not usefull?
-            _cells[i] = rotate * _cells[i];
             Transform cell = puzzle.transform.GetChild(i);
-            //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                _stickers[i][j] = rotate * _stickers[i][j];
-                sticker.position = Projection4DTo3D(_stickers[i][j]);
+                p.setSticker(i, j, rotate * p.GetSticker(i, j));
+                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
+        return totalRotation;
     }
 
     /// <summary>
-    /// Snaps each cell and sticker to its final position
+    /// Snaps each cell sticker to its final position
     /// </summary>
     public void SnapToTargets(List<List<Vector4>> targets) {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
             Transform cell = puzzle.transform.GetChild(i);
-            //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                _stickers[i][j] = targets[i][j];
-                sticker.position = Projection4DTo3D(_stickers[i][j]);
+                p.setSticker(i, j, targets[i][j]);
+                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
     }

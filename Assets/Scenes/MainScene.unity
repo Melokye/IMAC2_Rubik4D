@@ -702,7 +702,7 @@ GameObject:
   - component: {fileID: 184157645}
   - component: {fileID: 184157644}
   m_Layer: 5
-  m_Name: YZ
+  m_Name: ZY
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2441,7 +2441,7 @@ GameObject:
   - component: {fileID: 740842696}
   - component: {fileID: 740842695}
   m_Layer: 5
-  m_Name: XY
+  m_Name: YX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2998,7 +2998,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.026833398, g: 0.048610505, b: 0.084905684, a: 0}
+  m_BackGroundColor: {r: 0.08904414, g: 0.1387974, b: 0.21698111, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
