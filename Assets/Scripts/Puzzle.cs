@@ -42,15 +42,16 @@ public class Puzzle : Attribute {
     }
 
     /// <summary>
-    /// Inserts value in Vector3 at pos, making it a Vector4
-    /// // TODO add more details about this function -> coord homogene?
+    /// Create a vector of size 4 with a vector of size 3 and a value
     /// </summary>
-    /// <param name="vec"></param>
-    /// <param name="value"></param>
-    /// <param name="pos"></param>
-    /// <returns>Vector4 with value inserted at index pos</returns>
+    /// <param name="vec">the vector of size 3</param>
+    /// <param name="value">the value we want to add to our new vector</param>
+    /// <param name="pos">index to insert the value</param>
+    /// <returns> Vector4 with value inserted at index pos </returns>
     private Vector4 InsertFloat(Vector3 vec, float value, int pos) {
-        pos = Mathf.Clamp(pos, 0, 3);
+    // TODO rename the function?
+        pos = Mathf.Clamp(pos, 0, 3); // TODO <- it's for DEBUG : to avoid out of range
+
         Vector4 result = Vector4.zero;
         switch (pos) {
             case 0:
@@ -71,6 +72,8 @@ public class Puzzle : Attribute {
         return result;
     }
 
+    // --- Getter and Setter
+    // TODO must have a version more C# like
     public List<List<Vector4>> GetStickers(){
         return _stickers;
     }
