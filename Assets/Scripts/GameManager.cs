@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager: MonoBehaviour {
+public class GameManager: MonoBehaviour { // == main
     // TODO const static attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
@@ -55,7 +55,7 @@ public class GameManager: MonoBehaviour {
         new Vector4(0, 0, 0, 1));
 
     /// <summary>
-    /// Start is called before the first frame update
+    /// Awake is called automatically before the function Start
     /// </summary>
     void Awake() {
         puzzle = new GameObject();
@@ -69,17 +69,18 @@ public class GameManager: MonoBehaviour {
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
         RenderCircles();
-
-
     }
 
+    /// <summary>
+    /// Start is called automatically before the first frame update
+    /// </summary>
     void Start(){
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }
 
     /// <summary>
-    /// Update is called once per frame
+    /// Update is called automatically once per frame
     /// </summary>
     void Update() {
         if (!_cubeRotating) {
@@ -162,6 +163,7 @@ public class GameManager: MonoBehaviour {
 
     /// <summary>
     /// Rotate a certain amount around a rotation plane and create vertices
+    /// // TODO rephrase the doc + rename fn?
     /// </summary>
     /// <param name="stickers"></param>
     /// <param name="sticker"></param>
@@ -450,7 +452,7 @@ public class GameManager: MonoBehaviour {
     }
 
     /// <summary>
-    /// Snaps each cell and sticker to its final position
+    /// Snaps each cell sticker to its final position
     /// </summary>
     public void SnapToTargets(List<List<Vector4>> targets) {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
