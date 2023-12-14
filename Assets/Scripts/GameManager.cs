@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
-public class GameManager: MonoBehaviour {
+public class GameManager : MonoBehaviour {
     // TODO const attributs
     List<string> _names = new List<string>() {
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
@@ -23,7 +21,6 @@ public class GameManager: MonoBehaviour {
     List<List<Vector4>> _stickers = new List<List<Vector4>>();
 
     private bool _cubeRotating = false;
-    private bool interrupted = false;
 
     // TODO for debug / test purpose?
     public int axis1 = 0;
@@ -80,11 +77,9 @@ public class GameManager: MonoBehaviour {
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
         RenderCircles();
-
-
     }
 
-    void Start(){
+    void Start() {
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }
@@ -93,15 +88,16 @@ public class GameManager: MonoBehaviour {
     /// Update is called once per frame
     /// </summary>
     void Update() {
-        // TODO: add proper keyboard shortcuts
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !_cubeRotating) {
-            (axis1, axis2) = (axis2, axis1);
-        }
-        if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
-            LaunchRotation();
-        }
-        if (Input.GetKeyDown(KeyCode.P) && !_cubeRotating) {
-            ChangeProjection();
+        if (!_cubeRotating) {
+            if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                (axis1, axis2) = (axis2, axis1);
+            }
+            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
+                LaunchRotation();
+            }
+            if (Input.GetKeyDown(KeyCode.P)) {
+                ChangeProjection();
+            }
         }
     }
 
@@ -110,12 +106,8 @@ public class GameManager: MonoBehaviour {
     /// </summary>
     public void LaunchRotation() {
         totalRotation = 0;
-        if (_cubeRotating) {
-            interrupted = true;
-        }
-        else {
-            _cubeRotating = true;
-        }
+
+        _cubeRotating = true;
     }
 
     /// <summary>
@@ -124,7 +116,7 @@ public class GameManager: MonoBehaviour {
     void GenerateStickerCoordinates() {
         const int nbPoints = 8;
         for (int i = 0; i < nbPoints; i++) {
-            Vector4 point = new Vector4(0, 0, 0, 0);
+            Vector4 point = Vector4.zero;
             int pointIndex = Mathf.FloorToInt(i * 0.5f);
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
@@ -401,13 +393,8 @@ public class GameManager: MonoBehaviour {
             else {
                 List<List<Vector4>> targets = DefineTargets();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
-                    List<List<Vector4>> tempstickers = new List<List<Vector4>>(_stickers);
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        RotateOverTime(rotationSpeed, tempstickers);
-                        if (interrupted) {
-                            interrupted = false;
-                            break;
-                        }
+                        RotateOverTime(rotationSpeed);
                         yield return null;
                     }
                 }
@@ -420,7 +407,7 @@ public class GameManager: MonoBehaviour {
 
     string whosOpposite(string sphereName) {
         int index = _names.IndexOf(sphereName);
-        return (index%2 == 0 )? _names[index + 1]: _names[index - 1];
+        return (index % 2 == 0) ? _names[index + 1] : _names[index - 1];
     }
 
     public List<string> whosGunnaRotate(string sphereName) { // TODO remove public?
@@ -459,7 +446,7 @@ public class GameManager: MonoBehaviour {
     /// Rotates by 90 degrees with animation
     /// </summary>
     /// <param name="rotationSpeed"> </param>
-    public void RotateOverTime(float rotationSpeed, List<List<Vector4>> stickers = new List<List<Vector4>>()) {
+    public void RotateOverTime(float rotationSpeed) {
         Matrix4x4 rotate = RotationMatrix(axis1, axis2, rotationSpeed);
         totalRotation += rotationSpeed;
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation + rotationSpeed);
@@ -471,8 +458,8 @@ public class GameManager: MonoBehaviour {
             //cell.position = Projection4DTo3D(_cells[i]);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                stickers[i][j] = rotate * stickers[i][j];
-                sticker.position = Projection4DTo3D(stickers[i][j]);
+                _stickers[i][j] = rotate * _stickers[i][j];
+                sticker.position = Projection4DTo3D(_stickers[i][j]);
             }
         }
     }
@@ -556,7 +543,7 @@ public class GameManager: MonoBehaviour {
     /// </summary>
     /// <param name="a1">the first axis</param>
     /// <param name="a2">the second axis</param>
-    public void SetPlane (int a1, int a2) {
+    public void SetPlane(int a1, int a2) {
         axis1 = a1;
         axis2 = a2;
     }

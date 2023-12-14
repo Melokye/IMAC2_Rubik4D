@@ -24,7 +24,7 @@ public class InputsBuffer: MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (Input.GetKeyDown(KeyCode.R)) {
-            List<int> Entry = new List<int>(){handler.GetAxis2(), handler.GetAxis1()};
+            List<int> Entry = new List<int>() { handler.GetAxis2(), handler.GetAxis1() };
             inputsBuffer.Add(Entry);
             // debugLength(inputsBuffer); // TODO
         }
@@ -52,10 +52,10 @@ public class InputsBuffer: MonoBehaviour {
         int axis1 = 0;
         int axis2 = 0;
         System.Random rnd = new System.Random();
-        for (int cmp = 0 ; cmp < 50 ; cmp++) {
-            axis1 = rnd.Next(0,4);
-            while(axis2==axis1)axis2 = rnd.Next(0,4);
-            mixed.Add(new List<int>(){axis1,axis2});
+        for (int cmp = 0; cmp < 50; cmp++) {
+            axis1 = rnd.Next(0, 4);
+            while (axis2 == axis1) axis2 = rnd.Next(0, 4);
+            mixed.Add(new List<int>() { axis1, axis2 });
         }
     }
 
@@ -72,29 +72,29 @@ public class InputsBuffer: MonoBehaviour {
                 yield return null;
             }
             else {
-                handler.rotationSpeed = 6 ;
+                handler.rotationSpeed = 6;
                 foreach (var entry in inputsBuffer) {
                     InjectInput(in entry);
                     handler.totalRotation = 0;
                     List<List<Vector4>> targets = handler.DefineTargets();
-                    if(GameManager.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
-                        while(Mathf.Abs(90f - handler.totalRotation) > Mathf.Epsilon){
+                    if (GameManager.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)) {
+                        while (Mathf.Abs(90f - handler.totalRotation) > Mathf.Epsilon) {
                             handler.RotateOverTime(handler.rotationSpeed);
                             yield return null;
                         }
                     }
                     handler.SnapToTargets(targets);
                 }
-                
+
                 handler.rotationSpeed = 2;
                 inputing = false;
                 inputsBuffer.Clear();
             }
-        }        
+        }
     }
 
     void DebugLength(in List<List<int>> list) {
-        int cmp=0;
+        int cmp = 0;
         foreach (var entry in list) {
             cmp++;
         }
