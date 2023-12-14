@@ -44,23 +44,25 @@ public class CommandBoard: MonoBehaviour {
 
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
-        List<int> axis = new List<int>();
-        foreach(char letter in selected.name) {
-            axis.Add((int) GiveAxis(letter));
-        }
-        
-        // Insert axis in the GameManager
-        if (clockwise) {
-            handler.SetPlane(axis[0], axis[1]);
-            buffer.inputsBuffer.Add(new List<int>(){axis[1], axis[0]});
-        }
-        else {
-            handler.SetPlane(axis[1], axis[0]);
-            buffer.inputsBuffer.Add(new List<int>(){axis[0], axis[1]});
-        }
+        if(!handler.GetRotateFlag() & !buffer.GetInputingFlag()){
+            List<int> axis = new List<int>();
+            foreach(char letter in selected.name) {
+                axis.Add((int) GiveAxis(letter));
+            }
+            
+            // Insert axis in the GameManager
+            if (clockwise) {
+                handler.SetPlane(axis[0], axis[1]);
+                buffer.inputsBuffer.Add(new List<int>(){axis[1], axis[0]});
+            }
+            else {
+                handler.SetPlane(axis[1], axis[0]);
+                buffer.inputsBuffer.Add(new List<int>(){axis[0], axis[1]});
+            }
 
-        // TODO check if a "zone" has been selected before
-        handler.LaunchRotation();
+            // TODO check if a "zone" has been selected before
+            handler.LaunchRotation();
+        }
     }
 
     public void ChangeClock() {

@@ -72,7 +72,7 @@ public class InputsBuffer: MonoBehaviour {
                 yield return null;
             }
             else {
-                handler.rotationSpeed = 6;
+                handler.rotationSpeed = 6 ;
                 foreach (var entry in inputsBuffer) {
                     InjectInput(in entry);
                     List<List<Vector4>> targets = handler.DefineTargets();
@@ -99,6 +99,10 @@ public class InputsBuffer: MonoBehaviour {
             cmp++;
         }
         //Debug.Log(cmp);
+    }
+
+    public bool GetInputingFlag() {
+        return inputing;
     }
 
 }
