@@ -22,6 +22,8 @@ public class GameManager: MonoBehaviour {
     
     private bool _cubeRotating = false;
 
+    [SerializeField]
+    private SelectSticker selectedSticker;
     // TODO for debug / test purpose?
     public int axis1 = 0;
     public int axis2 = 1;
@@ -161,6 +163,10 @@ public class GameManager: MonoBehaviour {
                 Material stickerMat = Resources.Load(_materials[i], typeof(Material)) as Material;
                 sticker.AddComponent<MeshRenderer>();
                 sticker.GetComponent<Renderer>().material = stickerMat;
+
+                // add the Select Scipt
+                sticker.AddComponent<SelectSticker>();
+                sticker.AddComponent<MeshCollider>();
 
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
@@ -495,6 +501,14 @@ public class GameManager: MonoBehaviour {
 
     public bool GetRotateFlag() {
         return _cubeRotating;
+    }
+
+    public void setterSelection(SelectSticker selection){
+        selectedSticker = selection;
+    }
+
+    public SelectSticker GetSelection(){
+        return selectedSticker;
     }
     /// <summary>
     /// set the plane based on two axis
