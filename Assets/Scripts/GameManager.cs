@@ -160,7 +160,7 @@ public class GameManager: MonoBehaviour { // == main
 
                 // add the Select Scipt
                 sticker.AddComponent<SelectSticker>();
-                sticker.GetComponent<SelectSticker>().coordinates = p.GetSticker(i,j);
+                sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
                 sticker.AddComponent<MeshCollider>();
 
                 // place these points in the space

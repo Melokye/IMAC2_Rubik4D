@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class SelectSticker : MonoBehaviour
 {   
-    public Vector4 coordinates;
+    private Vector4 coordinates;
+    public static Vector4 selectedCoordinates;
     private Renderer rend;
     private Color baseColor;
     private static bool hovered;
@@ -37,6 +38,7 @@ public class SelectSticker : MonoBehaviour
         }
         rend.material.color = Color.yellow;
         handler.setterSelection(this);
+        SelectSticker.selectedCoordinates = this.coordinates;
     }
 
     void Update(){
@@ -51,5 +53,9 @@ public class SelectSticker : MonoBehaviour
     }
     public Color GetBaseColor(){
         return baseColor;
+    }
+
+    public void SetCoordinates(Vector4 Coordinates){
+        coordinates = Coordinates;
     }
 }
