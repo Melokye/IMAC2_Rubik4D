@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SelectSticker : MonoBehaviour
-{
+{   
+    public Vector4 coordinates;
     private Renderer rend;
     private Color baseColor;
     private static bool hovered;

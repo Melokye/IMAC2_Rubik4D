@@ -50,11 +50,11 @@ public class InputsBuffer: MonoBehaviour {
         // axis1 (0,1,2,3), axis2 (0,1,2,3)
         // rotation speed will remain untouched.
         int axis1 = 0;
-        int axis2 = 0;
+        int axis2 = 1;
         System.Random rnd = new System.Random();
         for (int cmp = 0 ; cmp < 50 ; cmp++) {
-            axis1 = rnd.Next(0,4);
-            while(axis2==axis1)axis2 = rnd.Next(0,4);
+            axis1 = rnd.Next(0,3);
+            while(axis2==axis1)axis2 = rnd.Next(1,4);
             mixed.Add(new List<int>(){axis1,axis2});
         }
     }

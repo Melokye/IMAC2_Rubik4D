@@ -125,7 +125,7 @@ public class GameManager: MonoBehaviour {
                 Vector3 temp = new Vector3(0, 0, 0);
                 if (puzzleSize > 1) {
                     temp.x = Mathf.Lerp(-1f, 1f,
-                    (Mathf.FloorToInt(j / Mathf.Pow(puzzleSize, 2)) % puzzleSize) / (puzzleSize - 1f));
+                        (Mathf.FloorToInt(j / Mathf.Pow(puzzleSize, 2)) % puzzleSize) / (puzzleSize - 1f));
                     temp.y = Mathf.Lerp(-1f, 1f,
                         (Mathf.FloorToInt(j / puzzleSize) % puzzleSize) / (puzzleSize - 1f));
                     temp.z = Mathf.Lerp(-1f, 1f,
@@ -166,6 +166,7 @@ public class GameManager: MonoBehaviour {
 
                 // add the Select Scipt
                 sticker.AddComponent<SelectSticker>();
+                sticker.GetComponent<SelectSticker>().coordinates = _stickers[i][j];
                 sticker.AddComponent<MeshCollider>();
 
                 // place these points in the space
