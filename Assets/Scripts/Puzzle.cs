@@ -4,46 +4,46 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Puzzle : Attribute {
-        // TODO can be optimized?
+        // TODO _stickers can be optimized?
     List<List<Vector4>> _stickers = new List<List<Vector4>>();
-
-    
-    private int nbCells = 8; // const static
+    const int _nbCells = 8;
     private float stickerDistance = 10f; // TODO -> in renderer ?
 
     /// <summary>
-    /// Create coordinates for each sticker
+    /// Generate a 4D Rubik
     /// </summary>
-    public Puzzle(int puzzleSize = 2){
-        for (int i = 0; i < nbCells; i++) {
-            // Create a cell
-            Vector4 point = Vector4.zero;
-            int pointIndex = Mathf.FloorToInt(i * 0.5f);
-            int altSign = 1 - (2 * (i % 2));
-            point[pointIndex] = altSign;
+    /// <param name="n">Size of the Rubik (by default it's a 2x2x2x2 Rubik)</param>
+    public Puzzle(int n = 2){ 
+        // TODO n must be added in parameters -> puzzleSize
+        for (int i = 0; i < _nbCells; i++) { // 8 == nbCells
+            // Define a cell
+            Vector4 cell = Vector4.zero;
+            int iCell = Mathf.FloorToInt(i * 0.5f);
+            cell[iCell] = 1 - (2 * (i % 2)); // 1 or -1 depending the situation
 
-            // Create the stickers inside of the i-eme cell
+            // Create the stickers at the i-eme cell
+                // TODO explain more?
             _stickers.Add(new List<Vector4>());
-            for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
+            for (int j = 0; j < Mathf.Pow(n, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
-                if (puzzleSize > 1) {
+                if (n > 1) {
                     temp.x = Mathf.Lerp(-1f, 1f,
-                        (Mathf.FloorToInt(j / Mathf.Pow(puzzleSize, 2)) % puzzleSize) / (puzzleSize - 1f));
+                        (Mathf.FloorToInt(j / Mathf.Pow(n, 2)) % n) / (n - 1f));
                     temp.y = Mathf.Lerp(-1f, 1f,
-                        (Mathf.FloorToInt(j / puzzleSize) % puzzleSize) / (puzzleSize - 1f));
+                        (Mathf.FloorToInt(j / n) % n) / (n - 1f));
                     temp.z = Mathf.Lerp(-1f, 1f,
-                        (j % puzzleSize) / (puzzleSize - 1f));
+                        (j % n) / (n - 1f));
                 }
-                Vector4 subpoint = new Vector4(0, 0, 0, 0);
-                subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
-                _stickers[i].Add(subpoint);
+                Vector4 sticker = new Vector4(0, 0, 0, 0);
+                sticker = InsertFloat(temp / stickerDistance, cell[iCell], iCell);
+                _stickers[i].Add(sticker);
             }
         }
     }
 
     /// <summary>
     /// Inserts value in Vector3 at pos, making it a Vector4
-    /// // TODO add more details about this function
+    /// // TODO add more details about this function -> coord homogene?
     /// </summary>
     /// <param name="vec"></param>
     /// <param name="value"></param>
@@ -71,17 +71,12 @@ public class Puzzle : Attribute {
         return result;
     }
 
-    public void UpdateStickers(List<List<Vector4>> stickers){ 
-        // TODO into constructor?
-        _stickers = stickers;
-    }
-
     public List<List<Vector4>> GetStickers(){
         return _stickers;
     }
 
     public int NbCells(){
-        return _stickers.Count;
+        return _nbCells;
     }
 
     public int NbStickers(int index){
