@@ -135,7 +135,7 @@ public class GameManager: MonoBehaviour { // == main
                 stickers[i].Add(subpoint);
             }
         }
-        p.UpdateStickers(_stickers);
+        p.UpdateStickers(stickers);
     }
 
     /// <summary>
@@ -496,7 +496,7 @@ public class GameManager: MonoBehaviour { // == main
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Projection4DTo3D(_stickers[i][j]);
+                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
     }
