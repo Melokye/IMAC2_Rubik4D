@@ -14,7 +14,7 @@ public class GameManager: MonoBehaviour { // == main
     // ---
 
     public GameObject puzzle;
-    // TODO move in another file? 
+    // TODO move in another file?
     // TODO Create a specific struct?
     Puzzle p;
 
@@ -26,7 +26,7 @@ public class GameManager: MonoBehaviour { // == main
     public int axis1 = 0;
     public int axis2 = 1;
     // ---
-    
+
     // To customize the Rubik // TODO need to be added in a Parameter Menu
     [SerializeField]
     private Mesh sphereMesh;
@@ -43,11 +43,14 @@ public class GameManager: MonoBehaviour { // == main
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
     static float _s6 = 1f - s6;
 
-    Matrix4x4 cameraRotation = new Matrix4x4(
+    static Matrix4x4 specialProjection = new Matrix4x4(
         new Vector4(-s6, 0f, _s6, s3),
         new Vector4(_s6, 0f, -s6, s3),
         new Vector4(-s3, 0f, -s3, -s3),
         new Vector4(0f, 1f, 0f, 0f));
+
+    private int cameraRotationMode = 0;
+    Matrix4x4 cameraRotation = specialProjection;
 
     // secondary rotation matrix to eventually use later
     Matrix4x4 colorAssignment = new Matrix4x4(
@@ -93,13 +96,16 @@ public class GameManager: MonoBehaviour { // == main
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
             }
+            if (Input.GetKeyDown(KeyCode.P)) {
+                ChangeProjection();
+            }
         }
     }
 
     /// <summary>
     /// initialize the data to lauch a rotation
     /// </summary>
-    public void LaunchRotation(){
+    public void LaunchRotation() {
         _cubeRotating = true;
     }
 
@@ -107,10 +113,10 @@ public class GameManager: MonoBehaviour { // == main
     /// Create coordinates for each sticker
     /// </summary>
     void GenerateStickerCoordinates() {
-        List<List<Vector4>> stickers = new List<List<Vector4>>(); 
+        List<List<Vector4>> stickers = new List<List<Vector4>>();
         const int nbPoints = 8;
         for (int i = 0; i < nbPoints; i++) {
-            Vector4 point = new Vector4(0, 0, 0, 0);
+            Vector4 point = Vector4.zero;
             int pointIndex = Mathf.FloorToInt(i * 0.5f);
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
@@ -125,7 +131,7 @@ public class GameManager: MonoBehaviour { // == main
                         (Mathf.FloorToInt(j / puzzleSize) % puzzleSize) / (puzzleSize - 1f));
                     temp.z = Mathf.Lerp(-1f, 1f,
                         (j % puzzleSize) / (puzzleSize - 1f));
-                } 
+                }
                 Vector4 subpoint = new Vector4(0, 0, 0, 0);
                 subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
                 stickers[i].Add(subpoint);
@@ -295,7 +301,7 @@ public class GameManager: MonoBehaviour { // == main
     void RenderCircles() {
         List<Vector4> tempstickers = new List<Vector4>();
         List<Vector3> vertices = new List<Vector3>();
-        
+
         // copy position from actual stickers // TODO?
         for (int i = 0; i < p.NbStickers(0); i++) {
             tempstickers.Add(p.GetSticker(0, i));
@@ -347,7 +353,7 @@ public class GameManager: MonoBehaviour { // == main
     /// <returns>Vector4 with value inserted at index pos</returns>
     Vector4 InsertFloat(Vector3 vec, float value, int pos) {
         pos = Mathf.Clamp(pos, 0, 3);
-        Vector4 result = new Vector4(0, 0, 0, 0);
+        Vector4 result = Vector4.zero;
         switch (pos) {
             case 0:
                 result = new Vector4(value, vec.x, vec.y, vec.z);
@@ -397,7 +403,7 @@ public class GameManager: MonoBehaviour { // == main
                         yield return null;
                     }
                 }
-                    
+
                 SnapToTargets(targets);
                 _cubeRotating = false;
             }
@@ -406,7 +412,7 @@ public class GameManager: MonoBehaviour { // == main
 
     string whosOpposite(string sphereName) {
         int index = _names.IndexOf(sphereName);
-        return (index%2 == 0 )? _names[index + 1]: _names[index - 1];
+        return (index % 2 == 0) ? _names[index + 1] : _names[index - 1];
     }
 
     public List<string> whosGunnaRotate(string sphereName) { // TODO remove public?
@@ -432,7 +438,7 @@ public class GameManager: MonoBehaviour { // == main
 
         for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
             targets.Add(new List<Vector4>());
-            
+
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 targets[i].Add(rotate * p.GetSticker(i, j));
@@ -475,6 +481,33 @@ public class GameManager: MonoBehaviour { // == main
         }
     }
 
+    /// <summary>
+    /// Toggle between classic projection and special projection
+    /// </summary>
+    private void ChangeProjection() {
+        switch (cameraRotationMode) {
+            case 0:
+                cameraRotationMode = 1;
+                cameraRotation = Matrix4x4.identity;
+                break;
+            case 1:
+            default:
+                cameraRotationMode = 0;
+                cameraRotation = specialProjection;
+                break;
+        }
+        GameObject circleContainer = GameObject.Find("CircleContainer");
+        Destroy(circleContainer);
+        RenderCircles();
+        for (int i = 0; i < puzzle.transform.childCount; i++) {
+            Transform cell = puzzle.transform.GetChild(i);
+            for (int j = 0; j < cell.childCount; j++) {
+                Transform sticker = cell.GetChild(j);
+                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
+            }
+        }
+    }
+
     public static bool IsBetweenRangeExcluded(float value, float value1, float value2) {
         return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
     }
@@ -482,7 +515,18 @@ public class GameManager: MonoBehaviour { // == main
     public Vector4 Projection4DTo3D(Vector4 point) {
         Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
         temp = cameraRotation * colorAssignment * temp;
-        return new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
+        Vector3 projected = Vector3.zero;
+        // handle projection to infinity
+        if (temp.w + 1 != 0) {
+            projected = new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
+        }
+        else {
+            projected = new Vector3(
+                Mathf.Sign(temp.x) * Int32.MaxValue,
+                Mathf.Sign(temp.y) * Int32.MaxValue,
+                Mathf.Sign(temp.z) * Int32.MaxValue);
+        }
+        return projected;
     }
 
     public int GetAxis1() {
@@ -509,7 +553,7 @@ public class GameManager: MonoBehaviour { // == main
     /// </summary>
     /// <param name="a1">the first axis</param>
     /// <param name="a2">the second axis</param>
-    public void SetPlane (int a1, int a2) {
+    public void SetPlane(int a1, int a2) {
         axis1 = a1;
         axis2 = a2;
     }

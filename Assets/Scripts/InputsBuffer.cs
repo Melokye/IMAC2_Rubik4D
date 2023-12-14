@@ -24,7 +24,7 @@ public class InputsBuffer: MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (Input.GetKeyDown(KeyCode.R)) {
-            List<int> Entry = new List<int>(){handler.GetAxis2(), handler.GetAxis1()};
+            List<int> Entry = new List<int>() { handler.GetAxis2(), handler.GetAxis1() };
             inputsBuffer.Add(Entry);
             // debugLength(inputsBuffer); // TODO
         }
@@ -85,16 +85,16 @@ public class InputsBuffer: MonoBehaviour {
                     }
                     handler.SnapToTargets(targets);
                 }
-                
+
                 handler.rotationSpeed = 2;
                 inputing = false;
                 inputsBuffer.Clear();
             }
-        }        
+        }
     }
 
     void DebugLength(in List<List<int>> list) {
-        int cmp=0;
+        int cmp = 0;
         foreach (var entry in list) {
             cmp++;
         }

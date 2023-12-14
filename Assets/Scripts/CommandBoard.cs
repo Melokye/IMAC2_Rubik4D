@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum Axis { x, y, z, w, none }
 
-public class CommandBoard: MonoBehaviour {
+public class CommandBoard : MonoBehaviour {
     GameManager handler;
     InputsBuffer buffer;
     bool clockwise = true;
@@ -19,23 +19,21 @@ public class CommandBoard: MonoBehaviour {
         tmp = GameObject.Find("TrivialSolver");
         buffer = tmp.GetComponent<InputsBuffer>();
 
-        ray = Camera.main.ViewportPointToRay(new Vector3 (0.5f, 0.5f, 0));
+        
     }
 
     // Update is called once per frame
-    void Update() {
-        Debug.DrawRay(ray.origin, ray.direction * 10,Color.yellow);
-    }
-    
+    void Update() { }
+
     public Axis GiveAxis(char axis) {
-        switch(axis) {
+        switch (axis) {
             case 'X': return Axis.x;
             case 'Y': return Axis.y;
             case 'Z': return Axis.z;
             case 'W': return Axis.w;
 
             // TODO normally we can't access this line but just in case...
-            default: Debug.Log(axis + " isn't defined"); return Axis.none; 
+            default: Debug.Log(axis + " isn't defined"); return Axis.none;
         }
     }
 
@@ -50,20 +48,20 @@ public class CommandBoard: MonoBehaviour {
 
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
-        if(!handler.GetRotateFlag() & !buffer.GetInputingFlag()){
+        if (!handler.GetRotateFlag() & !buffer.GetInputingFlag()) {
             List<int> axis = new List<int>();
-            foreach(char letter in selected.name) {
-                axis.Add((int) GiveAxis(letter));
+            foreach (char letter in selected.name) {
+                axis.Add((int)GiveAxis(letter));
             }
-            
+
             // Insert axis in the GameManager
             if (clockwise) {
                 handler.SetPlane(axis[0], axis[1]);
-                buffer.inputsBuffer.Add(new List<int>(){axis[1], axis[0]});
+                buffer.inputsBuffer.Add(new List<int>() { axis[1], axis[0] });
             }
             else {
                 handler.SetPlane(axis[1], axis[0]);
-                buffer.inputsBuffer.Add(new List<int>(){axis[0], axis[1]});
+                buffer.inputsBuffer.Add(new List<int>() { axis[0], axis[1] });
             }
 
             // TODO check if a "zone" has been selected before
