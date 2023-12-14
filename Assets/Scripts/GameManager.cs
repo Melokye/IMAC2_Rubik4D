@@ -16,7 +16,7 @@ public class GameManager: MonoBehaviour { // == main
     public GameObject puzzle;
     // TODO move in another file? 
     // TODO Create a specific struct?
-    List<List<Vector4>> _stickers = new List<List<Vector4>>(); 
+    Puzzle p;
 
     private bool _cubeRotating = false;
 
@@ -60,6 +60,7 @@ public class GameManager: MonoBehaviour { // == main
     void Awake() {
         puzzle = new GameObject();
         puzzle.name = "Puzzle";
+        p = new Puzzle();
 
         // Find the 3D coordinates of the 4D stickers of the puzzle
         GenerateStickerCoordinates();
@@ -104,6 +105,7 @@ public class GameManager: MonoBehaviour { // == main
     /// Create coordinates for each sticker
     /// </summary>
     void GenerateStickerCoordinates() {
+        List<List<Vector4>> stickers = new List<List<Vector4>>(); 
         const int nbPoints = 8;
         for (int i = 0; i < nbPoints; i++) {
             Vector4 point = new Vector4(0, 0, 0, 0);
@@ -111,7 +113,7 @@ public class GameManager: MonoBehaviour { // == main
             int altSign = 1 - (2 * (i % 2));
             point[pointIndex] = altSign;
 
-            _stickers.Add(new List<Vector4>());
+            stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(puzzleSize, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
                 if (puzzleSize > 1) {
@@ -124,23 +126,24 @@ public class GameManager: MonoBehaviour { // == main
                 } 
                 Vector4 subpoint = new Vector4(0, 0, 0, 0);
                 subpoint = InsertFloat(temp / stickerDistance, point[pointIndex], pointIndex);
-                _stickers[i].Add(subpoint);
+                stickers[i].Add(subpoint);
             }
         }
+        p.UpdateStickers(_stickers);
     }
 
     /// <summary>
     /// Draw the circles on the 3D space
     /// </summary>
     void RenderStickers() {
-        for (int i = 0; i < _stickers.Count; i++) {
+        for (int i = 0; i < p.NbCells(); i++) {
             // TODO warning : length of _names and _materials may not be the same as the number of points
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
             // place these points in the space
             cell.transform.parent = puzzle.transform;
-            for (int j = 0; j < _stickers[i].Count; j++) {
+            for (int j = 0; j < p.NbStickers(i); j++) {
                 GameObject sticker = new GameObject();
                 sticker.name = _names[i] + "_" + j;
 
@@ -156,7 +159,7 @@ public class GameManager: MonoBehaviour { // == main
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = Projection4DTo3D(_stickers[i][j]);
+                sticker.transform.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
     }
@@ -286,9 +289,9 @@ public class GameManager: MonoBehaviour { // == main
         List<Vector4> tempstickers = new List<Vector4>();
         List<Vector3> vertices = new List<Vector3>();
         
-        // copy position from actual stickers
-        for (int i = 0; i < _stickers[0].Count; i++) {
-            tempstickers.Add(_stickers[0][i]);
+        // copy position from actual stickers // TODO?
+        for (int i = 0; i < p.NbStickers(0); i++) {
+            tempstickers.Add(p.GetSticker(0, i));
         }
 
         // create circles
@@ -425,7 +428,7 @@ public class GameManager: MonoBehaviour { // == main
             
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
-                targets[i].Add(rotate * _stickers[i][j]);
+                targets[i].Add(rotate * p.GetSticker(i, j));
             }
         }
         return targets;
@@ -444,8 +447,8 @@ public class GameManager: MonoBehaviour { // == main
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                _stickers[i][j] = rotate * _stickers[i][j];
-                sticker.position = Projection4DTo3D(_stickers[i][j]);
+                p.setSticker(i, j, rotate * p.GetSticker(i, j));
+                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
         return totalRotation;
@@ -459,8 +462,8 @@ public class GameManager: MonoBehaviour { // == main
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                _stickers[i][j] = targets[i][j];
-                sticker.position = Projection4DTo3D(_stickers[i][j]);
+                p.setSticker(i, j, targets[i][j]);
+                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
             }
         }
     }
