@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 class Animation {
+    static float rotationSpeed = 2f; // TODO attribute?
+
     /// <summary>
     /// Determine the destination of each sticker
     /// </summary>
@@ -22,5 +24,28 @@ class Animation {
             }
         }
         return targets;
+    }
+
+    /// <summary>
+    /// Rotates by 90 degrees with animation
+    /// </summary>
+    /// <param name="rotationSpeed"> </param>
+    public static float RotateOverTime(Puzzle puzzle, GameObject puzzleObject, float totalRotation, List<List<bool>> toBeRotated, Geometry.Axis begin, Geometry.Axis end) {
+        // TODO needs optimization? maybe move rotate outside of the function?
+        Matrix4x4 rotate = Geometry.RotationMatrix(begin, end, rotationSpeed);
+        
+        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
+        totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
+        for (int i = 0; i < puzzleObject.transform.childCount; i++) {
+            Transform cell = puzzleObject.transform.GetChild(i);
+            for (int j = 0; j < cell.childCount; j++) {
+                Transform sticker = cell.GetChild(j);
+                if(toBeRotated[i][j]==true){
+                    puzzle.setSticker(i, j, rotate * puzzle.GetSticker(i, j));
+                    sticker.GetComponent<SelectSticker>().SetCoordinates(puzzle.GetSticker(i,j));
+                }
+            }
+        }
+        return totalRotation;
     }
 }

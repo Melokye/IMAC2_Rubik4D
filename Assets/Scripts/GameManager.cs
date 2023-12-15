@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour { // == main
     private Mesh sphereMesh;
     private float stickerSize = 0.125f;
 
-    public float rotationSpeed = 2f;
+    public float rotationSpeed = 2f; // TODO remplace by Animation.rotationSpeed
 
     // to simplify the camera rotation
     // TODO move it in another file?
@@ -124,7 +124,8 @@ public class GameManager : MonoBehaviour { // == main
                 if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        totalRotation = RotateOverTime(rotationSpeed, totalRotation, toBeRotated);
+                        // TODO need reajustement?
+                        totalRotation = Animation.RotateOverTime(p, puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
                         yield return null;
                     }
                 }
@@ -133,30 +134,6 @@ public class GameManager : MonoBehaviour { // == main
                 _cubeRotating = false;
             }
         }
-    }
-
-
-
-    /// <summary>
-    /// Rotates by 90 degrees with animation
-    /// </summary>
-    /// <param name="rotationSpeed"> </param>
-    public float RotateOverTime(float rotationSpeed, float totalRotation, List<List<bool>> toBeRotated) {
-        // TODO needs optimization?
-        Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), rotationSpeed);
-        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
-        totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Transform cell = puzzle.transform.GetChild(i);
-            for (int j = 0; j < cell.childCount; j++) {
-                Transform sticker = cell.GetChild(j);
-                if(toBeRotated[i][j]==true){
-                    p.setSticker(i, j, rotate * p.GetSticker(i, j));
-                    sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
-                }
-            }
-        }
-        return totalRotation;
     }
 
     /// <summary>
