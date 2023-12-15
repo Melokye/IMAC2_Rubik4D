@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+// TODO separate function to distinct GameObject puzzle and Puzzle
+
 class Animation {
     static float rotationSpeed = 2f; // TODO attribute?
 
@@ -47,5 +50,22 @@ class Animation {
             }
         }
         return totalRotation;
+    }
+
+    /// <summary>
+    /// Snaps each cell sticker to its final position
+    /// </summary>
+    public static void SnapToTargets(Puzzle puzzle, GameObject puzzleObject, List<List<Vector4>> targets, List<List<bool>> toBeRotated) {
+        // TODO
+        for (int i = 0; i < puzzle.NbCells(); i++) {
+            Transform cell = puzzleObject.transform.GetChild(i);
+            for (int j = 0; j < puzzle.NbStickers(i); j++) {
+                Transform sticker = cell.GetChild(j);
+                if(toBeRotated[i][j]==true){
+                    puzzle.setSticker(i, j, targets[i][j]);
+                    sticker.GetComponent<SelectSticker>().SetCoordinates(puzzle.GetSticker(i,j));
+                }
+            }
+        }
     }
 }

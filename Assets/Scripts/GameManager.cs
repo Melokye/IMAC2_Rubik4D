@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour { // == main
         _cubeRotating = true;
     }
 
-    public IEnumerator RotationHandler() {
+    public IEnumerator RotationHandler() { // TODO directly in Animation.cs?
         while (true) {
             if (!_cubeRotating) {
                 yield return null;
@@ -130,24 +130,8 @@ public class GameManager : MonoBehaviour { // == main
                     }
                 }
 
-                SnapToTargets(targets, toBeRotated);
+                Animation.SnapToTargets(p, puzzle, targets, toBeRotated);
                 _cubeRotating = false;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Snaps each cell sticker to its final position
-    /// </summary>
-    public void SnapToTargets(List<List<Vector4>> targets, List<List<bool>> toBeRotated) {
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Transform cell = puzzle.transform.GetChild(i);
-            for (int j = 0; j < cell.childCount; j++) {
-                Transform sticker = cell.GetChild(j);
-                if(toBeRotated[i][j]==true){
-                    p.setSticker(i, j, targets[i][j]);
-                    sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
-                }
             }
         }
     }

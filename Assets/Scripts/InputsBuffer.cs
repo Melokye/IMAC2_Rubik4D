@@ -68,6 +68,7 @@ public class InputsBuffer: MonoBehaviour {
     }
 
     private IEnumerator RotationHandler() {
+        // TODO try to delete this function? just change the rotationSpeed to 6.
         while (true) {
             if (!inputing) {
                 yield return null;
@@ -86,7 +87,7 @@ public class InputsBuffer: MonoBehaviour {
                             yield return null;
                         }
                     }
-                    handler.SnapToTargets(targets, toBeRotated);
+                    Animation.SnapToTargets(handler.p, handler.puzzle, targets, toBeRotated);
                 }
 
                 handler.rotationSpeed = 2;
