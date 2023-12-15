@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SelectSticker : MonoBehaviour {
+    [SerializeField]
     private Vector4 coordinates;
     public static Vector4 selectedCoordinates;
     private Renderer rend;
@@ -46,14 +47,31 @@ public class SelectSticker : MonoBehaviour {
                 tmp.rend.material.color = tmp.baseColor;
                 handler.SetterSelection(tmp);
             }
-            handler.SetterSelection(null);
+            //handler.SetterSelection(null);
         }
     }
     public Color GetBaseColor() {
         return baseColor;
     }
 
+    public void SetBaseColor(Color col){
+        baseColor = col;
+    }
+
+    public Renderer GetRend(){
+        return rend;
+    }
+
+    public void SetRend(Renderer Rend){
+        rend = Rend;
+    }
+
     public void SetCoordinates(Vector4 Coordinates) {
         coordinates = Coordinates;
     }
+
+    public Vector4 GetCoordinates(){
+        return coordinates;
+    }
+
 }

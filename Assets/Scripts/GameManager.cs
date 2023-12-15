@@ -337,15 +337,16 @@ public class GameManager : MonoBehaviour { // == main
             }
             else {
                 List<List<Vector4>> targets = DefineTargets();
+                List<List<bool>> toBeRotated = whosGunnaRotate();
                 if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        totalRotation = RotateOverTime(rotationSpeed, totalRotation);
+                        totalRotation = RotateOverTime(rotationSpeed, totalRotation, toBeRotated);
                         yield return null;
                     }
                 }
 
-                SnapToTargets(targets);
+                SnapToTargets(targets, toBeRotated);
                 _cubeRotating = false;
             }
         }
@@ -362,18 +363,30 @@ public class GameManager : MonoBehaviour { // == main
         return (index % 2 == 0) ? _names[index + 1] : _names[index - 1];
     }
 
-    public List<string> whosGunnaRotate(string sphereName) { // TODO remove public?
+    public List<List<bool>> whosGunnaRotate() { // TODO remove public?
         // TODO not complete yet?
-        // TODO rename to FindRotatingStickers
-        // TODO: use sticker term instead of sphere
-        List<string> mustRotate = new List<string>();
-        string opposite = whosOpposite(sphereName);
-        foreach (string entry in _names) {
-            if (entry != sphereName & entry != opposite) {
-                mustRotate.Add(entry);
+        int discriminator = 0;
+        int signOfDiscriminator = 0;
+        for(int i = 0 ; i < 4 ; i++){
+            if(Mathf.Abs(selectedSticker.GetCoordinates()[i])==1){
+                signOfDiscriminator = (int)selectedSticker.GetCoordinates()[i];
+                discriminator = i;
             }
         }
-        return mustRotate;
+        List<List<bool>> toBeRotated = new List<List<bool>>();
+        for (int i = 0 ; i < puzzle.transform.childCount; i++){
+            toBeRotated.Add(new List<bool>());
+            Transform cell = puzzle.transform.GetChild(i);
+            for(int j = 0 ; j < cell.childCount; j++){
+                if(signOfDiscriminator*p.GetSticker(i,j)[discriminator]>0){
+                    toBeRotated[i].Add(true);
+                }
+                else{
+                    toBeRotated[i].Add(false);
+                }
+            }
+        }
+        return toBeRotated;
     }
 
     /// <summary>
@@ -387,10 +400,12 @@ public class GameManager : MonoBehaviour { // == main
 
         for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
             targets.Add(new List<Vector4>());
-
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
-                targets[i].Add(rotate * p.GetSticker(i, j));
+                if(whosGunnaRotate()[i][j]==true){
+                    targets[i].Add(rotate * p.GetSticker(i, j));
+                }
+                else{targets[i].Add(new Vector4());}
             }
         }
         return targets;
@@ -400,7 +415,7 @@ public class GameManager : MonoBehaviour { // == main
     /// Rotates by 90 degrees with animation
     /// </summary>
     /// <param name="rotationSpeed"> </param>
-    public float RotateOverTime(float rotationSpeed, float totalRotation) {
+    public float RotateOverTime(float rotationSpeed, float totalRotation, List<List<bool>> toBeRotated) {
         // TODO needs optimization?
         Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), rotationSpeed);
         rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
@@ -409,7 +424,10 @@ public class GameManager : MonoBehaviour { // == main
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                p.setSticker(i, j, rotate * p.GetSticker(i, j));
+                if(toBeRotated[i][j]==true){
+                    p.setSticker(i, j, rotate * p.GetSticker(i, j));
+                    sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
+                }
             }
         }
         return totalRotation;
@@ -418,12 +436,15 @@ public class GameManager : MonoBehaviour { // == main
     /// <summary>
     /// Snaps each cell sticker to its final position
     /// </summary>
-    public void SnapToTargets(List<List<Vector4>> targets) {
+    public void SnapToTargets(List<List<Vector4>> targets, List<List<bool>> toBeRotated) {
         for (int i = 0; i < puzzle.transform.childCount; i++) {
             Transform cell = puzzle.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                p.setSticker(i, j, targets[i][j]);
+                if(toBeRotated[i][j]==true){
+                    p.setSticker(i, j, targets[i][j]);
+                    sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
+                }
             }
         }
     }

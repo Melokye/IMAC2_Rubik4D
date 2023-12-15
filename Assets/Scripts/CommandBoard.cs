@@ -21,14 +21,14 @@ public class CommandBoard : MonoBehaviour {
     // Update is called once per frame
     void Update() { }
 
-    public void FindRotation(GameObject sticker) {
+    /*public void FindRotation(GameObject sticker) {
         Debug.Log(sticker.name);
         foreach (string needRotate in handler.whosGunnaRotate(sticker.name)) {
             Debug.Log(needRotate);
         }
 
         // TODO
-    }
+    }*/
 
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
@@ -41,11 +41,11 @@ public class CommandBoard : MonoBehaviour {
             // Insert axis in the GameManager
             if (clockwise) {
                 handler.SetPlane(Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]));
-                buffer.inputsBuffer.Add(new List<int>() { Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]) });
+                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]), handler.GetSelection() });
             }
             else {
                 handler.SetPlane(Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]));
-                buffer.inputsBuffer.Add(new List<int>() { Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]) });
+                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]), handler.GetSelection() });
             }
 
             handler.LaunchRotation();
