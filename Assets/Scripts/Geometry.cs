@@ -66,6 +66,17 @@ class Geometry {
         }
     }
 
+    public static char IntToChar(int n) {
+        switch (n) {
+            case 0: return 'X';
+            case 1: return 'Y';
+            case 2: return 'Z';
+            case 3: return 'W';
+            default:
+                Debug.Log("Int not matching an axis");
+                return  'o';
+        }
+    }
     public static int AxisToInt(Axis axis) {
         return (int)axis; // TODO must delete it later
     }
