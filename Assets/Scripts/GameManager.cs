@@ -4,14 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour { // == main
-    // TODO const static attributs
-    List<string> _names = new List<string>() {
-            "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
-    List<string> _materials = new List<string>() {
-            "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
-
-    // ---
-
     public GameObject puzzle; // TODO delete it?
     Puzzle p;
 
@@ -29,7 +21,7 @@ public class GameManager : MonoBehaviour { // == main
     [SerializeField]
     private Mesh sphereMesh;
     private float stickerSize = 0.125f;
-    
+
     public float rotationSpeed = 2f;
 
     // to simplify the camera rotation
@@ -61,10 +53,10 @@ public class GameManager : MonoBehaviour { // == main
         p = new Puzzle();
 
         // Create a GameObject for each point and link them in the GameObject "Puzzle"
-        puzzle = new GameObject();
+        puzzle = p.RenderStickers(sphereMesh, stickerSize);
         puzzle.name = "Puzzle";
         puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
-        RenderStickers();
+        
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
         GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
@@ -121,42 +113,6 @@ public class GameManager : MonoBehaviour { // == main
         _cubeRotating = true;
     }
 
-    /// <summary>
-    /// Create coordinates for each sticker
-    /// </summary>
-    void RenderStickers() {
-        for (int i = 0; i < p.NbCells(); i++) {
-            // TODO warning : length of _names and _materials may not be the same as the number of points
-            GameObject cell = new GameObject();
-            cell.name = _names[i];
-
-            // place these points in the space
-            cell.transform.parent = puzzle.transform;
-            for (int j = 0; j < p.NbStickers(i); j++) {
-                GameObject sticker = new GameObject();
-                sticker.name = _names[i] + "_" + j;
-
-                // add mesh
-                sticker.AddComponent<MeshFilter>();
-                sticker.GetComponent<MeshFilter>().mesh = sphereMesh;
-
-                // add material
-                Material stickerMat = Resources.Load(_materials[i], typeof(Material)) as Material;
-                sticker.AddComponent<MeshRenderer>();
-                sticker.GetComponent<Renderer>().material = stickerMat;
-
-                // add the Select Scipt
-                sticker.AddComponent<SelectSticker>();
-                sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i, j));
-                sticker.AddComponent<MeshCollider>();
-
-                // place these points in the space
-                sticker.transform.localScale = stickerSize * Vector3.one;
-                sticker.transform.parent = cell.transform;
-                sticker.transform.position = Geometry.Projection4DTo3D(cameraRotation * colorAssignment * p.GetSticker(i, j));
-            }
-        }
-    }
 
     public IEnumerator RotationHandler() {
         while (true) {
@@ -180,30 +136,6 @@ public class GameManager : MonoBehaviour { // == main
         }
     }
 
-    /// <summary>
-    /// Determine which face is the opposite of argument
-    /// </summary>
-    /// <param name="sphereName"></param>
-    /// <returns>Name of the opposing face</returns>
-    string whosOpposite(string sphereName) { // TODO: rename to OppositeCellName
-        // TODO: use sticker term instead of sphere
-        int index = _names.IndexOf(sphereName);
-        return (index % 2 == 0) ? _names[index + 1] : _names[index - 1];
-    }
-
-    public List<string> whosGunnaRotate(string sphereName) { // TODO remove public?
-        // TODO not complete yet?
-        // TODO rename to FindRotatingStickers
-        // TODO: use sticker term instead of sphere
-        List<string> mustRotate = new List<string>();
-        string opposite = whosOpposite(sphereName);
-        foreach (string entry in _names) {
-            if (entry != sphereName & entry != opposite) {
-                mustRotate.Add(entry);
-            }
-        }
-        return mustRotate;
-    }
 
     /// <summary>
     /// Determine the destination of each cell and sticker
