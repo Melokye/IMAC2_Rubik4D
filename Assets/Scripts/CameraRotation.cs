@@ -8,6 +8,8 @@ public class CameraRotation : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         cameraObj = Camera.main;
+        // TODO: Why not just use Vector3.zero instead of using another object's position?
+        // TODO: May now be unused. To delete.
         centerOfBlackHole = GameObject.Find("Up");
     }
 
@@ -18,10 +20,10 @@ public class CameraRotation : MonoBehaviour {
 
     void RotateCamera() {
         if (Input.GetMouseButton(0)) {
-            cameraObj.transform.RotateAround(centerOfBlackHole.transform.position,
+            cameraObj.transform.RotateAround(Vector3.zero,
                 cameraObj.transform.up, Input.GetAxis("Mouse X") * speed);
 
-            cameraObj.transform.RotateAround(centerOfBlackHole.transform.position,
+            cameraObj.transform.RotateAround(Vector3.zero,
                 cameraObj.transform.right, -Input.GetAxis("Mouse Y") * speed);
         }
     }
