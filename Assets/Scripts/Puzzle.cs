@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Puzzle : Attribute {
+public class Puzzle {
     // TODO _stickers can be optimized?
     List<List<Vector4>> _stickers = new List<List<Vector4>>();
     const int _nbCells = 8;
@@ -14,7 +14,7 @@ public class Puzzle : Attribute {
     /// <param name="n">Size of the Rubik (by default it's a 2x2x2x2 Rubik)</param>
     public Puzzle(int n = 2) {
         // TODO n must be added in parameters -> puzzleSize
-        for (int i = 0; i < _nbCells; i++) { // 8 == nbCells
+        for (int i = 0; i < _nbCells; i++) {
             // Define a cell
             Vector4 cell = Vector4.zero;
             int iCell = Mathf.FloorToInt(i * 0.5f);
