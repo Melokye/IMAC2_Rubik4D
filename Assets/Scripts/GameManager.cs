@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour { // == main
-    public GameObject puzzle; // TODO delete it?
+    public GameObject puzzle;
     Puzzle p;
 
     private bool _cubeRotating = false;
@@ -57,13 +57,13 @@ public class GameManager : MonoBehaviour { // == main
         puzzle.name = "Puzzle";
         puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
         
-
         // Create GameObjects representing the rotation axes, aesthetic purpose
         GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
 
         // Creates the dupe puzzle to display the classical view in a UI
         GameObject puzzleDuplicate = Instantiate(puzzle);
         puzzleDuplicate.name = "Puzzle_UI";
+
         SetLayerAllChildren(puzzleDuplicate.transform, 3); // Change layer for camera view
         ChangeProjection(); // Change projection to classical view to render the circles
         GameObject circleContainer_UI = RingsRepresentation.RenderCircles("CircleContainer_UI", p);
@@ -113,7 +113,6 @@ public class GameManager : MonoBehaviour { // == main
         _cubeRotating = true;
     }
 
-
     public IEnumerator RotationHandler() {
         while (true) {
             if (!_cubeRotating) {
@@ -135,7 +134,6 @@ public class GameManager : MonoBehaviour { // == main
             }
         }
     }
-
 
     /// <summary>
     /// Determine the destination of each cell and sticker
@@ -274,5 +272,4 @@ public class GameManager : MonoBehaviour { // == main
             child.gameObject.layer = layer;
         }
     }
-
 }
