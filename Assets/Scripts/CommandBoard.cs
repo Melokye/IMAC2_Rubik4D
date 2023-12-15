@@ -16,11 +16,40 @@ public class CommandBoard : MonoBehaviour {
 
         tmp = GameObject.Find("TrivialSolver");
         buffer = tmp.GetComponent<InputsBuffer>();
+
+
     }
 
     // Update is called once per frame
     void Update() { }
 
+    public void changeSelection(GameObject selected) {
+        Debug.Log(selected.name);
+        if(selected.name == "Right") {
+            handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
+        }
+        if(selected.name == "Left") {
+            handler.SetterSelection(GameObject.Find("Left_0").GetComponent<SelectSticker>());
+        }
+        if(selected.name == "Up") {
+            handler.SetterSelection(GameObject.Find("Up_0").GetComponent<SelectSticker>());
+        }
+        if(selected.name == "Down") {
+            handler.SetterSelection(GameObject.Find("Down_0").GetComponent<SelectSticker>());
+        }
+        if(selected.name == "Back") {
+            handler.SetterSelection(GameObject.Find("Back_0").GetComponent<SelectSticker>());
+        }
+        if(selected.name == "Front") {
+            handler.SetterSelection(GameObject.Find("Front_0").GetComponent<SelectSticker>());
+        }
+        if(selected.name == "Inside") {
+            handler.SetterSelection(GameObject.Find("Inside_0").GetComponent<SelectSticker>());
+        }
+        if(selected.name == "Outside") {
+            handler.SetterSelection(GameObject.Find("Outside_0").GetComponent<SelectSticker>());
+        }
+    }
 
 
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?

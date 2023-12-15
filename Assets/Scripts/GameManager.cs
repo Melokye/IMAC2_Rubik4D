@@ -87,9 +87,9 @@ public class GameManager : MonoBehaviour { // == main
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
                 (axis1, axis2) = (axis2, axis1);
             }
-            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
+            /*if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
-            }
+            }*/
             // TODO: repair projection swap to swap projection views
             /*if (Input.GetKeyDown(KeyCode.P)) {
                 ChangeProjection();
