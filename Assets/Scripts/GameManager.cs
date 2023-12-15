@@ -166,14 +166,17 @@ public class GameManager : MonoBehaviour { // == main
     /// <param name="stickers"></param>
     /// <param name="sticker"></param>
     /// <param name="vertices"></param>
-    /// <param name="index"></param>
     /// <param name="axis1"></param>
     /// <param name="axis2"></param>
     /// <param name="angle"></param>
     /// <param name="makeVertices"></param>
-    public static void TraverseAxis(List<Vector4> stickers, GameObject sticker, List<Vector3> vertices, int index, int axis1, int axis2,
-            float angle, bool makeVertices = true) {
-        sticker.transform.position = Projection4DTo3D(stickers[index]);
+    public static Vector4 TraverseAxis(
+        Vector4 stickers, GameObject sticker, 
+        List<Vector3> vertices, 
+        int axis1, int axis2,
+        float angle, bool makeVertices = true) 
+    {
+        sticker.transform.position = Projection4DTo3D(stickers);
         if (makeVertices) {
             float vertexX = trailWidth * Mathf.Sin(angle);
             float vertexY = trailWidth * Mathf.Sin(angle);
@@ -184,7 +187,7 @@ public class GameManager : MonoBehaviour { // == main
         }
 
         // TODO improve reajustement
-        stickers[index] = Geometry.RotationMatrix((Geometry.Axis)axis1, (Geometry.Axis)axis2, angle) * stickers[index];
+        return Geometry.RotationMatrix((Geometry.Axis)axis1, (Geometry.Axis)axis2, angle) * stickers;
     }
 
     /// <summary>
@@ -260,21 +263,21 @@ public class GameManager : MonoBehaviour { // == main
     /// Create circle from mesh
     /// </summary>
     /// <param name="mesh"></param>
-    /// <param name="axisIndex"></param>
+    /// <param name="plane"></param>
     /// <param name="tempstickerIndex"></param>
     /// <returns></returns>
-    public static GameObject CreateCircle(Mesh mesh, int axisIndex, int tempstickerIndex) {
+    public static GameObject CreateCircle(Mesh mesh, int plane, int tempstickerIndex) {
         // TODO into RingsRepresentation.cs
         // create gameobject
         GameObject circle = new GameObject();
-        circle.name = _circle_materials[axisIndex] + "_" + tempstickerIndex;
+        circle.name = _circle_materials[plane] + "_" + tempstickerIndex;
 
         // add mesh
         circle.AddComponent<MeshFilter>();
         circle.GetComponent<MeshFilter>().mesh = mesh;
 
         // add material
-        Material circleMat = Resources.Load(_circle_materials[axisIndex], typeof(Material)) as Material;
+        Material circleMat = Resources.Load(_circle_materials[plane], typeof(Material)) as Material;
         circle.AddComponent<MeshRenderer>();
         circle.GetComponent<Renderer>().material = circleMat;
 
