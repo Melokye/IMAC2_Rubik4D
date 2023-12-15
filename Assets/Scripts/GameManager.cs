@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour { // == main
                 yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
             }else {
-                List<List<Vector4>> targets = DefineTargets();
+                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedSticker, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
                 List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedSticker);
                 if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
@@ -135,29 +135,7 @@ public class GameManager : MonoBehaviour { // == main
         }
     }
 
-    /// <summary>
-    /// Determine the destination of each cell and sticker
-    /// </summary>
-    public List<List<Vector4>> DefineTargets() {
-        // TODO put "puzzle" in param?
-        // TODO need change for differents layers
-        List<List<Vector4>> targets = new List<List<Vector4>>(); // TODO may be simplified with List<Vector4>?
-        Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), 90);
 
-        for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
-            targets.Add(new List<Vector4>());
-            Transform cell = puzzle.transform.GetChild(i);
-            
-            for (int j = 0; j < cell.childCount; j++) {
-                if(p.whosGunnaRotate(selectedSticker)[i][j]){
-                    targets[i].Add(rotate * p.GetSticker(i, j));
-                }else{
-                    targets[i].Add(new Vector4());
-                }
-            }
-        }
-        return targets;
-    }
 
     /// <summary>
     /// Rotates by 90 degrees with animation

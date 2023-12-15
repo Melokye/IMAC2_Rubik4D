@@ -77,7 +77,7 @@ public class InputsBuffer: MonoBehaviour {
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
                     InjectInput(inputsBuffer[i]);
                     float totalRotation = 0;
-                    List<List<Vector4>> targets = handler.DefineTargets();
+                    List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedSticker, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
                     List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedSticker); // TODO need reajustement
                     if(Geometry.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
                         while(Mathf.Abs(90f - totalRotation) > Mathf.Epsilon){
