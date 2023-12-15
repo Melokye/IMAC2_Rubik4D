@@ -8,7 +8,11 @@ public class CommandBoard : MonoBehaviour {
     bool clockwise = true;
     List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2), 
                                                      new Vector2(0,1), new Vector2(0,3), 
-                                                     new Vector2(1,3), new Vector2(2,3)};
+                                                     new Vector2(1,3), new Vector2(2,3),
+                                                     
+                                                     new Vector2(2,1), new Vector2(2,0), 
+                                                     new Vector2(1,0), new Vector2(3,0), 
+                                                     new Vector2(3,1), new Vector2(3,2),};
 
     // Start is called before the first frame update
     void Start() {
@@ -26,7 +30,8 @@ public class CommandBoard : MonoBehaviour {
             List<string> rotations = PossibleRotation();
             for(int i = 0 ; i < 6 ; i++){
                 Transform child = transform.GetChild(i);
-                if(child.name == rotations[0] | child.name == rotations[1] | child.name == rotations[2]){
+                if(  child.name == rotations[0] | child.name == rotations[1] | child.name == rotations[2]
+                   | child.name == rotations[3] | child.name == rotations[4] | child.name == rotations[5]){
                     child.GetComponent<Button>().interactable = true;
                 }
                 else {
