@@ -45,10 +45,10 @@ public class GameManager : MonoBehaviour { // == main
         new Vector4(0f, 1f, 0f, 0f));
 
     private int cameraRotationMode = 0;
-    static Matrix4x4 cameraRotation = specialProjection;
+    public static Matrix4x4 cameraRotation = specialProjection;
 
     // secondary rotation matrix to eventually use later
-    static Matrix4x4 colorAssignment = new Matrix4x4(
+    public static Matrix4x4 colorAssignment = new Matrix4x4(
         new Vector4(1, 0, 0, 0),
         new Vector4(0, 1, 0, 0),
         new Vector4(0, 0, 1, 0),
@@ -58,12 +58,12 @@ public class GameManager : MonoBehaviour { // == main
     /// Awake is called automatically before the function Start
     /// </summary>
     void Awake() {
-        puzzle = new GameObject();
-        puzzle.name = "Puzzle";
-        puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
         p = new Puzzle();
 
         // Create a GameObject for each point and link them in the GameObject "Puzzle"
+        puzzle = new GameObject();
+        puzzle.name = "Puzzle";
+        puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
         RenderStickers();
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
@@ -153,7 +153,7 @@ public class GameManager : MonoBehaviour { // == main
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = Projection4DTo3D(p.GetSticker(i, j));
+                sticker.transform.position = Geometry.Projection4DTo3D(cameraRotation * colorAssignment * p.GetSticker(i, j));
             }
         }
     }
@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour { // == main
             }
             else {
                 List<List<Vector4>> targets = DefineTargets();
-                if (IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
+                if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
                         totalRotation = RotateOverTime(rotationSpeed, totalRotation);
@@ -294,37 +294,9 @@ public class GameManager : MonoBehaviour { // == main
             Transform cell = gameObject.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Projection4DTo3D(p.GetSticker(i, j));
+                sticker.position = Geometry.Projection4DTo3D(cameraRotation * colorAssignment * p.GetSticker(i, j));
             }
         }
-    }
-
-    public static bool IsBetweenRangeExcluded(float value, float value1, float value2) {
-        return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
-    }
-
-    /// <summary>
-    /// Projects a 4D vector into 3D
-    /// </summary>
-    /// <param name="point"></param>
-    /// <returns></returns>
-    public static Vector4 Projection4DTo3D(Vector4 point) {
-        // TODO move into Geometry.cs
-        Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
-        temp = cameraRotation * colorAssignment * temp;
-        Vector3 projected = Vector3.zero;
-
-        // Handle projection to infinity
-        if (temp.w + 1 != 0) {
-            projected = new Vector3(temp.x, temp.y, temp.z) / (temp.w + 1);
-        }
-        else {
-            projected = new Vector3(
-                Mathf.Sign(temp.x) * Int32.MaxValue,
-                Mathf.Sign(temp.y) * Int32.MaxValue,
-                Mathf.Sign(temp.z) * Int32.MaxValue);
-        }
-        return projected;
     }
 
     public int GetAxis1() {
@@ -371,35 +343,4 @@ public class GameManager : MonoBehaviour { // == main
         }
     }
 
-    // void BaseRotation(GameObject sphere, string input) {
-    //     if (input == "y") {
-    //         Geometry.RotationMatrix[0, 0] = Mathf.Cos(0.1f);
-    //         Geometry.RotationMatrix[2, 0] = -Mathf.Sin(0.1f);
-    //         Geometry.RotationMatrix[0, 2] = Mathf.Sin(0.1f);
-    //         Geometry.RotationMatrix[2, 2] = Mathf.Cos(0.1f);
-    //     }
-    //     if (input == "x") {
-    //         Geometry.RotationMatrix[1, 1] = Mathf.Cos(0.1f);
-    //         Geometry.RotationMatrix[2, 1] = -Mathf.Sin(0.1f);
-    //         Geometry.RotationMatrix[1, 2] = Mathf.Sin(0.1f);
-    //         Geometry.RotationMatrix[2, 2] = Mathf.Cos(0.1f);
-    //     }
-    //     if (input == "z") {
-    //         Geometry.RotationMatrix[0, 0] = Mathf.Cos(0.1f);
-    //         Geometry.RotationMatrix[1, 0] = -Mathf.Sin(0.1f);
-    //         Geometry.RotationMatrix[0, 1] = Mathf.Sin(0.1f);
-    //         Geometry.RotationMatrix[1, 1] = Mathf.Cos(0.1f);
-    //     }
-    //     Vector3 sphereCoords = sphere.transform.position;
-    //     sphereCoords = Geometry.RotationMatrix * sphereCoords;
-    //     sphere.transform.position = sphereCoords;
-    // }
-
-    // void BigRotation(GameObject sphere, string input) {
-    //     List<string> toBeRotated = new List<string>(6);
-    //     toBeRotated = whosGunnaRotate(sphere.name);
-    //     foreach (string entry in toBeRotated) {
-    //         baseRotation(GameObject.Find(entry),input);
-    //     }
-    // }
 }

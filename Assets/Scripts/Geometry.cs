@@ -1,9 +1,16 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 // TODO must need to sort again
 class Geometry {
+    
     public enum Axis { x, y, z, w, none }
 
+    Geometry(){
+    }
+    
     /// <summary>
     /// Create a vector of size 4 with a vector of size 3 and a value
     /// </summary>
@@ -73,5 +80,32 @@ class Geometry {
     public static Axis IntToAxis(int n) {
         // TODO must delete later?
         return (Axis)n;
+    }
+
+    public static bool IsBetweenRangeExcluded(float value, float value1, float value2) {
+        return value > Mathf.Min(value1, value2) && value < Mathf.Max(value1, value2);
+    }
+
+    /// <summary>
+    /// Projects a 4D vector into 3D
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public static Vector4 Projection4DTo3D(Vector4 point) {
+        // Vector4 point = new Vector4(p.x, p.y, p.z, p.w);
+        // temp = cameraRotation * colorAssignment * temp; // TODO move it outside of the fn
+        Vector3 projected = Vector3.zero;
+
+        // Handle projection to infinity
+        if (point.w + 1 != 0) {
+            projected = new Vector3(point.x, point.y, point.z) / (point.w + 1);
+        }else {
+            projected = new Vector3(
+                Mathf.Sign(point.x) * Int32.MaxValue,
+                Mathf.Sign(point.y) * Int32.MaxValue,
+                Mathf.Sign(point.z) * Int32.MaxValue
+            );
+        }
+        return projected;
     }
 }

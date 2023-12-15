@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 class RingsRepresentation: MonoBehaviour{
+    // TODO display only link between stickers?
     private static float trailWidth = 0.0078125f;
     RingsRepresentation(){}
 
@@ -179,7 +180,7 @@ class RingsRepresentation: MonoBehaviour{
         int axis1, int axis2,
         float angle, bool makeVertices = true) 
     {
-        sticker.transform.position = GameManager.Projection4DTo3D(stickers);
+        sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * GameManager.colorAssignment * stickers);
         if (makeVertices) {
             float vertexX = trailWidth * Mathf.Sin(angle);
             float vertexY = trailWidth * Mathf.Sin(angle);
