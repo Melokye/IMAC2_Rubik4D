@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour { // == main
     public GameObject puzzle;
-    Puzzle p;
+    public Puzzle p;
 
     private bool _cubeRotating = false;
 
     [SerializeField]
-    private SelectSticker selectedSticker;
+    public SelectSticker selectedSticker; // TODO private
 
     // TODO for debug / test purpose?
     public int axis1 = 0;
@@ -118,10 +118,9 @@ public class GameManager : MonoBehaviour { // == main
             if (!_cubeRotating) {
                 yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
-            }
-            else {
+            }else {
                 List<List<Vector4>> targets = DefineTargets();
-                List<List<bool>> toBeRotated = whosGunnaRotate();
+                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedSticker);
                 if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
@@ -136,33 +135,6 @@ public class GameManager : MonoBehaviour { // == main
         }
     }
 
-
-    public List<List<bool>> whosGunnaRotate() { // TODO remove public?
-        // TODO not complete yet?
-        int discriminator = 0;
-        int signOfDiscriminator = 0;
-        for(int i = 0 ; i < 4 ; i++){
-            if(Mathf.Abs(selectedSticker.GetCoordinates()[i])==1){
-                signOfDiscriminator = (int)selectedSticker.GetCoordinates()[i];
-                discriminator = i;
-            }
-        }
-        List<List<bool>> toBeRotated = new List<List<bool>>();
-        for (int i = 0 ; i < puzzle.transform.childCount; i++){
-            toBeRotated.Add(new List<bool>());
-            Transform cell = puzzle.transform.GetChild(i);
-            for(int j = 0 ; j < cell.childCount; j++){
-                if(signOfDiscriminator*p.GetSticker(i,j)[discriminator]>0){
-                    toBeRotated[i].Add(true);
-                }
-                else{
-                    toBeRotated[i].Add(false);
-                }
-            }
-        }
-        return toBeRotated;
-    }
-
     /// <summary>
     /// Determine the destination of each cell and sticker
     /// </summary>
@@ -175,11 +147,13 @@ public class GameManager : MonoBehaviour { // == main
         for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
             targets.Add(new List<Vector4>());
             Transform cell = puzzle.transform.GetChild(i);
+            
             for (int j = 0; j < cell.childCount; j++) {
-                if(whosGunnaRotate()[i][j]==true){
+                if(p.whosGunnaRotate(selectedSticker)[i][j]){
                     targets[i].Add(rotate * p.GetSticker(i, j));
+                }else{
+                    targets[i].Add(new Vector4());
                 }
-                else{targets[i].Add(new Vector4());}
             }
         }
         return targets;
