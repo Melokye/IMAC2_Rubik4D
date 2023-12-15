@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour { // == main
             "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
     List<string> _materials = new List<string>() {
             "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
-    List<string> _circle_materials = new List<string>() {
+    static List<string> _circle_materials = new List<string>() {
             "XY", "XZ", "YZ", "XW", "YW", "ZW" };
     // ---
 
@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour { // == main
     [SerializeField]
     private Mesh sphereMesh;
     private float stickerSize = 0.125f;
-    private float trailWidth = 0.0078125f;
+    private static float trailWidth = 0.0078125f;
     public float rotationSpeed = 2f;
 
     // to simplify the camera rotation
@@ -46,10 +46,10 @@ public class GameManager : MonoBehaviour { // == main
         new Vector4(0f, 1f, 0f, 0f));
 
     private int cameraRotationMode = 0;
-    Matrix4x4 cameraRotation = specialProjection;
+    static Matrix4x4 cameraRotation = specialProjection;
 
     // secondary rotation matrix to eventually use later
-    Matrix4x4 colorAssignment = new Matrix4x4(
+    static Matrix4x4 colorAssignment = new Matrix4x4(
         new Vector4(1, 0, 0, 0),
         new Vector4(0, 1, 0, 0),
         new Vector4(0, 0, 1, 0),
@@ -68,14 +68,14 @@ public class GameManager : MonoBehaviour { // == main
         RenderStickers();
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
-        GameObject circleContainer = RenderCircles("CircleContainer");
+        GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
 
         // Creates the dupe puzzle to display the classical view in a UI
         GameObject puzzleDuplicate = Instantiate(puzzle);
         puzzleDuplicate.name = "Puzzle_UI";
         SetLayerAllChildren(puzzleDuplicate.transform, 3); // Change layer for camera view
         ChangeProjection(); // Change projection to classical view to render the circles
-        GameObject circleContainer_UI = RenderCircles("CircleContainer_UI");
+        GameObject circleContainer_UI = RingsRepresentation.RenderCircles("CircleContainer_UI", p);
         ChangeProjection(); // Change back projection for the first Update() frame cycle
         SetLayerAllChildren(circleContainer_UI.transform, 3);
     }
@@ -171,7 +171,7 @@ public class GameManager : MonoBehaviour { // == main
     /// <param name="axis2"></param>
     /// <param name="angle"></param>
     /// <param name="makeVertices"></param>
-    void TraverseAxis(List<Vector4> stickers, GameObject sticker, List<Vector3> vertices, int index, int axis1, int axis2,
+    public static void TraverseAxis(List<Vector4> stickers, GameObject sticker, List<Vector3> vertices, int index, int axis1, int axis2,
             float angle, bool makeVertices = true) {
         sticker.transform.position = Projection4DTo3D(stickers[index]);
         if (makeVertices) {
@@ -192,7 +192,8 @@ public class GameManager : MonoBehaviour { // == main
     /// </summary>
     /// <param name="vertices"></param>
     /// <returns></returns>
-    Mesh CreateCircleMesh(List<Vector3> vertices) {
+    public static Mesh CreateCircleMesh(List<Vector3> vertices) {
+        // TODO into RingsRepresentation.cs
         Mesh mesh = new Mesh();
 
         // add vertices
@@ -262,7 +263,8 @@ public class GameManager : MonoBehaviour { // == main
     /// <param name="axisIndex"></param>
     /// <param name="tempstickerIndex"></param>
     /// <returns></returns>
-    GameObject CreateCircle(Mesh mesh, int axisIndex, int tempstickerIndex) {
+    public static GameObject CreateCircle(Mesh mesh, int axisIndex, int tempstickerIndex) {
+        // TODO into RingsRepresentation.cs
         // create gameobject
         GameObject circle = new GameObject();
         circle.name = _circle_materials[axisIndex] + "_" + tempstickerIndex;
@@ -277,56 +279,6 @@ public class GameManager : MonoBehaviour { // == main
         circle.GetComponent<Renderer>().material = circleMat;
 
         return circle;
-    }
-
-    /// <summary>
-    /// Draw the axis circles on the 3D space
-    /// </summary>
-    GameObject RenderCircles(string name) {
-        List<Vector4> tempstickers = new List<Vector4>();
-        List<Vector3> vertices = new List<Vector3>();
-
-        // copy position from actual stickers // TODO?
-        for (int i = 0; i < p.NbStickers(0); i++) {
-            tempstickers.Add(p.GetSticker(0, i));
-        }
-
-        // create circles
-        List<Tuple<int, int>> rotationAxes = new List<Tuple<int, int>>() {
-            Tuple.Create(0, 1), Tuple.Create(0, 2), Tuple.Create(1, 0),
-            Tuple.Create(2, 1), Tuple.Create(1, 3), Tuple.Create(3, 1),
-            Tuple.Create(2, 3), Tuple.Create(0, 3)
-        };
-        List<int> matChoice = new List<int>() { 0, 1, 0, 2, 4, 4, 5, 3 };
-        GameObject circleContainer = new GameObject();
-        circleContainer.name = name;
-        for (int i = 0; i < tempstickers.Count; i++) {
-            GameObject tempsticker = new GameObject();
-            // for all rotations necessary to roam all 6 circles
-            for (int j = 0; j < 8; j++) {
-                switch (j) {
-                    // rotation j = 2 and j = 5 are only to get on the right circle
-                    case 2:
-                    case 5:
-                        TraverseAxis(tempstickers, tempsticker, vertices, i,
-                            rotationAxes[j].Item1, rotationAxes[j].Item2, 90f, false);
-                        break;
-                    // other rotations draw the circles
-                    default:
-                        for (int k = 0; k < 90; k++) {
-                            TraverseAxis(tempstickers, tempsticker, vertices, i,
-                                rotationAxes[j].Item1, rotationAxes[j].Item2, 4f);
-                        }
-                        Mesh circleMesh = CreateCircleMesh(vertices);
-                        GameObject circle = CreateCircle(circleMesh, matChoice[j], i);
-                        circle.transform.parent = circleContainer.transform;
-                        vertices.Clear();
-                        break;
-                }
-            }
-            Destroy(tempsticker);
-        }
-        return circleContainer;
     }
 
     public IEnumerator RotationHandler() {
@@ -479,7 +431,8 @@ public class GameManager : MonoBehaviour { // == main
     /// </summary>
     /// <param name="point"></param>
     /// <returns></returns>
-    public Vector4 Projection4DTo3D(Vector4 point) {
+    public static Vector4 Projection4DTo3D(Vector4 point) {
+        // TODO move into Geometry.cs
         Vector4 temp = new Vector4(point.x, point.y, point.z, point.w);
         temp = cameraRotation * colorAssignment * temp;
         Vector3 projected = Vector3.zero;
