@@ -84,6 +84,18 @@ class Geometry {
                 return  'o';
         }
     }
+
+    public static int CharToInt(char c) {
+        switch(c) {
+            case 'X': return 0 ;
+            case 'Y': return 1 ;
+            case 'Z': return 2 ;
+            case 'W': return 3 ;    
+            default:
+                Debug.Log("Char not matching an axis");
+                return -1;    
+        }
+    }
     public static int AxisToInt(Axis axis) {
         return (int)axis; // TODO must delete it later
     }

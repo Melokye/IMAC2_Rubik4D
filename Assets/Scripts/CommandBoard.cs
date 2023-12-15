@@ -1,18 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 public class CommandBoard : MonoBehaviour {
     GameManager handler;
     InputsBuffer buffer;
     bool clockwise = true;
-    List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2), 
-                                                     new Vector2(0,1), new Vector2(0,3), 
-                                                     new Vector2(1,3), new Vector2(2,3),
-                                                     
-                                                     new Vector2(2,1), new Vector2(2,0), 
-                                                     new Vector2(1,0), new Vector2(3,0), 
-                                                     new Vector2(3,1), new Vector2(3,2),};
+
 
     // Start is called before the first frame update
     void Start() {
@@ -25,41 +19,7 @@ public class CommandBoard : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() { 
-        if(handler.GetSelection()!=null) {
-            List<string> rotations = PossibleRotation();
-            for(int i = 0 ; i < 6 ; i++){
-                Transform child = transform.GetChild(i);
-                if(  child.name == rotations[0] | child.name == rotations[1] | child.name == rotations[2]
-                   | child.name == rotations[3] | child.name == rotations[4] | child.name == rotations[5]){
-                    child.GetComponent<Button>().interactable = true;
-                }
-                else {
-                    child.GetComponent<Button>().interactable = false;
-                }
-            }
-        }
-    }
-
-    public List<string> PossibleRotation() {
-        List<Vector2> pR = new List<Vector2>(0);;
-        List<string> nameOfRotations = new List<string>();
-        int usefulIndex=0;
-        for(int i = 0 ; i < 4 ; i++){
-            if(Mathf.Abs(handler.GetSelection().GetCoordinates()[i])==1){
-                usefulIndex = i ;
-            }
-        }
-        for(int i = 0 ; i < AllRotations.Count ; i++){
-            if(AllRotations[i][0] != usefulIndex & AllRotations[i][1] != usefulIndex){
-                pR.Add(AllRotations[i]);
-            }
-        }
-        for(int i = 0 ; i < pR.Count ; i++){
-            nameOfRotations.Add(new string(new char[]{Geometry.IntToChar((int)pR[i][0]),Geometry.IntToChar((int)pR[i][1])}));
-        }
-        return nameOfRotations;
-    }
+    void Update() { }
 
 
 
