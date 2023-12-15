@@ -14,7 +14,8 @@ public class GameManager : MonoBehaviour { // == main
     // ---
 
     public GameObject puzzle; // TODO delete it?
-    Puzzle p;
+    public Puzzle p;
+    public Camera[] cameraArray;
 
     private bool _cubeRotating = false;
 
@@ -84,6 +85,7 @@ public class GameManager : MonoBehaviour { // == main
     /// Start is called automatically before the first frame update
     /// </summary>
     void Start() {
+        cameraArray = Camera.allCameras;
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }
@@ -101,10 +103,9 @@ public class GameManager : MonoBehaviour { // == main
             }
             // For each camera in the scene, toggle both relevant culling masks
             if (Input.GetKeyDown(KeyCode.P)) {
-                Camera[] cameraArray = Camera.allCameras;
                 foreach (Camera camera in cameraArray) {
                     ToggleCameraCullingMask(camera, "Default");
-                    ToggleCameraCullingMask(camera, "ClassicProjection");
+                    ToggleCameraCullingMask(camera, "UIPuzzleView");
                 }
             }
         }
