@@ -2,7 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Puzzle : Attribute {
+public class Puzzle {
+    List<string> _names = new List<string>() {
+        "Right", "Left", "Up", "Down", "Back", "Front", "In", "Out" };
+
+    List<string> _materials = new List<string>() {
+        "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
+
     // TODO _stickers can be optimized?
     List<List<Vector4>> _stickers = new List<List<Vector4>>();
     const int _nbCells = 8;
@@ -14,7 +20,7 @@ public class Puzzle : Attribute {
     /// <param name="n">Size of the Rubik (by default it's a 2x2x2x2 Rubik)</param>
     public Puzzle(int n = 2) {
         // TODO n must be added in parameters -> puzzleSize
-        for (int i = 0; i < _nbCells; i++) { // 8 == nbCells
+        for (int i = 0; i < _nbCells; i++) {
             // Define a cell
             Vector4 cell = Vector4.zero;
             int iCell = Mathf.FloorToInt(i * 0.5f);
@@ -38,6 +44,45 @@ public class Puzzle : Attribute {
                 _stickers[i].Add(sticker);
             }
         }
+    }
+
+    /// <summary>
+    /// Create coordinates for each sticker
+    /// </summary>
+    public GameObject RenderStickers(Mesh mesh, float stickerSize) {
+        GameObject puzzle = new GameObject();
+        for (int i = 0; i < NbCells(); i++) {
+            // TODO warning : length of _names and _materials may not be the same as the number of points
+            GameObject cell = new GameObject();
+            cell.name = _names[i];
+
+            // place these points in the space
+            cell.transform.parent = puzzle.transform;
+            for (int j = 0; j < NbStickers(i); j++) {
+                GameObject sticker = new GameObject();
+                sticker.name = _names[i] + "_" + j;
+
+                // add mesh
+                sticker.AddComponent<MeshFilter>();
+                sticker.GetComponent<MeshFilter>().mesh = mesh;
+
+                // add material
+                Material stickerMat = Resources.Load(_materials[i], typeof(Material)) as Material;
+                sticker.AddComponent<MeshRenderer>();
+                sticker.GetComponent<Renderer>().material = stickerMat;
+
+                // add the Select Scipt
+                sticker.AddComponent<SelectSticker>();
+                sticker.GetComponent<SelectSticker>().SetCoordinates(GetSticker(i, j));
+                sticker.AddComponent<MeshCollider>();
+
+                // place these points in the space
+                sticker.transform.localScale = stickerSize * Vector3.one;
+                sticker.transform.parent = cell.transform;
+                sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * GameManager.colorAssignment * GetSticker(i, j));
+            }
+        }
+        return puzzle;
     }
 
     // --- Getter and Setter
