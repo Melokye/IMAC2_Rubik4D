@@ -99,10 +99,14 @@ public class GameManager : MonoBehaviour { // == main
             if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
             }
-            // TODO: repair projection swap to swap projection views
-            /*if (Input.GetKeyDown(KeyCode.P)) {
-                ChangeProjection();
-            }*/
+            // For each camera in the scene, toggle both relevant culling masks
+            if (Input.GetKeyDown(KeyCode.P)) {
+                Camera[] cameraArray = Camera.allCameras;
+                foreach (Camera camera in cameraArray) {
+                    ToggleCameraCullingMask(camera, "Default");
+                    ToggleCameraCullingMask(camera, "ClassicProjection");
+                }
+            }
         }
         // At all times, there are two puzzle game objects.
         // The first is the special projection, the second is the classic projection.
@@ -532,13 +536,18 @@ public class GameManager : MonoBehaviour { // == main
     /// </summary>
     /// <param name="root"></param>
     /// <param name="layer"></param>
-    void SetLayerAllChildren(Transform root, int layer) {
+    public void SetLayerAllChildren(Transform root, int layer) {
         root.gameObject.layer = layer;
         var children = root.GetComponentsInChildren<Transform>(includeInactive: true);
         foreach (var child in children) {
             //Debug.Log(child.name);
             child.gameObject.layer = layer;
         }
+    }
+
+    // Toggle the bit using a XOR operation:
+    public void ToggleCameraCullingMask(Camera camera, string layerName) {
+        camera.cullingMask ^= 1 << LayerMask.NameToLayer(layerName);
     }
 
     // void BaseRotation(GameObject sphere, string input) {
