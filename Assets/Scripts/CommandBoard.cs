@@ -25,6 +25,7 @@ public class CommandBoard : MonoBehaviour {
 
     public void changeSelection(GameObject selected) {
         Debug.Log(selected.name);
+        // TODO suggestion : handler.SetterSelection(GameObject.Find(selected.name + "_0").GetComponent<SelectSticker>());
         if(selected.name == "Right") {
             handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
         }
