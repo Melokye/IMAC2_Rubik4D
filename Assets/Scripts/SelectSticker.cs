@@ -65,7 +65,7 @@ public class SelectSticker : MonoBehaviour {
             }
         }
     }
-    
+
     /// <summary>
     /// Getter of the original color of the sticker, before hovering.
     /// </summary>

@@ -16,6 +16,7 @@ public class CameraRotation : MonoBehaviour {
     void Update() {
         RotateCamera();
     }
+
     /// <summary>
     /// Moves the camera around the puzzles in order to match a mouse drag on the screen.
     /// </summary>
