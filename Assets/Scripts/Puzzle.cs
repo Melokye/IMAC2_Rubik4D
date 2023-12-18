@@ -98,7 +98,7 @@ public class Puzzle {
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * GameManager.colorAssignment * GetSticker(i, j));
+                sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * GetSticker(i, j));
             }
         }
         return puzzle;

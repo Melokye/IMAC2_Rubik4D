@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 public class CommandBoard : MonoBehaviour {
     GameManager handler;
     InputsBuffer buffer;
     bool clockwise = true;
-    List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2), 
-                                                     new Vector2(0,1), new Vector2(0,3), 
-                                                     new Vector2(1,3), new Vector2(2,3)};
 
     // Start is called before the first frame update
     void Start() {
@@ -21,43 +18,43 @@ public class CommandBoard : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() { 
-        if(handler.GetSelection()!=null) {
-            List<string> rotations = PossibleRotation();
-            for(int i = 0 ; i < 6 ; i++){
-                Transform child = transform.GetChild(i);
-                if(child.name == rotations[0] | child.name == rotations[1] | child.name == rotations[2]){
-                    child.GetComponent<Button>().interactable = true;
-                }
-                else {
-                    child.GetComponent<Button>().interactable = false;
-                }
-            }
+    void Update() { }
+    /// <summary>
+    /// Toggle the selection via the command board.
+    /// </summary>
+    /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
+    public void changeSelection(GameObject selected) {
+        Debug.Log(selected.name);
+        if (selected.name == "Right") {
+            handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
+        }
+        if (selected.name == "Left") {
+            handler.SetterSelection(GameObject.Find("Left_0").GetComponent<SelectSticker>());
+        }
+        if (selected.name == "Up") {
+            handler.SetterSelection(GameObject.Find("Up_0").GetComponent<SelectSticker>());
+        }
+        if (selected.name == "Down") {
+            handler.SetterSelection(GameObject.Find("Down_0").GetComponent<SelectSticker>());
+        }
+        if (selected.name == "Back") {
+            handler.SetterSelection(GameObject.Find("Back_0").GetComponent<SelectSticker>());
+        }
+        if (selected.name == "Front") {
+            handler.SetterSelection(GameObject.Find("Front_0").GetComponent<SelectSticker>());
+        }
+        if (selected.name == "Inside") {
+            handler.SetterSelection(GameObject.Find("Inside_0").GetComponent<SelectSticker>());
+        }
+        if (selected.name == "Outside") {
+            handler.SetterSelection(GameObject.Find("Outside_0").GetComponent<SelectSticker>());
         }
     }
 
-    public List<string> PossibleRotation() {
-        List<Vector2> pR = new List<Vector2>(0);;
-        List<string> nameOfRotations = new List<string>();
-        int usefulIndex=0;
-        for(int i = 0 ; i < 4 ; i++){
-            if(Mathf.Abs(handler.GetSelection().GetCoordinates()[i])==1){
-                usefulIndex = i ;
-            }
-        }
-        for(int i = 0 ; i < AllRotations.Count ; i++){
-            if(AllRotations[i][0] != usefulIndex & AllRotations[i][1] != usefulIndex){
-                pR.Add(AllRotations[i]);
-            }
-        }
-        for(int i = 0 ; i < pR.Count ; i++){
-            nameOfRotations.Add(new string(new char[]{Geometry.IntToChar((int)pR[i][0]),Geometry.IntToChar((int)pR[i][1])}));
-        }
-        return nameOfRotations;
-    }
-
-
-
+    /// <summary>
+    /// Lanch the selected rotation onClick on the bounded buttons of the command board.
+    /// </summary>
+    /// <param name="selected">The rotation plane selected by the user.</param>
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
         if (!handler.GetRotateFlag() & !buffer.GetInputingFlag()) {
@@ -94,8 +91,8 @@ public class CommandBoard : MonoBehaviour {
     }
     // TODO Note for handling the 1-layer rotation:
     // In 2^4n no matter which sticker you select in the cell, it will always rotate the same thing.
-    // Only the layer that is the closest to the cell selected will rotate. 
-    // Rotations possible for each cell: 
+    // Only the layer that is the closest to the cell selected will rotate.
+    // Rotations possible for each cell:
     // In : x , y , z      : up circles
     // Out : x , y , z     : down circles
 

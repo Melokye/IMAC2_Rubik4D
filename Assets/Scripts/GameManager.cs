@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour { // == main
     public Puzzle p;
     public Camera[] cameraArray;
 
+
     private bool _cubeRotating = false;
 
     [SerializeField]
@@ -40,13 +41,6 @@ public class GameManager : MonoBehaviour { // == main
 
     private int cameraRotationMode = 0;
     public static Matrix4x4 cameraRotation = specialProjection;
-
-    // secondary rotation matrix to eventually use later
-    public static Matrix4x4 colorAssignment = new Matrix4x4(
-        new Vector4(1, 0, 0, 0),
-        new Vector4(0, 1, 0, 0),
-        new Vector4(0, 0, 1, 0),
-        new Vector4(0, 0, 0, 1));
 
     /// <summary>
     /// Awake is called automatically before the function Start
@@ -92,15 +86,18 @@ public class GameManager : MonoBehaviour { // == main
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
                 (axis1, axis2) = (axis2, axis1);
             }
-            if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
+            /*if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
-            }
+            }*/
             // For each camera in the scene, toggle both relevant culling masks
             if (Input.GetKeyDown(KeyCode.P)) {
-                foreach (Camera camera in cameraArray) {
-                    ToggleCameraCullingMask(camera, "Default");
-                    ToggleCameraCullingMask(camera, "UIPuzzleView");
-                }
+                GameObject circleContainer = GameObject.Find("CircleContainer");
+                GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
+                SetLayerAllChildren(circleContainer.transform,
+                    (circleContainer.layer + 3) % 6);
+                SetLayerAllChildren(circleContainer_UI.transform,
+                    (circleContainer_UI.layer + 3) % 6);
+                ChangeProjection();
             }
         }
         // At all times, there are two puzzle game objects.
@@ -121,6 +118,10 @@ public class GameManager : MonoBehaviour { // == main
         _cubeRotating = true;
     }
 
+    /// <summary>
+    /// Handles rotations on each frame.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator RotationHandler() { // TODO directly in Animation.cs?
         while (true) {
             if (!_cubeRotating) {
@@ -181,7 +182,7 @@ public class GameManager : MonoBehaviour { // == main
             Transform cell = gameObject.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Geometry.Projection4DTo3D(cameraRotation * colorAssignment * p.GetSticker(i, j));
+                sticker.position = Geometry.Projection4DTo3D(cameraRotation * p.GetSticker(i, j));
             }
         }
     }
