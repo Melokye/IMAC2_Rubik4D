@@ -68,24 +68,26 @@ public class InputsBuffer: MonoBehaviour {
     }
 
     private IEnumerator RotationHandler() {
+        // TODO try to delete this function? just change the rotationSpeed to 6.
         while (true) {
             if (!inputing) {
                 yield return null;
             }
             else {
                 handler.rotationSpeed = 6 ;
+                // TODO need reajustement
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
                     InjectInput(inputsBuffer[i]);
                     float totalRotation = 0;
-                    List<List<Vector4>> targets = handler.DefineTargets();
-                    List<List<bool>> toBeRotated = handler.whosGunnaRotate();
+                    List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedSticker, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
+                    List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedSticker); 
                     if(Geometry.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
                         while(Mathf.Abs(90f - totalRotation) > Mathf.Epsilon){
-                            totalRotation = handler.RotateOverTime(handler.rotationSpeed, totalRotation, toBeRotated);
+                            totalRotation = Animation.RotateOverTime(handler.p, handler.puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
                             yield return null;
                         }
                     }
-                    handler.SnapToTargets(targets, toBeRotated);
+                    Animation.SnapToTargets(handler.p, handler.puzzle, targets, toBeRotated);
                 }
 
                 handler.rotationSpeed = 2;

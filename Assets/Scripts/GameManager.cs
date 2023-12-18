@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour { // == main
     public GameObject puzzle;
-    Puzzle p;
+    public Puzzle p;
+    public Camera[] cameraArray;
 
     private bool _cubeRotating = false;
 
     [SerializeField]
-    private SelectSticker selectedSticker;
+    public SelectSticker selectedSticker; // TODO private
 
     // TODO for debug / test purpose?
     public int axis1 = 0;
@@ -22,7 +23,7 @@ public class GameManager : MonoBehaviour { // == main
     private Mesh sphereMesh;
     private float stickerSize = 0.125f;
 
-    public float rotationSpeed = 2f;
+    public float rotationSpeed = 2f; // TODO remplace by Animation.rotationSpeed
 
     // to simplify the camera rotation
     // TODO move it in another file?
@@ -56,7 +57,7 @@ public class GameManager : MonoBehaviour { // == main
         puzzle = p.RenderStickers(sphereMesh, stickerSize);
         puzzle.name = "Puzzle";
         puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
-        
+
         // Create GameObjects representing the rotation axes, aesthetic purpose
         GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
 
@@ -75,6 +76,7 @@ public class GameManager : MonoBehaviour { // == main
     /// Start is called automatically before the first frame update
     /// </summary>
     void Start() {
+        cameraArray = Camera.allCameras;
         // Handles rotation in parallel to the Update method
         StartCoroutine(RotationHandler());
     }
@@ -90,10 +92,13 @@ public class GameManager : MonoBehaviour { // == main
             /*if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
             }*/
-            // TODO: repair projection swap to swap projection views
-            /*if (Input.GetKeyDown(KeyCode.P)) {
-                ChangeProjection();
-            }*/
+            // For each camera in the scene, toggle both relevant culling masks
+            if (Input.GetKeyDown(KeyCode.P)) {
+                foreach (Camera camera in cameraArray) {
+                    ToggleCameraCullingMask(camera, "Default");
+                    ToggleCameraCullingMask(camera, "UIPuzzleView");
+                }
+            }
         }
         // At all times, there are two puzzle game objects.
         // The first is the special projection, the second is the classic projection.
@@ -113,112 +118,25 @@ public class GameManager : MonoBehaviour { // == main
         _cubeRotating = true;
     }
 
-    public IEnumerator RotationHandler() {
+    public IEnumerator RotationHandler() { // TODO directly in Animation.cs?
         while (true) {
             if (!_cubeRotating) {
                 yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
-            }
-            else {
-                List<List<Vector4>> targets = DefineTargets();
-                List<List<bool>> toBeRotated = whosGunnaRotate();
+            }else {
+                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedSticker, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
+                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedSticker);
                 if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        totalRotation = RotateOverTime(rotationSpeed, totalRotation, toBeRotated);
+                        // TODO need reajustement?
+                        totalRotation = Animation.RotateOverTime(p, puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
                         yield return null;
                     }
                 }
 
-                SnapToTargets(targets, toBeRotated);
+                Animation.SnapToTargets(p, puzzle, targets, toBeRotated);
                 _cubeRotating = false;
-            }
-        }
-    }
-
-
-    public List<List<bool>> whosGunnaRotate() { // TODO remove public?
-        // TODO not complete yet?
-        int discriminator = 0;
-        int signOfDiscriminator = 0;
-        for(int i = 0 ; i < 4 ; i++){
-            if(Mathf.Abs(selectedSticker.GetCoordinates()[i])==1){
-                signOfDiscriminator = (int)selectedSticker.GetCoordinates()[i];
-                discriminator = i;
-            }
-        }
-        List<List<bool>> toBeRotated = new List<List<bool>>();
-        for (int i = 0 ; i < puzzle.transform.childCount; i++){
-            toBeRotated.Add(new List<bool>());
-            Transform cell = puzzle.transform.GetChild(i);
-            for(int j = 0 ; j < cell.childCount; j++){
-                if(signOfDiscriminator*p.GetSticker(i,j)[discriminator]>0){
-                    toBeRotated[i].Add(true);
-                }
-                else{
-                    toBeRotated[i].Add(false);
-                }
-            }
-        }
-        return toBeRotated;
-    }
-
-    /// <summary>
-    /// Determine the destination of each cell and sticker
-    /// </summary>
-    public List<List<Vector4>> DefineTargets() {
-        // TODO put "puzzle" in param?
-        // TODO need change for differents layers
-        List<List<Vector4>> targets = new List<List<Vector4>>(); // TODO may be simplified with List<Vector4>?
-        Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), 90);
-
-        for (int i = 0; i < puzzle.transform.childCount; i++) { // TODO change conditions
-            targets.Add(new List<Vector4>());
-            Transform cell = puzzle.transform.GetChild(i);
-            for (int j = 0; j < cell.childCount; j++) {
-                if(whosGunnaRotate()[i][j]==true){
-                    targets[i].Add(rotate * p.GetSticker(i, j));
-                }
-                else{targets[i].Add(new Vector4());}
-            }
-        }
-        return targets;
-    }
-
-    /// <summary>
-    /// Rotates by 90 degrees with animation
-    /// </summary>
-    /// <param name="rotationSpeed"> </param>
-    public float RotateOverTime(float rotationSpeed, float totalRotation, List<List<bool>> toBeRotated) {
-        // TODO needs optimization?
-        Matrix4x4 rotate = Geometry.RotationMatrix(Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2), rotationSpeed);
-        rotationSpeed = Mathf.Clamp(rotationSpeed, 0f, 90f - totalRotation);
-        totalRotation = Mathf.Clamp(totalRotation + rotationSpeed, 0f, 90f);
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Transform cell = puzzle.transform.GetChild(i);
-            for (int j = 0; j < cell.childCount; j++) {
-                Transform sticker = cell.GetChild(j);
-                if(toBeRotated[i][j]==true){
-                    p.setSticker(i, j, rotate * p.GetSticker(i, j));
-                    sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
-                }
-            }
-        }
-        return totalRotation;
-    }
-
-    /// <summary>
-    /// Snaps each cell sticker to its final position
-    /// </summary>
-    public void SnapToTargets(List<List<Vector4>> targets, List<List<bool>> toBeRotated) {
-        for (int i = 0; i < puzzle.transform.childCount; i++) {
-            Transform cell = puzzle.transform.GetChild(i);
-            for (int j = 0; j < cell.childCount; j++) {
-                Transform sticker = cell.GetChild(j);
-                if(toBeRotated[i][j]==true){
-                    p.setSticker(i, j, targets[i][j]);
-                    sticker.GetComponent<SelectSticker>().SetCoordinates(p.GetSticker(i,j));
-                }
             }
         }
     }
@@ -300,12 +218,17 @@ public class GameManager : MonoBehaviour { // == main
     /// </summary>
     /// <param name="root"></param>
     /// <param name="layer"></param>
-    void SetLayerAllChildren(Transform root, int layer) {
+    public void SetLayerAllChildren(Transform root, int layer) {
         root.gameObject.layer = layer;
         var children = root.GetComponentsInChildren<Transform>(includeInactive: true);
         foreach (var child in children) {
             //Debug.Log(child.name);
             child.gameObject.layer = layer;
         }
+    }
+
+    // Toggle the bit using a XOR operation
+    public void ToggleCameraCullingMask(Camera camera, string layerName) {
+        camera.cullingMask ^= 1 << LayerMask.NameToLayer(layerName);
     }
 }

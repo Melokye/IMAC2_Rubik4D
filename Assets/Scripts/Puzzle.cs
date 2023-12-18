@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq; // to use Enumerable
 
 public class Puzzle {
     List<string> _names = new List<string>() {
@@ -83,6 +84,41 @@ public class Puzzle {
             }
         }
         return puzzle;
+    }
+
+    /// <summary>
+    /// // TODO explain a little bit this function
+    /// </summary>
+    /// <returns></returns>
+    public List<List<bool>> whosGunnaRotate(SelectSticker selectedSticker = null) {
+        // List<List<bool>> toBeRotated = new List<List<bool>>();
+        if(selectedSticker == null){ // TODO need optimisation
+            List<bool> sticker = Enumerable.Repeat(true, NbStickers(0)).ToList();
+            return Enumerable.Repeat(sticker, NbCells()).ToList();
+        }
+
+        // TODO change type of selectedSticker?
+        int discriminator = 0;
+        int signOfDiscriminator = 0;
+        for(int i = 0 ; i < 4 ; i++){
+            if(Mathf.Abs(selectedSticker.GetCoordinates()[i])==1){
+                signOfDiscriminator = (int) selectedSticker.GetCoordinates()[i];
+                discriminator = i;
+            }
+        }
+
+        List<List<bool>> toBeRotated = new List<List<bool>>();
+        for (int i = 0 ; i < NbCells(); i++){
+            toBeRotated.Add(new List<bool>());
+            for(int j = 0 ; j < NbStickers(i); j++){
+                if(signOfDiscriminator*GetSticker(i,j)[discriminator]>0){
+                    toBeRotated[i].Add(true);
+                }else{
+                    toBeRotated[i].Add(false);
+                }
+            }
+        }
+        return toBeRotated;
     }
 
     // --- Getter and Setter
