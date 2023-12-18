@@ -118,6 +118,10 @@ public class GameManager : MonoBehaviour { // == main
         _cubeRotating = true;
     }
 
+    /// <summary>
+    /// Handles rotations on each frame.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator RotationHandler() { // TODO directly in Animation.cs?
         while (true) {
             if (!_cubeRotating) {

@@ -54,15 +54,15 @@ public class SelectSticker : MonoBehaviour {
         return baseColor;
     }
 
-    public void SetBaseColor(Color col){
+    public void SetBaseColor(Color col) {
         baseColor = col;
     }
 
-    public Renderer GetRend(){
+    public Renderer GetRend() {
         return rend;
     }
 
-    public void SetRend(Renderer Rend){
+    public void SetRend(Renderer Rend) {
         rend = Rend;
     }
 
@@ -70,8 +70,7 @@ public class SelectSticker : MonoBehaviour {
         coordinates = Coordinates;
     }
 
-    public Vector4 GetCoordinates(){
+    public Vector4 GetCoordinates() {
         return coordinates;
     }
-
 }
