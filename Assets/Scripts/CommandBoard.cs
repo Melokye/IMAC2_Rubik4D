@@ -22,7 +22,10 @@ public class CommandBoard : MonoBehaviour {
 
     // Update is called once per frame
     void Update() { }
-
+    /// <summary>
+    /// Toggle the selection via the command board.
+    /// </summary>
+    /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
     public void changeSelection(GameObject selected) {
         Debug.Log(selected.name);
         if(selected.name == "Right") {
@@ -51,7 +54,10 @@ public class CommandBoard : MonoBehaviour {
         }
     }
 
-
+    /// <summary>
+    /// Lanch the selected rotation onClick on the bounded buttons of the command board.
+    /// </summary>
+    /// <param name="selected">The rotation plane selected by the user.</param>
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
         if (!handler.GetRotateFlag() & !buffer.GetInputingFlag()) {
@@ -74,6 +80,9 @@ public class CommandBoard : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Invert the upcomming rotations. 
+    /// </summary>
     public void ChangeClock() {
         clockwise = !clockwise;
     }

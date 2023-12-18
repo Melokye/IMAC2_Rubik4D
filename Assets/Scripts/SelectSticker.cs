@@ -20,13 +20,18 @@ public class SelectSticker : MonoBehaviour {
         baseColor = rend.material.color;
     }
     
-    
+    /// <summary>
+    /// A Raycasting Function to temporary hover the user's selection.
+    /// Changes the color of hovered sticker. Currently the selection is yellow.
+    /// </summary>
     void OnMouseOver() {
         rend.material.color = Color.yellow;
         SelectSticker.hovered = true;
     }
 
-    
+    /// <summary>
+    /// A Raycasting Function to visually unhover the precedent selection.
+    /// </summary>
     void OnMouseExit() {
         if (handler.GetSelection() != this) {
             rend.material.color = baseColor;
@@ -34,7 +39,9 @@ public class SelectSticker : MonoBehaviour {
         SelectSticker.hovered = false;
     }
 
-    
+    /// <summary>
+    /// A Raycasting, onClick function to permanently hover the user's selection.
+    /// </summary>
     void OnMouseDown() {
         if (handler.GetSelection() != null) {
             SelectSticker tmp = handler.GetSelection();
@@ -46,6 +53,9 @@ public class SelectSticker : MonoBehaviour {
         SelectSticker.selectedCoordinates = this.coordinates;
     }
 
+    /// <summary>
+    /// Handle the deselection, when clicking away.
+    /// </summary>
     void Update() {
         if (!SelectSticker.hovered && Input.GetMouseButtonDown(0)) {
             SelectSticker tmp = handler.GetSelection();
@@ -58,30 +68,50 @@ public class SelectSticker : MonoBehaviour {
     }
     
     /// <summary>
-    /// Getter for the originla </parameter> color, of the sticker before hovering.
+    /// Getter of the original color of the sticker, before hovering.
     /// </summary>
     /// <returns></returns>
     public Color GetBaseColor() {
         return baseColor;
     }
 
+    /// <summary>
+    /// A simple setter of the original color of the sticker, without hovering.
+    /// </summary>
+    /// <param name="col"> A Unity.color to set from. </param>
     public void SetBaseColor(Color col) {
         baseColor = col;
     }
 
+    /// <summary>
+    /// Getter of the renderer of the Unity.gameObject.
+    /// </summary>
+    /// <returns></returns>
     public Renderer GetRend() {
         return rend;
     }
 
+    /// <summary>
+    /// Setter of the renderer of the Unity.gameObject.
+    /// </summary>
+    /// <param name="Rend"> The mesh renderer of the Unity.gameObject. </param>
     public void SetRend(Renderer Rend) {
         rend = Rend;
     }
 
-    public void SetCoordinates(Vector4 Coordinates) {
-        coordinates = Coordinates;
-    }
-
+    /// <summary>
+    /// Getter of the 4D coordinates of the sticker.
+    /// </summary>
+    /// <returns></returns>
     public Vector4 GetCoordinates() {
         return coordinates;
+    }
+
+    /// <summary>
+    /// Setter of the 4D coordinates of the sticker.
+    /// </summary>
+    /// <param name="Coordinates"> A Unity.Vector4 to set from. </param>
+    public void SetCoordinates(Vector4 Coordinates) {
+        coordinates = Coordinates;
     }
 }

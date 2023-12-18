@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+/// <summary>
+/// The script that computes all possible rotation.
+/// </summary>
 public class UserInput : MonoBehaviour
 {
 
@@ -36,7 +38,10 @@ public class UserInput : MonoBehaviour
             ApplyRotation();
         }
     }
-    
+    /// <summary>
+    /// With a selected sticker selected by the user, computes all the 6 rotations possible (3 trigonometric and 3 antitrigonometric).
+    /// </summary>
+    /// <returns> A list of the possible rotations. They are string in the form "XY", "WZ", etc...</returns>
     public List<string> PossibleRotation() {
         List<string> nameOfRotations = new List<string>();
         if(handler.GetSelection()!=null){
@@ -59,7 +64,9 @@ public class UserInput : MonoBehaviour
         }
         return nameOfRotations;
     }
-
+    /// <summary>
+    /// Toggles the possible rotations within the UI. 
+    /// </summary>
     private void setRotationsActive(){
         if(handler.GetSelection()!=null) {
             List<string> rotations = PossibleRotation();
@@ -82,6 +89,10 @@ public class UserInput : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Launching rotations given certain user input (arrow keys or awd keys).
+    /// </summary>
     private void ApplyRotation(){
         nameOfRotation = PossibleRotation();
         int axis1=0;
