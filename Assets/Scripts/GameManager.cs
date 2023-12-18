@@ -128,8 +128,8 @@ public class GameManager : MonoBehaviour { // == main
                 yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
             }else {
-                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedSticker, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
-                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedSticker);
+                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedCell, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
+                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedCell);
                 if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {

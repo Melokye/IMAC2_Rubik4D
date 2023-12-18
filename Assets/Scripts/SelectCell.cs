@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SelectCell : MonoBehaviour {
-    //[SerializeField]
-    //private Vector4 coordinates;
-    //public static Vector4 selectedCoordinates;
+    [SerializeField]
+    private Vector4 coordinates;
+    public static Vector4 selectedCoordinates;
     private Renderer rend;
     private Color baseColor;
     private static bool hovered;
@@ -54,7 +54,7 @@ public class SelectCell : MonoBehaviour {
         rend.enabled = true;
         rend.material.color = Color.yellow;
         handler.SetterSelectionCell(this);
-        //SelectCell.selectedCoordinates = this.coordinates;
+        SelectCell.selectedCoordinates = this.coordinates;
     }
 
     /// <summary>
@@ -106,15 +106,15 @@ public class SelectCell : MonoBehaviour {
     /// Getter of the 4D coordinates of the sticker.
     /// </summary>
     /// <returns></returns>
-    //public Vector4 GetCoordinates() {
-    //   return coordinates;
-    //}
+    public Vector4 GetCoordinates() {
+       return coordinates;
+    }
 
     /// <summary>
     /// Setter of the 4D coordinates of the sticker.
     /// </summary>
     /// <param name="Coordinates"> A Unity.Vector4 to set from. </param>
-    //public void SetCoordinates(Vector4 Coordinates) {
-    //    coordinates = Coordinates;
-    //}
+    public void SetCoordinates(Vector4 Coordinates) {
+        coordinates = Coordinates;
+    }
 }

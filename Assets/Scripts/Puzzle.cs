@@ -57,20 +57,23 @@ public class Puzzle {
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
+            // add mesh
+            cell.AddComponent<MeshFilter>();
+            cell.GetComponent<MeshFilter>().mesh = mesh;
+
             // add material
             Material cellMat = Resources.Load("_Select", typeof(Material)) as Material;
             cell.AddComponent<MeshRenderer>();
             cell.GetComponent<Renderer>().material = cellMat;
-            cell.GetComponent<Renderer>().enabled = false;
-
-            // add the Select Script
-            cell.AddComponent<SelectCell>();
-            //cell.GetComponent<SelectCell>().SetCoordinates(GetSticker(i, j));
-            cell.AddComponent<MeshCollider>();
 
             Vector4 cellPosition = Vector4.zero;
             int iCell = Mathf.FloorToInt(i * 0.5f);
             cellPosition[iCell] = 1 - (2 * (i % 2));
+
+            // add the Select Script
+            cell.AddComponent<SelectCell>();
+            cell.GetComponent<SelectCell>().SetCoordinates(cellPosition);
+            cell.AddComponent<MeshCollider>();
 
             cell.transform.localScale = 0.5f * Vector3.one; 
             cell.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * cellPosition);
@@ -91,8 +94,8 @@ public class Puzzle {
                 sticker.GetComponent<Renderer>().material = stickerMat;
 
                 // add the Select Script
-                //sticker.AddComponent<SelectSticker>();
-                //sticker.GetComponent<SelectSticker>().SetCoordinates(GetSticker(i, j));
+                sticker.AddComponent<SelectSticker>();
+                sticker.GetComponent<SelectSticker>().SetCoordinates(GetSticker(i, j));
                 //sticker.AddComponent<MeshCollider>();
 
                 // place these points in the space
@@ -108,19 +111,19 @@ public class Puzzle {
     /// // TODO explain a little bit this function
     /// </summary>
     /// <returns></returns>
-    public List<List<bool>> whosGunnaRotate(SelectSticker selectedSticker = null) {
+    public List<List<bool>> whosGunnaRotate(SelectCell selectedCell = null) {
         // List<List<bool>> toBeRotated = new List<List<bool>>();
-        if (selectedSticker == null) { // TODO need optimisation
+        if (selectedCell == null) { // TODO need optimisation
             List<bool> sticker = Enumerable.Repeat(true, NbStickers(0)).ToList();
             return Enumerable.Repeat(sticker, NbCells()).ToList();
         }
 
-        // TODO change type of selectedSticker?
+        // TODO change type of selectedCell?
         int discriminator = 0;
         int signOfDiscriminator = 0;
         for (int i = 0; i < 4; i++) {
-            if (Mathf.Abs(selectedSticker.GetCoordinates()[i]) == 1) {
-                signOfDiscriminator = (int)selectedSticker.GetCoordinates()[i];
+            if (Mathf.Abs(selectedCell.GetCoordinates()[i]) == 1) {
+                signOfDiscriminator = (int)selectedCell.GetCoordinates()[i];
                 discriminator = i;
             }
         }

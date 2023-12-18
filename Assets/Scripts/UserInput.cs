@@ -34,7 +34,7 @@ public class UserInput : MonoBehaviour
     // Update is called once per frame
     void Update() {
         setRotationsActive();
-        if (handler.GetSelection() != null) {
+        if (handler.GetSelectionCell() != null) {
             ApplyRotation();
         }
     }
@@ -44,12 +44,12 @@ public class UserInput : MonoBehaviour
     /// <returns> A list of the possible rotations. They are string in the form "XY", "WZ", etc...</returns>
     public List<string> PossibleRotation() {
         List<string> nameOfRotations = new List<string>();
-        if (handler.GetSelection() != null) {
+        if (handler.GetSelectionCell() != null) {
             List<Vector2> pR = new List<Vector2>(0); ;
 
             int usefulIndex = 0;
             for (int i = 0; i < 4; i++) {
-                if (Mathf.Abs(handler.GetSelection().GetCoordinates()[i]) == 1) {
+                if (Mathf.Abs(handler.GetSelectionCell().GetCoordinates()[i]) == 1) {
                     usefulIndex = i;
                 }
             }
@@ -68,7 +68,7 @@ public class UserInput : MonoBehaviour
     /// Toggles the possible rotations within the UI. 
     /// </summary>
     private void setRotationsActive() {
-        if (handler.GetSelection() != null) {
+        if (handler.GetSelectionCell() != null) {
             unselect.GetComponent<Button>().interactable = true;
             List<string> rotations = PossibleRotation();
             for (int i = 0; i < 6; i++) {
@@ -103,7 +103,7 @@ public class UserInput : MonoBehaviour
             axis1 = Geometry.CharToInt(nameOfRotation[0][0]);
             axis2 = Geometry.CharToInt(nameOfRotation[0][1]);
             handler.SetPlane(axis1, axis2);
-            buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
+            buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelectionCell() });
             handler.LaunchRotation();
         }
         if ((Input.GetKeyDown(KeyCode.W) | Input.GetKeyDown(KeyCode.UpArrow)) & !handler.GetRotateFlag()) {
@@ -111,7 +111,7 @@ public class UserInput : MonoBehaviour
             axis2 = Geometry.CharToInt(nameOfRotation[1][1]);
 
             handler.SetPlane(axis1, axis2);
-            buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
+            buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelectionCell() });
             handler.LaunchRotation();
         }
         if ((Input.GetKeyDown(KeyCode.D) | Input.GetKeyDown(KeyCode.RightArrow)) & !handler.GetRotateFlag()) {
@@ -119,7 +119,7 @@ public class UserInput : MonoBehaviour
             axis2 = Geometry.CharToInt(nameOfRotation[2][1]);
 
             handler.SetPlane(axis1, axis2);
-            buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
+            buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelectionCell() });
             handler.LaunchRotation();
         }
     }
