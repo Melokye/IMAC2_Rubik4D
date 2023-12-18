@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 class RingsRepresentation: MonoBehaviour{
     private static float trailWidth = 0.0078125f;
@@ -103,6 +104,12 @@ class RingsRepresentation: MonoBehaviour{
 
         // add vertices
         mesh.vertices = vertices.ToArray();
+
+        // add colors for transparency
+        var transparencyValues = vertices.Select(vec => Mathf.Clamp(1f
+            - Vector3.Distance(vec, Vector3.zero) / 20f, 0f, 1f)).ToArray();
+        Color[] colorArray = transparencyValues.Select(value => new Color(1.0f, 1.0f, 1.0f, value)).ToArray();
+        mesh.colors = colorArray;
 
         // create uvs
         Vector2[] uvs = new Vector2[vertices.Count];
