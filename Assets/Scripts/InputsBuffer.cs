@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // TODO reduce dependancies with GameManager
-// TODO rename file into Solver.cs?
+// TODO rename file into Solver.cs
+
+/// <summary>
+/// Keep trace of all the user or mixer rotations to undo them in case of solving.
+/// Solver and Mixer.
+/// </summary>
 public class InputsBuffer: MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
@@ -40,12 +45,13 @@ public class InputsBuffer: MonoBehaviour {
             inputing = true;
         }
     }
-
-    public void Scrambler(ref List<List<object>> mixed) {
-        // Generation of a 50 entries set of inputs.
-        // For each entry must be specified 2 values :
-        // axis1 (0,1,2,3), axis2 (0,1,2,3)
-        // rotation speed will remain untouched.
+    
+    /// <summary>
+    /// Generates a 50 long sequence of rotations.
+    /// To be injected next in the inputBuffer.
+    /// </summary>
+    public void Scrambler() {
+        // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
         System.Random rnd = new System.Random();
@@ -55,14 +61,22 @@ public class InputsBuffer: MonoBehaviour {
             mixed.Add(new List<object>(){axis1,axis2});
         }
     }
-
+    /// <summary>
+    /// Injects a single command in the GameManager.
+    /// </summary>
+    /// <param name="command">A command is a set of three things : two axis to set a rotation and a selectSticker to set the selection.</param>
     public void InjectInput(in List<object> command) {
-        // handler.targets.Clear();
         handler.axis1 = (int)command[0];
         handler.axis2 = (int)command[1];
         handler.SetterSelection((SelectSticker)command[2]);
     }
 
+    /// <summary>
+    /// Used as a coroutine, it listens wether some chunk of commands are to be injected or not.
+    /// If this is the case, for each of the commands it will launch the matching animation and update the sticker positions.
+    /// The rotation speed is increased not to make the user leave from boredom.
+    /// </summary>
+    /// <returns>As I recall, nothing eheh.</returns>
     private IEnumerator RotationHandler() {
         // TODO try to delete this function? just change the rotationSpeed to 6.
         while (true) {
@@ -92,18 +106,11 @@ public class InputsBuffer: MonoBehaviour {
             }
         }
     }
-
     /// <summary>
-    /// TODO For debug purpose, must move it in another file?
+    /// Getter of the inputing flag.
     /// </summary>
-    /// <param name="list"></param>
-    void DebugLength(in List<List<int>> list) {
-        int cmp = 0;
-        foreach (var entry in list) {
-            cmp++;
-        }
-    }
-
+    /// <returns>A bool : if true, animations are still running
+    ///                   if false, well we good to go.</returns>
     public bool GetInputingFlag() {
         return inputing;
     }

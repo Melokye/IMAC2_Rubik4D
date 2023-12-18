@@ -7,7 +7,6 @@ public class CommandBoard : MonoBehaviour {
     InputsBuffer buffer;
     bool clockwise = true;
 
-
     // Start is called before the first frame update
     void Start() {
         // Connect the handler with the game manager
@@ -16,43 +15,23 @@ public class CommandBoard : MonoBehaviour {
 
         tmp = GameObject.Find("TrivialSolver");
         buffer = tmp.GetComponent<InputsBuffer>();
-
-
     }
 
     // Update is called once per frame
-    void Update() { }
+    void Update() {}
 
+    /// <summary>
+    /// Toggle the selection via the command board.
+    /// </summary>
+    /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
     public void changeSelection(GameObject selected) {
-        Debug.Log(selected.name);
-        // TODO suggestion : handler.SetterSelection(GameObject.Find(selected.name + "_0").GetComponent<SelectSticker>());
-        if(selected.name == "Right") {
-            handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
-        }
-        if(selected.name == "Left") {
-            handler.SetterSelection(GameObject.Find("Left_0").GetComponent<SelectSticker>());
-        }
-        if(selected.name == "Up") {
-            handler.SetterSelection(GameObject.Find("Up_0").GetComponent<SelectSticker>());
-        }
-        if(selected.name == "Down") {
-            handler.SetterSelection(GameObject.Find("Down_0").GetComponent<SelectSticker>());
-        }
-        if(selected.name == "Back") {
-            handler.SetterSelection(GameObject.Find("Back_0").GetComponent<SelectSticker>());
-        }
-        if(selected.name == "Front") {
-            handler.SetterSelection(GameObject.Find("Front_0").GetComponent<SelectSticker>());
-        }
-        if(selected.name == "Inside") {
-            handler.SetterSelection(GameObject.Find("Inside_0").GetComponent<SelectSticker>());
-        }
-        if(selected.name == "Outside") {
-            handler.SetterSelection(GameObject.Find("Outside_0").GetComponent<SelectSticker>());
-        }
+        handler.SetterSelection(GameObject.Find(selected.name + "_0").GetComponent<SelectSticker>());
     }
 
-
+    /// <summary>
+    /// Lanch the selected rotation onClick on the bounded buttons of the command board.
+    /// </summary>
+    /// <param name="selected">The rotation plane selected by the user.</param>
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
         if (!handler.GetRotateFlag() & !buffer.GetInputingFlag()) {
@@ -73,6 +52,15 @@ public class CommandBoard : MonoBehaviour {
 
             handler.LaunchRotation();
         }
+    }
+
+    public void ToggleCommandBoard() {
+        GameObject panel = transform.GetChild(0).gameObject;
+        panel.SetActive(!panel.activeSelf);
+    }
+
+    public void UnselectSticker() {
+        handler.SetterSelection(null);
     }
 
     public void ChangeClock() {

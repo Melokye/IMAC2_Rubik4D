@@ -112,7 +112,7 @@ class Geometry {
     /// <summary>
     /// Projects a 4D vector into 3D
     /// </summary>
-    /// <param name="p"></param>
+    /// <param name="point"></param>
     /// <returns></returns>
     public static Vector4 Projection4DTo3D(Vector4 point) {
         // Vector4 point = new Vector4(p.x, p.y, p.z, p.w);
