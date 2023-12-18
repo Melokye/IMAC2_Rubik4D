@@ -171,6 +171,7 @@ MonoBehaviour:
   puzzle: {fileID: 0}
   cameraArray: []
   selectedSticker: {fileID: 0}
+  selectedCell: {fileID: 0}
   axis1: 0
   axis2: 1
   sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}

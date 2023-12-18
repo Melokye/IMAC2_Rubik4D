@@ -26,7 +26,7 @@ public class SelectCell : MonoBehaviour {
     /// </summary>
     void OnMouseOver() {
         rend.enabled = true;
-        rend.material.color = Color.black;
+        rend.material.color = new Color(0, 0, 0, 0.125f);
         SelectCell.hovered = true;
     }
 
@@ -34,7 +34,7 @@ public class SelectCell : MonoBehaviour {
     /// A Raycasting Function to visually unhover the precedent selection.
     /// </summary>
     void OnMouseExit() {
-        if (handler.GetSelection() != this) {
+        if (handler.GetSelectionCell() != this) {
             rend.material.color = baseColor;
             rend.enabled = false;
         }
@@ -45,14 +45,14 @@ public class SelectCell : MonoBehaviour {
     /// A Raycasting, onClick function to permanently hover the user's selection.
     /// </summary>
     void OnMouseDown() {
-        if (handler.GetSelection() != null) {
+        if (handler.GetSelectionCell() != null) {
             SelectCell tmp = handler.GetSelectionCell();
             tmp.rend.enabled = false;
             tmp.rend.material.color = tmp.baseColor;
             handler.SetterSelectionCell(tmp);
         }
         rend.enabled = true;
-        rend.material.color = Color.yellow;
+        rend.material.color = baseColor;
         handler.SetterSelectionCell(this);
         SelectCell.selectedCoordinates = this.coordinates;
     }
@@ -61,11 +61,10 @@ public class SelectCell : MonoBehaviour {
     /// Handle the deselection, when clicking away.
     /// </summary>
     void Update() {
-        if (!SelectCell.hovered && Input.GetMouseButtonDown(0)) {
+        if (!SelectCell.hovered) {
             SelectCell tmp = handler.GetSelectionCell();
             if (tmp != null) {
                 tmp.rend.material.color = tmp.baseColor;
-                handler.SetterSelectionCell(tmp);
             }
         }
     }

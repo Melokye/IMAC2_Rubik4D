@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq; // to use Enumerable
+using System.Linq;
+using UnityEngine.Rendering; // to use Enumerable
 
 public class Puzzle {
     List<string> _names = new List<string>() {
@@ -64,7 +65,12 @@ public class Puzzle {
             // add material
             Material cellMat = Resources.Load("_Select", typeof(Material)) as Material;
             cell.AddComponent<MeshRenderer>();
+            // TODO: fix this, not working currently
+            /*cell.AddComponent<MeshRenderer>().shader.shadowCastingMode = ShadowCastingMode.Off;
+            cell.AddComponent<MeshRenderer>().receiveShadows = false;
+            cell.AddComponent<MeshRenderer>().allowOcclusionWhenDynamic = false;*/
             cell.GetComponent<Renderer>().material = cellMat;
+            cell.GetComponent<Renderer>().enabled = false;
 
             Vector4 cellPosition = Vector4.zero;
             int iCell = Mathf.FloorToInt(i * 0.5f);
@@ -75,8 +81,9 @@ public class Puzzle {
             cell.GetComponent<SelectCell>().SetCoordinates(cellPosition);
             cell.AddComponent<MeshCollider>();
 
-            cell.transform.localScale = 0.5f * Vector3.one; 
             cell.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * cellPosition);
+            cell.transform.localScale = 0.6f * (float)Math.Sqrt(
+                Vector3.Distance(cell.transform.position, Vector3.zero) + 1) * Vector3.one;
 
             // place these points in the space
             cell.transform.parent = puzzle.transform;

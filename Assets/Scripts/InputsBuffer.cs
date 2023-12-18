@@ -29,7 +29,7 @@ public class InputsBuffer: MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (Input.GetKeyDown(KeyCode.R)) {
-            List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelection() };
+            List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelectionCell() };
             inputsBuffer.Add(Entry);
             // debugLength(inputsBuffer); // TODO
         }
@@ -72,7 +72,7 @@ public class InputsBuffer: MonoBehaviour {
         //debugLength(commands); // TODO
         handler.axis1 = (int)command[0];
         handler.axis2 = (int)command[1];
-        handler.SetterSelection((SelectSticker)command[2]);
+        handler.SetterSelectionCell((SelectCell)command[2]);
     }
 
     /// <summary>

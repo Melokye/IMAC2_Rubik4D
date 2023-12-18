@@ -66,11 +66,11 @@ public class CommandBoard : MonoBehaviour {
             // Insert axis in the GameManager
             if (clockwise) {
                 handler.SetPlane(Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]));
-                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]), handler.GetSelection() });
+                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]), handler.GetSelectionCell() });
             }
             else {
                 handler.SetPlane(Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]));
-                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]), handler.GetSelection() });
+                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]), handler.GetSelectionCell() });
             }
 
             handler.LaunchRotation();
@@ -83,6 +83,7 @@ public class CommandBoard : MonoBehaviour {
     }
 
     public void UnselectSticker() {
+        handler.selectedCell.GetComponent<Renderer>().enabled = false;
         handler.SetterSelectionCell(null);
     }
 

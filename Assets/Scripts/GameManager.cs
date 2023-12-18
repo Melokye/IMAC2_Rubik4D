@@ -93,10 +93,15 @@ public class GameManager : MonoBehaviour { // == main
             if (Input.GetKeyDown(KeyCode.P)) {
                 GameObject circleContainer = GameObject.Find("CircleContainer");
                 GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
+                GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
                 SetLayerAllChildren(circleContainer.transform,
                     (circleContainer.layer + 3) % 6);
                 SetLayerAllChildren(circleContainer_UI.transform,
                     (circleContainer_UI.layer + 3) % 6);
+                SetLayerDirectChildrenNoRoot(puzzle.transform,
+                    (puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
+                SetLayerDirectChildrenNoRoot(puzzle_UI.transform,
+                    (puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
                 ChangeProjection();
             }
         }
@@ -235,6 +240,17 @@ public class GameManager : MonoBehaviour { // == main
         var children = root.GetComponentsInChildren<Transform>(includeInactive: true);
         foreach (var child in children) {
             //Debug.Log(child.name);
+            child.gameObject.layer = layer;
+        }
+    }
+
+    /// <summary>
+    /// Sets display Layer of direct children
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="layer"></param>
+    public void SetLayerDirectChildrenNoRoot(Transform root, int layer) {
+        foreach (Transform child in root) {
             child.gameObject.layer = layer;
         }
     }
