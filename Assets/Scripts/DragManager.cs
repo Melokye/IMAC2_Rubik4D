@@ -17,20 +17,38 @@ public class DragManager : MonoBehaviour {
         SetBoundingBoxRect(_dragLayer);
     }
 
+    /// <summary>
+    /// Move dragged object to the dragLayer parent
+    /// </summary>
+    /// <param name="drag"></param>
     public void RegisterDraggedObject(DragObject drag) {
         _currentDraggedObject = drag;
         drag.transform.SetParent(_dragLayer);
     }
 
+    /// <summary>
+    /// Move released dragged object back to the defaultLayer parent
+    /// </summary>
+    /// <param name="drag"></param>
     public void UnregisterDraggedObject(DragObject drag) {
         drag.transform.SetParent(_defaultLayer);
         _currentDraggedObject = null;
     }
 
+    /// <summary>
+    /// Not exactly sure what this one does, but sure.
+    /// Currently unused.
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public bool IsWithinBounds(Vector2 position) {
         return _boundingBox.Contains(position);
     }
 
+    /// <summary>
+    /// Another useless piece of code
+    /// </summary>
+    /// <param name="rectTransform"></param>
     private void SetBoundingBoxRect(RectTransform rectTransform) {
         var corners = new Vector3[4];
         rectTransform.GetWorldCorners(corners);
