@@ -40,13 +40,6 @@ public class GameManager : MonoBehaviour { // == main
     private int cameraRotationMode = 0;
     public static Matrix4x4 cameraRotation = specialProjection;
 
-    // secondary rotation matrix to eventually use later
-    public static Matrix4x4 colorAssignment = new Matrix4x4(
-        new Vector4(1, 0, 0, 0),
-        new Vector4(0, 1, 0, 0),
-        new Vector4(0, 0, 1, 0),
-        new Vector4(0, 0, 0, 1));
-
     /// <summary>
     /// Awake is called automatically before the function Start
     /// </summary>
@@ -94,10 +87,13 @@ public class GameManager : MonoBehaviour { // == main
             }*/
             // For each camera in the scene, toggle both relevant culling masks
             if (Input.GetKeyDown(KeyCode.P)) {
-                foreach (Camera camera in cameraArray) {
-                    ToggleCameraCullingMask(camera, "Default");
-                    ToggleCameraCullingMask(camera, "UIPuzzleView");
-                }
+                GameObject circleContainer = GameObject.Find("CircleContainer");
+                GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
+                SetLayerAllChildren(circleContainer.transform,
+                    (circleContainer.layer + 3) % 6);
+                SetLayerAllChildren(circleContainer_UI.transform,
+                    (circleContainer_UI.layer + 3) % 6);
+                ChangeProjection();
             }
         }
         // At all times, there are two puzzle game objects.
@@ -182,7 +178,7 @@ public class GameManager : MonoBehaviour { // == main
             Transform cell = gameObject.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Geometry.Projection4DTo3D(cameraRotation * colorAssignment * p.GetSticker(i, j));
+                sticker.position = Geometry.Projection4DTo3D(cameraRotation * p.GetSticker(i, j));
             }
         }
     }

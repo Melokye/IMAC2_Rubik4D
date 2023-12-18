@@ -53,7 +53,6 @@ public class SelectSticker : MonoBehaviour {
                 tmp.rend.material.color = tmp.baseColor;
                 handler.SetterSelection(tmp);
             }
-            handler.SetterSelection(null);
         }
     }
     
