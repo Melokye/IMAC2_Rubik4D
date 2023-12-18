@@ -40,7 +40,7 @@ public class Puzzle {
                     temp.z = Mathf.Lerp(-1f, 1f,
                         (j % n) / (n - 1f));
                 }
-                Vector4 sticker = new Vector4(0, 0, 0, 0);
+                Vector4 sticker = Vector4.zero;
                 sticker = Geometry.InsertFloat(temp / stickerDistance, cell[iCell], iCell);
                 _stickers[i].Add(sticker);
             }
@@ -57,6 +57,24 @@ public class Puzzle {
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
+            // add material
+            Material cellMat = Resources.Load("_Select", typeof(Material)) as Material;
+            cell.AddComponent<MeshRenderer>();
+            cell.GetComponent<Renderer>().material = cellMat;
+            cell.GetComponent<Renderer>().enabled = false;
+
+            // add the Select Script
+            cell.AddComponent<SelectCell>();
+            //cell.GetComponent<SelectCell>().SetCoordinates(GetSticker(i, j));
+            cell.AddComponent<MeshCollider>();
+
+            Vector4 cellPosition = Vector4.zero;
+            int iCell = Mathf.FloorToInt(i * 0.5f);
+            cellPosition[iCell] = 1 - (2 * (i % 2));
+
+            cell.transform.localScale = 0.5f * Vector3.one; 
+            cell.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * cellPosition);
+
             // place these points in the space
             cell.transform.parent = puzzle.transform;
             for (int j = 0; j < NbStickers(i); j++) {
@@ -72,10 +90,10 @@ public class Puzzle {
                 sticker.AddComponent<MeshRenderer>();
                 sticker.GetComponent<Renderer>().material = stickerMat;
 
-                // add the Select Scipt
-                sticker.AddComponent<SelectSticker>();
-                sticker.GetComponent<SelectSticker>().SetCoordinates(GetSticker(i, j));
-                sticker.AddComponent<MeshCollider>();
+                // add the Select Script
+                //sticker.AddComponent<SelectSticker>();
+                //sticker.GetComponent<SelectSticker>().SetCoordinates(GetSticker(i, j));
+                //sticker.AddComponent<MeshCollider>();
 
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
@@ -92,7 +110,7 @@ public class Puzzle {
     /// <returns></returns>
     public List<List<bool>> whosGunnaRotate(SelectSticker selectedSticker = null) {
         // List<List<bool>> toBeRotated = new List<List<bool>>();
-        if(selectedSticker == null){ // TODO need optimisation
+        if (selectedSticker == null) { // TODO need optimisation
             List<bool> sticker = Enumerable.Repeat(true, NbStickers(0)).ToList();
             return Enumerable.Repeat(sticker, NbCells()).ToList();
         }
@@ -100,20 +118,21 @@ public class Puzzle {
         // TODO change type of selectedSticker?
         int discriminator = 0;
         int signOfDiscriminator = 0;
-        for(int i = 0 ; i < 4 ; i++){
-            if(Mathf.Abs(selectedSticker.GetCoordinates()[i])==1){
-                signOfDiscriminator = (int) selectedSticker.GetCoordinates()[i];
+        for (int i = 0; i < 4; i++) {
+            if (Mathf.Abs(selectedSticker.GetCoordinates()[i]) == 1) {
+                signOfDiscriminator = (int)selectedSticker.GetCoordinates()[i];
                 discriminator = i;
             }
         }
 
         List<List<bool>> toBeRotated = new List<List<bool>>();
-        for (int i = 0 ; i < NbCells(); i++){
+        for (int i = 0; i < NbCells(); i++) {
             toBeRotated.Add(new List<bool>());
-            for(int j = 0 ; j < NbStickers(i); j++){
-                if(signOfDiscriminator*GetSticker(i,j)[discriminator]>0){
+            for (int j = 0; j < NbStickers(i); j++) {
+                if (signOfDiscriminator * GetSticker(i, j)[discriminator] > 0) {
                     toBeRotated[i].Add(true);
-                }else{
+                }
+                else {
                     toBeRotated[i].Add(false);
                 }
             }

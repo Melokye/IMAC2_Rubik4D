@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour { // == main
 
     [SerializeField]
     public SelectSticker selectedSticker; // TODO private
+    public SelectCell selectedCell; // TODO private
 
     // TODO for debug / test purpose?
     public int axis1 = 0;
@@ -62,14 +63,16 @@ public class GameManager : MonoBehaviour { // == main
         GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
 
         // Creates the dupe puzzle to display the classical view in a UI
-        GameObject puzzleDuplicate = Instantiate(puzzle);
-        puzzleDuplicate.name = "Puzzle_UI";
+        ChangeProjection(); // Swap to classical view
+        GameObject puzzle_UI = p.RenderStickers(sphereMesh, stickerSize);
+        puzzle_UI.name = "Puzzle_UI";
+        puzzle_UI.tag = "Puzzle";
 
-        SetLayerAllChildren(puzzleDuplicate.transform, 3); // Change layer for camera view
-        ChangeProjection(); // Change projection to classical view to render the circles
+        SetLayerAllChildren(puzzle_UI.transform, 3); // Change layer for camera view
         GameObject circleContainer_UI = RingsRepresentation.RenderCircles("CircleContainer_UI", p);
-        ChangeProjection(); // Change back projection for the first Update() frame cycle
         SetLayerAllChildren(circleContainer_UI.transform, 3);
+
+        ChangeProjection(); // Change back projection for the first Update() frame cycle
     }
 
     /// <summary>
@@ -199,8 +202,16 @@ public class GameManager : MonoBehaviour { // == main
         selectedSticker = selection;
     }
 
+    public void SetterSelectionCell(SelectCell selection) {
+        selectedCell = selection;
+    }
+
     public SelectSticker GetSelection() {
         return selectedSticker;
+    }
+
+    public SelectCell GetSelectionCell() {
+        return selectedCell;
     }
 
     /// <summary>

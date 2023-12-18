@@ -43,12 +43,13 @@ public class InputsBuffer: MonoBehaviour {
             //Debug.Log("Done solving"); // TODO
         }
     }
-
+    
+    /// <summary>
+    /// Generates a 50 long sequence of rotations.
+    /// To be injected next in the inputBuffer.
+    /// </summary>
     public void Scrambler(ref List<List<object>> mixed) {
-        // Generation of a 50 entries set of inputs.
-        // For each entry must be specified 2 values :
-        // axis1 (0,1,2,3), axis2 (0,1,2,3)
-        // rotation speed will remain untouched.
+        // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
         System.Random rnd = new System.Random();

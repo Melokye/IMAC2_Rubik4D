@@ -80,6 +80,15 @@ public class CommandBoard : MonoBehaviour {
         }
     }
 
+    public void ToggleCommandBoard() {
+        GameObject panel = transform.GetChild(0).gameObject;
+        panel.SetActive(!panel.activeSelf);
+    }
+
+    public void UnselectSticker() {
+        handler.SetterSelectionCell(null);
+    }
+
     public void ChangeClock() {
         clockwise = !clockwise;
     }
