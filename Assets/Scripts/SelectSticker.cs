@@ -11,17 +11,22 @@ public class SelectSticker : MonoBehaviour {
     private static bool hovered;
 
     private static GameManager handler;
+    
+    
     // Start is called before the first frame update
     void Start() {
         SelectSticker.handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
         rend = GetComponent<Renderer>();
         baseColor = rend.material.color;
     }
+    
+    
     void OnMouseOver() {
         rend.material.color = Color.yellow;
         SelectSticker.hovered = true;
     }
 
+    
     void OnMouseExit() {
         if (handler.GetSelection() != this) {
             rend.material.color = baseColor;
@@ -29,6 +34,7 @@ public class SelectSticker : MonoBehaviour {
         SelectSticker.hovered = false;
     }
 
+    
     void OnMouseDown() {
         if (handler.GetSelection() != null) {
             SelectSticker tmp = handler.GetSelection();
@@ -47,9 +53,14 @@ public class SelectSticker : MonoBehaviour {
                 tmp.rend.material.color = tmp.baseColor;
                 handler.SetterSelection(tmp);
             }
-            //handler.SetterSelection(null);
+            handler.SetterSelection(null);
         }
     }
+    
+    /// <summary>
+    /// Getter for the originla </parameter> color, of the sticker before hovering.
+    /// </summary>
+    /// <returns></returns>
     public Color GetBaseColor() {
         return baseColor;
     }
