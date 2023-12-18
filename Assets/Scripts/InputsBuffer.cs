@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO delete _attribute used from GameManager.cs
 // TODO reduce dependancies with GameManager
-// TODO rename file into Solver.cs
+// TODO rename file into Solver.cs?
 public class InputsBuffer: MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
     private bool inputing;
     public List<List<object>> inputsBuffer = new List<List<object>>(0);
     List<List<object>> mixed = new List<List<object>>(0);
+
     // Start is called before the first frame update
     void Start() {
         rotationEngine = GameObject.Find("PuzzleGenerator");
@@ -26,21 +26,18 @@ public class InputsBuffer: MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.R)) {
             List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelection() };
             inputsBuffer.Add(Entry);
-            // debugLength(inputsBuffer); // TODO
         }
         if (Input.GetKeyDown(KeyCode.M)) {
-            /*un code qui permet d'executer pleins de rotations d'un coup*/
+            // execute a lot of rotation at once
             inputsBuffer.Clear();
             inputsBuffer.AddRange(mixed);
             mixed.Clear();
             Scrambler(ref mixed);
             inputing = true;
-            // Debug.Log("Done mixing"); // TODO
         }
         if (Input.GetKeyDown(KeyCode.S)) {
-            /*un code qui permet d'executer pleins de rotations d'un coup*/
+            // execute a lot of rotation at once
             inputing = true;
-            //Debug.Log("Done solving"); // TODO
         }
     }
 
@@ -60,7 +57,6 @@ public class InputsBuffer: MonoBehaviour {
     }
 
     public void InjectInput(in List<object> command) {
-        //debugLength(commands); // TODO
         // handler.targets.Clear();
         handler.axis1 = (int)command[0];
         handler.axis2 = (int)command[1];
@@ -97,17 +93,18 @@ public class InputsBuffer: MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// TODO For debug purpose, must move it in another file?
+    /// </summary>
+    /// <param name="list"></param>
     void DebugLength(in List<List<int>> list) {
         int cmp = 0;
         foreach (var entry in list) {
             cmp++;
         }
-        //Debug.Log(cmp);
     }
-
 
     public bool GetInputingFlag() {
         return inputing;
     }
-
 }
