@@ -179,7 +179,7 @@ class RingsRepresentation: MonoBehaviour{
         float angle, bool makeVertices = true) 
     {
         // TODO remove GameManager "attributes"?
-        sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * GameManager.colorAssignment * stickers);
+        sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * stickers);
         if (makeVertices) {
             float vertexX = trailWidth * Mathf.Sin(angle);
             float vertexY = trailWidth * Mathf.Sin(angle);

@@ -7,7 +7,6 @@ public class CommandBoard : MonoBehaviour {
     InputsBuffer buffer;
     bool clockwise = true;
 
-
     // Start is called before the first frame update
     void Start() {
         // Connect the handler with the game manager
@@ -16,8 +15,6 @@ public class CommandBoard : MonoBehaviour {
 
         tmp = GameObject.Find("TrivialSolver");
         buffer = tmp.GetComponent<InputsBuffer>();
-
-
     }
 
     // Update is called once per frame
@@ -28,28 +25,28 @@ public class CommandBoard : MonoBehaviour {
     /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
     public void changeSelection(GameObject selected) {
         Debug.Log(selected.name);
-        if(selected.name == "Right") {
+        if (selected.name == "Right") {
             handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
         }
-        if(selected.name == "Left") {
+        if (selected.name == "Left") {
             handler.SetterSelection(GameObject.Find("Left_0").GetComponent<SelectSticker>());
         }
-        if(selected.name == "Up") {
+        if (selected.name == "Up") {
             handler.SetterSelection(GameObject.Find("Up_0").GetComponent<SelectSticker>());
         }
-        if(selected.name == "Down") {
+        if (selected.name == "Down") {
             handler.SetterSelection(GameObject.Find("Down_0").GetComponent<SelectSticker>());
         }
-        if(selected.name == "Back") {
+        if (selected.name == "Back") {
             handler.SetterSelection(GameObject.Find("Back_0").GetComponent<SelectSticker>());
         }
-        if(selected.name == "Front") {
+        if (selected.name == "Front") {
             handler.SetterSelection(GameObject.Find("Front_0").GetComponent<SelectSticker>());
         }
-        if(selected.name == "Inside") {
+        if (selected.name == "Inside") {
             handler.SetterSelection(GameObject.Find("Inside_0").GetComponent<SelectSticker>());
         }
-        if(selected.name == "Outside") {
+        if (selected.name == "Outside") {
             handler.SetterSelection(GameObject.Find("Outside_0").GetComponent<SelectSticker>());
         }
     }
@@ -80,9 +77,15 @@ public class CommandBoard : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// Invert the upcomming rotations. 
-    /// </summary>
+    public void ToggleCommandBoard() {
+        GameObject panel = transform.GetChild(0).gameObject;
+        panel.SetActive(!panel.activeSelf);
+    }
+
+    public void UnselectSticker() {
+        handler.SetterSelection(null);
+    }
+
     public void ChangeClock() {
         clockwise = !clockwise;
     }
