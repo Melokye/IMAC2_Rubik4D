@@ -20,7 +20,7 @@ public class InputsBuffer: MonoBehaviour {
     void Start() {
         rotationEngine = GameObject.Find("PuzzleGenerator");
         handler = rotationEngine.GetComponent<GameManager>();
-        Scrambler(ref mixed);
+        // Scrambler(ref mixed);
         // inputsBuffer = mixed;
         StartCoroutine(RotationHandler());
         // inputing = true;
@@ -37,7 +37,7 @@ public class InputsBuffer: MonoBehaviour {
             inputsBuffer.Clear();
             inputsBuffer.AddRange(mixed);
             mixed.Clear();
-            Scrambler(ref mixed);
+            // Scrambler(ref mixed);
             inputing = true;
         }
         if (Input.GetKeyDown(KeyCode.S)) {
@@ -61,6 +61,7 @@ public class InputsBuffer: MonoBehaviour {
             mixed.Add(new List<object>(){axis1,axis2});
         }
     }
+
     /// <summary>
     /// Injects a single command in the GameManager.
     /// </summary>
@@ -82,8 +83,7 @@ public class InputsBuffer: MonoBehaviour {
         while (true) {
             if (!inputing) {
                 yield return null;
-            }
-            else {
+            }else {
                 handler.rotationSpeed = 6 ;
                 // TODO need reajustement
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
@@ -106,6 +106,7 @@ public class InputsBuffer: MonoBehaviour {
             }
         }
     }
+
     /// <summary>
     /// Getter of the inputing flag.
     /// </summary>
