@@ -23,7 +23,7 @@ public class CommandBoard : MonoBehaviour {
     /// Toggle the selection via the command board.
     /// </summary>
     /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
-    public void changeSelection(GameObject selected) {
+    /*public void changeSelection(GameObject selected) {
         Debug.Log(selected.name);
         if (selected.name == "Right") {
             handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
@@ -49,7 +49,7 @@ public class CommandBoard : MonoBehaviour {
         if (selected.name == "Outside") {
             handler.SetterSelection(GameObject.Find("Outside_0").GetComponent<SelectSticker>());
         }
-    }
+    }*/
 
     /// <summary>
     /// Lanch the selected rotation onClick on the bounded buttons of the command board.
@@ -86,13 +86,34 @@ public class CommandBoard : MonoBehaviour {
         handler.SetterSelection(null);
     }
 
+    public void ToggleSelectMode() {
+        GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
+        foreach (Transform cell in handler.puzzle.transform) {
+            cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
+            cell.GetComponent<Renderer>().enabled = false;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
+                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+            }
+        }
+        foreach (Transform cell in puzzle_UI.transform) {
+            cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
+            cell.GetComponent<Renderer>().enabled = false;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
+                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+            }
+        }
+        handler.SetterSelection(null);
+    }
+
     public void ChangeClock() {
         clockwise = !clockwise;
     }
     // TODO Note for handling the 1-layer rotation:
     // In 2^4n no matter which sticker you select in the cell, it will always rotate the same thing.
-    // Only the layer that is the closest to the cell selected will rotate. 
-    // Rotations possible for each cell: 
+    // Only the layer that is the closest to the cell selected will rotate.
+    // Rotations possible for each cell:
     // In : x , y , z      : up circles
     // Out : x , y , z     : down circles
 

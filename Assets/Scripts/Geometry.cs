@@ -115,20 +115,31 @@ class Geometry {
     /// <param name="point"></param>
     /// <returns></returns>
     public static Vector4 Projection4DTo3D(Vector4 point) {
-        // Vector4 point = new Vector4(p.x, p.y, p.z, p.w);
-        // temp = cameraRotation * colorAssignment * temp; // TODO move it outside of the fn
         Vector3 projected = Vector3.zero;
 
         // Handle projection to infinity
         if (point.w + 1 != 0) {
-            projected = new Vector3(point.x, point.y, point.z) / (point.w + 1);
+            projected = new Vector3(point.x, point.y, point.z) / (point.w + 1f);
         }else {
             projected = new Vector3(
-                Mathf.Sign(point.x) * Int32.MaxValue,
-                Mathf.Sign(point.y) * Int32.MaxValue,
-                Mathf.Sign(point.z) * Int32.MaxValue
+                Mathf.Sign(point.x) * Int16.MaxValue,
+                Mathf.Sign(point.y) * Int16.MaxValue,
+                Mathf.Sign(point.z) * Int16.MaxValue
             );
         }
+        return projected;
+    }
+
+    /// <summary>
+    /// Projects a 4D vector into 3D orthographically
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public static Vector4 Projection4DTo3DOrthographic(Vector4 point) {
+        // Vector4 point = new Vector4(p.x, p.y, p.z, p.w);
+        // temp = cameraRotation * colorAssignment * temp; // TODO move it outside of the fn
+        Vector3 projected = Vector3.zero;
+        projected = new Vector3(point.x, point.y, point.z);
         return projected;
     }
 }

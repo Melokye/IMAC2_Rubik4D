@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectSticker : MonoBehaviour {
+public class SelectCell : MonoBehaviour {
     [SerializeField]
     private Coords4D coords4D;
     private Renderer rend;
     private Color baseColor;
     private static bool hovered;
-    private static Color selectColor = Color.yellow;
+    private static Color hoverColor = new Color(0f, 0f, 0f, 0.125f);
 
     private static GameManager handler;
     
@@ -16,7 +16,7 @@ public class SelectSticker : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         coords4D = this.gameObject.GetComponent<Coords4D>();
-        SelectSticker.handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
+        SelectCell.handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
         rend = GetComponent<Renderer>();
         baseColor = rend.material.color;
     }
@@ -26,8 +26,9 @@ public class SelectSticker : MonoBehaviour {
     /// Changes the color of hovered sticker. Currently the selection is yellow.
     /// </summary>
     void OnMouseOver() {
-        rend.material.color = selectColor;
-        SelectSticker.hovered = true;
+        rend.enabled = true;
+        rend.material.color = hoverColor;
+        SelectCell.hovered = true;
     }
 
     /// <summary>
@@ -36,20 +37,23 @@ public class SelectSticker : MonoBehaviour {
     void OnMouseExit() {
         if (handler.GetSelection() != this.coords4D) {
             rend.material.color = baseColor;
+            rend.enabled = false;
         }
-        SelectSticker.hovered = false;
+        SelectCell.hovered = false;
     }
 
     /// <summary>
     /// A Raycasting, onClick function to permanently hover the user's selection.
     /// </summary>
     void OnMouseDown() {
-        if (handler.GetSelection() != null && handler.GetSelection().GetComponent<SelectSticker>() != null) {
-            SelectSticker tmp = handler.GetSelection().gameObject.GetComponent<SelectSticker>();
+        if (handler.GetSelection() != null && handler.GetSelection().GetComponent<SelectCell>() != null) {
+            SelectCell tmp = handler.GetSelection().gameObject.GetComponent<SelectCell>();
+            tmp.rend.enabled = false;
             tmp.rend.material.color = tmp.baseColor;
             handler.SetterSelection(tmp.coords4D);
         }
-        rend.material.color = selectColor;
+        rend.enabled = true;
+        rend.material.color = baseColor;
         handler.SetterSelection(this.coords4D);
         Coords4D.selectedCoordinates = this.coords4D.GetCoordinates();
     }
@@ -58,10 +62,15 @@ public class SelectSticker : MonoBehaviour {
     /// Handle the deselection, when clicking away.
     /// </summary>
     void Update() {
-        if (!SelectSticker.hovered && handler.GetSelection() != null) {
-            SelectSticker tmp = handler.GetSelection().gameObject.GetComponent<SelectSticker>();
-            if (tmp != null) {
-                tmp.rend.material.color = selectColor;
+        if (!SelectCell.hovered && handler.GetSelection() != null) {
+            if (handler.GetSelection() != null) {
+                SelectCell tmp = handler.GetSelection().gameObject.GetComponent<SelectCell>();
+                if (tmp != null) {
+                    tmp.rend.material.color = tmp.baseColor;
+                }
+            }
+            else {
+                rend.enabled = false;
             }
         }
     }

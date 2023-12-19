@@ -11,7 +11,7 @@ class Animation {
     /// <summary>
     /// Determine the destination of each sticker
     /// </summary>
-    public static List<List<Vector4>> DefineTargets(Puzzle p, SelectSticker selectedSticker, Geometry.Axis begin, Geometry.Axis end) {
+    public static List<List<Vector4>> DefineTargets(Puzzle p, Coords4D selectedElement, Geometry.Axis begin, Geometry.Axis end) {
         // TODO may be simplified with List<Vector4>?
         List<List<Vector4>> targets = new List<List<Vector4>>();
         Matrix4x4 rotate = Geometry.RotationMatrix(begin, end, 90);
@@ -19,7 +19,7 @@ class Animation {
         for (int i = 0; i < p.NbCells(); i++) {
             targets.Add(new List<Vector4>());
             for (int j = 0; j < p.NbStickers(i); j++) {
-                if (p.whosGunnaRotate(selectedSticker)[i][j]) {
+                if (p.whosGunnaRotate(selectedElement)[i][j]) {
                     targets[i].Add(rotate * p.GetSticker(i, j));
                 }
                 else {
@@ -46,7 +46,7 @@ class Animation {
                 Transform sticker = cell.GetChild(j);
                 if (toBeRotated[i][j] == true) {
                     puzzle.setSticker(i, j, rotate * puzzle.GetSticker(i, j));
-                    sticker.GetComponent<SelectSticker>().SetCoordinates(puzzle.GetSticker(i, j));
+                    sticker.GetComponent<Coords4D>().SetCoordinates(puzzle.GetSticker(i, j));
                 }
             }
         }
@@ -64,7 +64,7 @@ class Animation {
                 Transform sticker = cell.GetChild(j);
                 if (toBeRotated[i][j] == true) {
                     puzzle.setSticker(i, j, targets[i][j]);
-                    sticker.GetComponent<SelectSticker>().SetCoordinates(puzzle.GetSticker(i, j));
+                    sticker.GetComponent<Coords4D>().SetCoordinates(puzzle.GetSticker(i, j));
                 }
             }
         }

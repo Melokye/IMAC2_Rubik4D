@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 class RingsRepresentation: MonoBehaviour{
     private static float trailWidth = 0.0078125f;
@@ -28,11 +29,14 @@ class RingsRepresentation: MonoBehaviour{
             Tuple.Create(2, 3), Tuple.Create(0, 3)
         };
 
+        // TODO: make it work for 3x3x3x3 and above
+        List<int> stickerChoice = new List<int>() { 0, 3, 5, 6 };
+
         // create circles
-        for (int i = 0; i < p.NbStickers(0); i++) {
+        for (int i = 0; i < stickerChoice.Count; i++) {
             // TODO maybe we don't need the loop i
             GameObject tempsticker = new GameObject();
-            Vector4 stickerReference = p.GetSticker(0, i);
+            Vector4 stickerReference = p.GetSticker(0, stickerChoice[i]);
 
             // for all rotations necessary to roam all 6 circles
             for (int j = 0; j < 8; j++) {
@@ -103,6 +107,12 @@ class RingsRepresentation: MonoBehaviour{
 
         // add vertices
         mesh.vertices = vertices.ToArray();
+
+        // add colors for transparency
+        var transparencyValues = vertices.Select(vec => Mathf.Clamp(1f
+            - Vector3.Distance(vec, Vector3.zero) / 20f, 0f, 1f)).ToArray();
+        Color[] colorArray = transparencyValues.Select(value => new Color(1.0f, 1.0f, 1.0f, value)).ToArray();
+        mesh.colors = colorArray;
 
         // create uvs
         Vector2[] uvs = new Vector2[vertices.Count];

@@ -49,12 +49,12 @@ public class InputsBuffer: MonoBehaviour {
             inputing = true;
         }
     }
-    
+
     /// <summary>
     /// Generates a 50 long sequence of rotations.
     /// To be injected next in the inputBuffer.
     /// </summary>
-    public void Scrambler() {
+    public void Scrambler(ref List<List<object>> mixed) {
         // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
@@ -75,7 +75,7 @@ public class InputsBuffer: MonoBehaviour {
         //debugLength(commands); // TODO
         handler.axis1 = (int)command[0];
         handler.axis2 = (int)command[1];
-        handler.SetterSelection((SelectSticker)command[2]);
+        handler.SetterSelection((Coords4D)command[2]);
     }
 
     /// <summary>
@@ -95,8 +95,8 @@ public class InputsBuffer: MonoBehaviour {
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
                     InjectInput(inputsBuffer[i]);
                     float totalRotation = 0;
-                    List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedSticker, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
-                    List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedSticker); 
+                    List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedElement, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
+                    List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedElement);
                     if(Geometry.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
                         while(Mathf.Abs(90f - totalRotation) > Mathf.Epsilon){
                             totalRotation = Animation.RotateOverTime(handler.p, handler.puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
