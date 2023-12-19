@@ -6,7 +6,6 @@ public class Coords4D : MonoBehaviour
 {
     [SerializeField]
     private Vector4 coordinates;
-    public static Vector4 selectedCoordinates;
 
     /// <summary>
     /// Getter of the 4D coordinates of the object.

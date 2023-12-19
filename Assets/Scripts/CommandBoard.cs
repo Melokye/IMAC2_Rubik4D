@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class CommandBoard : MonoBehaviour {
     GameManager handler;
@@ -15,6 +15,13 @@ public class CommandBoard : MonoBehaviour {
 
         tmp = GameObject.Find("TrivialSolver");
         buffer = tmp.GetComponent<InputsBuffer>();
+
+        // Listen for size slider
+        GameObject cameraCanvas = GameObject.Find("CameraCanvas");
+        Slider cameraCanvasSize = GameObject.Find("CameraCanvasSize").GetComponent<Slider>();
+        cameraCanvasSize.onValueChanged.AddListener((value) => {
+            cameraCanvas.GetComponent<RectTransform>().localScale = new Vector3(0.5625f, 1f, 1f) * value;
+        });
     }
 
     // Update is called once per frame
@@ -83,28 +90,50 @@ public class CommandBoard : MonoBehaviour {
     }
 
     public void UnselectSticker() {
-        handler.SetterSelection(null);
+        // TODO: actually make the highlights disappear correctly
+        /*GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
+        foreach (Transform cell in handler.puzzle.transform) {
+            cell.GetComponent<Renderer>().enabled = false;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+            }
+        }
+        foreach (Transform cell in puzzle_UI.transform) {
+            cell.GetComponent<Renderer>().enabled = false;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+            }
+        }*/
+        if (handler.GetSelection() != null) {
+            if (handler.GetSelection().GetComponent<SelectCell>() == null) {
+                handler.GetSelection().GetComponent<SelectSticker>().SetState(SelectSticker.State.Idle);
+            }
+            else {
+                handler.GetSelection().GetComponent<SelectCell>().SetState(SelectCell.State.Idle);
+            }
+            handler.SetSelection(null);
+        }
     }
 
     public void ToggleSelectMode() {
         GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
         foreach (Transform cell in handler.puzzle.transform) {
             cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
-            cell.GetComponent<Renderer>().enabled = false;
+            //cell.GetComponent<Renderer>().enabled = false;
             foreach (Transform sticker in cell) {
                 sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
-                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+                //sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
             }
         }
         foreach (Transform cell in puzzle_UI.transform) {
             cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
-            cell.GetComponent<Renderer>().enabled = false;
+            //cell.GetComponent<Renderer>().enabled = false;
             foreach (Transform sticker in cell) {
                 sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
-                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+                //sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
             }
         }
-        handler.SetterSelection(null);
+        UnselectSticker();
     }
 
     public void ChangeClock() {

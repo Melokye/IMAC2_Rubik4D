@@ -203,12 +203,12 @@ public class GameManager : MonoBehaviour { // == main
         return _cubeRotating;
     }
 
-    public void SetterSelection(Coords4D selection) {
-        selectedElement = selection;
-    }
-
     public Coords4D GetSelection() {
         return selectedElement;
+    }
+
+    public void SetSelection(Coords4D selection) {
+        selectedElement = selection;
     }
 
     /// <summary>

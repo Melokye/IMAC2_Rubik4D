@@ -72,7 +72,7 @@ public class InputsBuffer: MonoBehaviour {
         //debugLength(commands); // TODO
         handler.axis1 = (int)command[0];
         handler.axis2 = (int)command[1];
-        handler.SetterSelection((Coords4D)command[2]);
+        handler.SetSelection((Coords4D)command[2]);
     }
 
     /// <summary>
