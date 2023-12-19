@@ -29,7 +29,7 @@ public class InputsBuffer: MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (Input.GetKeyDown(KeyCode.R)) {
-            List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelectionCell() };
+            List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelection() };
             inputsBuffer.Add(Entry);
             // debugLength(inputsBuffer); // TODO
         }
@@ -72,7 +72,7 @@ public class InputsBuffer: MonoBehaviour {
         //debugLength(commands); // TODO
         handler.axis1 = (int)command[0];
         handler.axis2 = (int)command[1];
-        handler.SetterSelectionCell((SelectCell)command[2]);
+        handler.SetterSelection((Coords4D)command[2]);
     }
 
     /// <summary>
@@ -93,8 +93,8 @@ public class InputsBuffer: MonoBehaviour {
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
                     InjectInput(inputsBuffer[i]);
                     float totalRotation = 0;
-                    List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedCell, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
-                    List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedCell);
+                    List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedElement, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
+                    List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedElement);
                     if(Geometry.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
                         while(Mathf.Abs(90f - totalRotation) > Mathf.Epsilon){
                             totalRotation = Animation.RotateOverTime(handler.p, handler.puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));

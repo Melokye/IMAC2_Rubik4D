@@ -23,7 +23,7 @@ public class CommandBoard : MonoBehaviour {
     /// Toggle the selection via the command board.
     /// </summary>
     /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
-    public void changeSelection(GameObject selected) {
+    /*public void changeSelection(GameObject selected) {
         Debug.Log(selected.name);
         if (selected.name == "Right") {
             handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
@@ -49,7 +49,7 @@ public class CommandBoard : MonoBehaviour {
         if (selected.name == "Outside") {
             handler.SetterSelection(GameObject.Find("Outside_0").GetComponent<SelectSticker>());
         }
-    }
+    }*/
 
     /// <summary>
     /// Lanch the selected rotation onClick on the bounded buttons of the command board.
@@ -66,11 +66,11 @@ public class CommandBoard : MonoBehaviour {
             // Insert axis in the GameManager
             if (clockwise) {
                 handler.SetPlane(Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]));
-                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]), handler.GetSelectionCell() });
+                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]), handler.GetSelection() });
             }
             else {
                 handler.SetPlane(Geometry.AxisToInt(axis[1]), Geometry.AxisToInt(axis[0]));
-                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]), handler.GetSelectionCell() });
+                buffer.inputsBuffer.Add(new List<object>() { Geometry.AxisToInt(axis[0]), Geometry.AxisToInt(axis[1]), handler.GetSelection() });
             }
 
             handler.LaunchRotation();
@@ -83,8 +83,28 @@ public class CommandBoard : MonoBehaviour {
     }
 
     public void UnselectSticker() {
-        handler.selectedCell.GetComponent<Renderer>().enabled = false;
-        handler.SetterSelectionCell(null);
+        handler.SetterSelection(null);
+    }
+
+    public void ToggleSelectMode() {
+        GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
+        foreach (Transform cell in handler.puzzle.transform) {
+            cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
+            cell.GetComponent<Renderer>().enabled = false;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
+                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+            }
+        }
+        foreach (Transform cell in puzzle_UI.transform) {
+            cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
+            cell.GetComponent<Renderer>().enabled = false;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
+                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
+            }
+        }
+        handler.SetterSelection(null);
     }
 
     public void ChangeClock() {

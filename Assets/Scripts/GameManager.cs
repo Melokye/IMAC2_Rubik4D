@@ -12,8 +12,7 @@ public class GameManager : MonoBehaviour { // == main
     private bool _cubeRotating = false;
 
     [SerializeField]
-    public SelectSticker selectedSticker; // TODO private
-    public SelectCell selectedCell; // TODO private
+    public Coords4D selectedElement; // TODO private
 
     // TODO for debug / test purpose?
     public int axis1 = 0;
@@ -133,8 +132,8 @@ public class GameManager : MonoBehaviour { // == main
                 yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
             }else {
-                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedCell, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
-                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedCell);
+                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedElement, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
+                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedElement);
                 if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
@@ -204,20 +203,12 @@ public class GameManager : MonoBehaviour { // == main
         return _cubeRotating;
     }
 
-    public void SetterSelection(SelectSticker selection) {
-        selectedSticker = selection;
+    public void SetterSelection(Coords4D selection) {
+        selectedElement = selection;
     }
 
-    public void SetterSelectionCell(SelectCell selection) {
-        selectedCell = selection;
-    }
-
-    public SelectSticker GetSelection() {
-        return selectedSticker;
-    }
-
-    public SelectCell GetSelectionCell() {
-        return selectedCell;
+    public Coords4D GetSelection() {
+        return selectedElement;
     }
 
     /// <summary>

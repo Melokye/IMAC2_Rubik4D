@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class SelectCell : MonoBehaviour {
     [SerializeField]
-    private Vector4 coordinates;
-    public static Vector4 selectedCoordinates;
+    private Coords4D coords4D;
     private Renderer rend;
     private Color baseColor;
     private static bool hovered;
+    private static Color hoverColor = new Color(0f, 0f, 0f, 0.125f);
 
     private static GameManager handler;
     
     
     // Start is called before the first frame update
     void Start() {
+        coords4D = this.gameObject.GetComponent<Coords4D>();
         SelectCell.handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
         rend = GetComponent<Renderer>();
         baseColor = rend.material.color;
@@ -26,7 +27,7 @@ public class SelectCell : MonoBehaviour {
     /// </summary>
     void OnMouseOver() {
         rend.enabled = true;
-        rend.material.color = new Color(0, 0, 0, 0.125f);
+        rend.material.color = hoverColor;
         SelectCell.hovered = true;
     }
 
@@ -34,7 +35,7 @@ public class SelectCell : MonoBehaviour {
     /// A Raycasting Function to visually unhover the precedent selection.
     /// </summary>
     void OnMouseExit() {
-        if (handler.GetSelectionCell() != this) {
+        if (handler.GetSelection() != this.coords4D) {
             rend.material.color = baseColor;
             rend.enabled = false;
         }
@@ -45,26 +46,31 @@ public class SelectCell : MonoBehaviour {
     /// A Raycasting, onClick function to permanently hover the user's selection.
     /// </summary>
     void OnMouseDown() {
-        if (handler.GetSelectionCell() != null) {
-            SelectCell tmp = handler.GetSelectionCell();
+        if (handler.GetSelection() != null && handler.GetSelection().GetComponent<SelectCell>() != null) {
+            SelectCell tmp = handler.GetSelection().gameObject.GetComponent<SelectCell>();
             tmp.rend.enabled = false;
             tmp.rend.material.color = tmp.baseColor;
-            handler.SetterSelectionCell(tmp);
+            handler.SetterSelection(tmp.coords4D);
         }
         rend.enabled = true;
         rend.material.color = baseColor;
-        handler.SetterSelectionCell(this);
-        SelectCell.selectedCoordinates = this.coordinates;
+        handler.SetterSelection(this.coords4D);
+        Coords4D.selectedCoordinates = this.coords4D.GetCoordinates();
     }
 
     /// <summary>
     /// Handle the deselection, when clicking away.
     /// </summary>
     void Update() {
-        if (!SelectCell.hovered) {
-            SelectCell tmp = handler.GetSelectionCell();
-            if (tmp != null) {
-                tmp.rend.material.color = tmp.baseColor;
+        if (!SelectCell.hovered && handler.GetSelection() != null) {
+            if (handler.GetSelection() != null) {
+                SelectCell tmp = handler.GetSelection().gameObject.GetComponent<SelectCell>();
+                if (tmp != null) {
+                    tmp.rend.material.color = tmp.baseColor;
+                }
+            }
+            else {
+                rend.enabled = false;
             }
         }
     }
@@ -99,21 +105,5 @@ public class SelectCell : MonoBehaviour {
     /// <param name="Rend"> The mesh renderer of the Unity.gameObject. </param>
     public void SetRend(Renderer Rend) {
         rend = Rend;
-    }
-
-    /// <summary>
-    /// Getter of the 4D coordinates of the sticker.
-    /// </summary>
-    /// <returns></returns>
-    public Vector4 GetCoordinates() {
-       return coordinates;
-    }
-
-    /// <summary>
-    /// Setter of the 4D coordinates of the sticker.
-    /// </summary>
-    /// <param name="Coordinates"> A Unity.Vector4 to set from. </param>
-    public void SetCoordinates(Vector4 Coordinates) {
-        coordinates = Coordinates;
     }
 }

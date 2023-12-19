@@ -78,7 +78,7 @@ public class Puzzle {
 
             // add the Select Script
             cell.AddComponent<SelectCell>();
-            cell.GetComponent<SelectCell>().SetCoordinates(cellPosition);
+            cell.AddComponent<Coords4D>().SetCoordinates(cellPosition);
             cell.AddComponent<MeshCollider>();
 
             cell.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * cellPosition);
@@ -92,8 +92,7 @@ public class Puzzle {
                 sticker.name = _names[i] + "_" + j;
 
                 // add mesh
-                sticker.AddComponent<MeshFilter>();
-                sticker.GetComponent<MeshFilter>().mesh = mesh;
+                sticker.AddComponent<MeshFilter>().mesh = mesh;
 
                 // add material
                 Material stickerMat = Resources.Load(_materials[i], typeof(Material)) as Material;
@@ -102,8 +101,8 @@ public class Puzzle {
 
                 // add the Select Script
                 sticker.AddComponent<SelectSticker>();
-                sticker.GetComponent<SelectSticker>().SetCoordinates(GetSticker(i, j));
-                //sticker.AddComponent<MeshCollider>();
+                sticker.AddComponent<Coords4D>().SetCoordinates(GetSticker(i, j));
+                sticker.AddComponent<MeshCollider>().enabled = false;
 
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
@@ -118,19 +117,19 @@ public class Puzzle {
     /// // TODO explain a little bit this function
     /// </summary>
     /// <returns></returns>
-    public List<List<bool>> whosGunnaRotate(SelectCell selectedCell = null) {
+    public List<List<bool>> whosGunnaRotate(Coords4D selectedElement = null) {
         // List<List<bool>> toBeRotated = new List<List<bool>>();
-        if (selectedCell == null) { // TODO need optimisation
+        if (selectedElement == null) { // TODO need optimisation
             List<bool> sticker = Enumerable.Repeat(true, NbStickers(0)).ToList();
             return Enumerable.Repeat(sticker, NbCells()).ToList();
         }
 
-        // TODO change type of selectedCell?
+        // TODO change type of selectedElement?
         int discriminator = 0;
         int signOfDiscriminator = 0;
         for (int i = 0; i < 4; i++) {
-            if (Mathf.Abs(selectedCell.GetCoordinates()[i]) == 1) {
-                signOfDiscriminator = (int)selectedCell.GetCoordinates()[i];
+            if (Mathf.Abs(selectedElement.GetCoordinates()[i]) == 1) {
+                signOfDiscriminator = (int)selectedElement.GetCoordinates()[i];
                 discriminator = i;
             }
         }

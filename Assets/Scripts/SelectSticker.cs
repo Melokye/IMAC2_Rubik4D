@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class SelectSticker : MonoBehaviour {
     [SerializeField]
-    private Vector4 coordinates;
-    public static Vector4 selectedCoordinates;
+    private Coords4D coords4D;
     private Renderer rend;
     private Color baseColor;
     private static bool hovered;
+    private static Color selectColor = Color.yellow;
 
     private static GameManager handler;
     
     
     // Start is called before the first frame update
     void Start() {
+        coords4D = this.gameObject.GetComponent<Coords4D>();
         SelectSticker.handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
         rend = GetComponent<Renderer>();
         baseColor = rend.material.color;
@@ -25,7 +26,7 @@ public class SelectSticker : MonoBehaviour {
     /// Changes the color of hovered sticker. Currently the selection is yellow.
     /// </summary>
     void OnMouseOver() {
-        rend.material.color = Color.yellow;
+        rend.material.color = selectColor;
         SelectSticker.hovered = true;
     }
 
@@ -33,7 +34,7 @@ public class SelectSticker : MonoBehaviour {
     /// A Raycasting Function to visually unhover the precedent selection.
     /// </summary>
     void OnMouseExit() {
-        if (handler.GetSelection() != this) {
+        if (handler.GetSelection() != this.coords4D) {
             rend.material.color = baseColor;
         }
         SelectSticker.hovered = false;
@@ -43,25 +44,24 @@ public class SelectSticker : MonoBehaviour {
     /// A Raycasting, onClick function to permanently hover the user's selection.
     /// </summary>
     void OnMouseDown() {
-        if (handler.GetSelection() != null) {
-            SelectSticker tmp = handler.GetSelection();
+        if (handler.GetSelection() != null && handler.GetSelection().GetComponent<SelectSticker>() != null) {
+            SelectSticker tmp = handler.GetSelection().gameObject.GetComponent<SelectSticker>();
             tmp.rend.material.color = tmp.baseColor;
-            handler.SetterSelection(tmp);
+            handler.SetterSelection(tmp.coords4D);
         }
-        rend.material.color = Color.yellow;
-        handler.SetterSelection(this);
-        SelectSticker.selectedCoordinates = this.coordinates;
+        rend.material.color = selectColor;
+        handler.SetterSelection(this.coords4D);
+        Coords4D.selectedCoordinates = this.coords4D.GetCoordinates();
     }
 
     /// <summary>
     /// Handle the deselection, when clicking away.
     /// </summary>
     void Update() {
-        if (!SelectSticker.hovered && Input.GetMouseButtonDown(0)) {
-            SelectSticker tmp = handler.GetSelection();
+        if (!SelectSticker.hovered && handler.GetSelection() != null) {
+            SelectSticker tmp = handler.GetSelection().gameObject.GetComponent<SelectSticker>();
             if (tmp != null) {
-                tmp.rend.material.color = tmp.baseColor;
-                handler.SetterSelection(tmp);
+                tmp.rend.material.color = selectColor;
             }
         }
     }
@@ -96,21 +96,5 @@ public class SelectSticker : MonoBehaviour {
     /// <param name="Rend"> The mesh renderer of the Unity.gameObject. </param>
     public void SetRend(Renderer Rend) {
         rend = Rend;
-    }
-
-    /// <summary>
-    /// Getter of the 4D coordinates of the sticker.
-    /// </summary>
-    /// <returns></returns>
-    public Vector4 GetCoordinates() {
-        return coordinates;
-    }
-
-    /// <summary>
-    /// Setter of the 4D coordinates of the sticker.
-    /// </summary>
-    /// <param name="Coordinates"> A Unity.Vector4 to set from. </param>
-    public void SetCoordinates(Vector4 Coordinates) {
-        coordinates = Coordinates;
     }
 }
