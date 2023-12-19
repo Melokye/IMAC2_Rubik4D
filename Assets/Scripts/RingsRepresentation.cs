@@ -29,11 +29,14 @@ class RingsRepresentation: MonoBehaviour{
             Tuple.Create(2, 3), Tuple.Create(0, 3)
         };
 
+        // TODO: make it work for 3x3x3x3 and above
+        List<int> stickerChoice = new List<int>() { 0, 3, 5, 6 };
+
         // create circles
-        for (int i = 0; i < p.NbStickers(0); i++) {
+        for (int i = 0; i < stickerChoice.Count; i++) {
             // TODO maybe we don't need the loop i
             GameObject tempsticker = new GameObject();
-            Vector4 stickerReference = p.GetSticker(0, i);
+            Vector4 stickerReference = p.GetSticker(0, stickerChoice[i]);
 
             // for all rotations necessary to roam all 6 circles
             for (int j = 0; j < 8; j++) {
