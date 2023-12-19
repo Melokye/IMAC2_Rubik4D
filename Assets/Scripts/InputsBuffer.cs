@@ -13,7 +13,8 @@ using UnityEngine;
 public class InputsBuffer: MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
-    private bool inputing;
+    private bool solving;
+    private bool mixing;
     public List<List<object>> inputsBuffer = new List<List<object>>(0);
     List<List<object>> mixed = new List<List<object>>(0);
     // Start is called before the first frame update
@@ -23,7 +24,7 @@ public class InputsBuffer: MonoBehaviour {
         Scrambler();
         // inputsBuffer = mixed;
         StartCoroutine(RotationHandler());
-        // inputing = true;
+        // solving = true;
     }
 
     // Update is called once per frame
@@ -40,13 +41,13 @@ public class InputsBuffer: MonoBehaviour {
             mixed.Clear();
             Scrambler();
             Animation.SetRotationSpeed(6f) ;
-            inputing = true;
+            mixing = true;
             // Debug.Log("Done mixing"); // TODO
         }
         if (Input.GetKeyDown(KeyCode.S)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
             Animation.SetRotationSpeed(6f) ;
-            inputing = true;
+            solving = true;
         }
     }
 
@@ -54,17 +55,21 @@ public class InputsBuffer: MonoBehaviour {
     /// Generates a 50 long sequence of rotations.
     /// To be injected next in the inputBuffer.
     /// </summary>
-    public void Scrambler(ref List<List<object>> mixed) {
+    public void Scrambler() {
         // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
-        SelectSticker selection;
+        Coords4D selection;
         GameObject p = GameObject.Find("Puzzle"); 
         System.Random rnd = new System.Random();
         for (int cmp = 0 ; cmp < 50 ; cmp++) {
             int tmp = rnd.Next(0,8);
-            selection = p.transform.GetChild(tmp).GetChild(1).gameObject.GetComponent<SelectSticker>;
-
+            selection = p.transform.GetChild(tmp).gameObject.GetComponent<Coords4D>();
+            List<string> possibleRotations = UserInput.PossibleRotation(selection);
+            string rotation = possibleRotations[rnd.Next(0,possibleRotations.Count)];
+            axis1 = Geometry.CharToInt(rotation[0]);
+            axis2 = Geometry.CharToInt(rotation[1]);
+            mixed.Add(new List<object>(){axis1,axis2,selection});
         }
     }
     /// <summary>
@@ -87,13 +92,18 @@ public class InputsBuffer: MonoBehaviour {
     private IEnumerator RotationHandler() {
         // TODO try to delete this function? just change the rotationSpeed to 6.
         while (true) {
-            if (!inputing) {
+            if (!solving && !mixing) {
                 yield return null;
             }
             else {
                 // TODO need reajustement
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
                     InjectInput(inputsBuffer[i]);
+                    if(mixing == true){
+                        object tmp = inputsBuffer[i][0];
+                        inputsBuffer[i][0] = inputsBuffer[i][1];
+                        inputsBuffer[i][1] = tmp;
+                    }
                     float totalRotation = 0;
                     List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedElement, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
                     List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedElement);
@@ -105,20 +115,26 @@ public class InputsBuffer: MonoBehaviour {
                     }
                     Animation.SnapToTargets(handler.p, handler.puzzle, targets, toBeRotated);
                 }
-
                 Animation.SetRotationSpeed(2f);
-                inputing = false;
-                inputsBuffer.Clear();
+                if(mixing == false ){
+                    inputsBuffer.Clear();
+                }
+                solving = false;
+                mixing = false;
             }
         }
     }
     /// <summary>
-    /// Getter of the inputing flag.
+    /// Getter of the solving flag.
     /// </summary>
     /// <returns>A bool : if true, animations are still running
     ///                   if false, well we good to go.</returns>
-    public bool GetInputingFlag() {
-        return inputing;
+    public bool GetsolvingFlag() {
+        return solving;
+    }
+
+    public bool GetMixingFlag() {
+        return mixing;
     }
 
 }

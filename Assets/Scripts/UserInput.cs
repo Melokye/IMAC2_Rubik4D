@@ -64,7 +64,7 @@ public class UserInput : MonoBehaviour
         }
         return nameOfRotations;
     }
-    public List<string> PossibleRotation(SelectSticker selected) {
+    public static List<string> PossibleRotation(Coords4D selected) {
         List<string> nameOfRotations = new List<string>();
 
             List<Vector2> pR = new List<Vector2>(0); ;
