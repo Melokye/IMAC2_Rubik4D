@@ -20,7 +20,7 @@ public class InputsBuffer: MonoBehaviour {
     void Start() {
         rotationEngine = GameObject.Find("PuzzleGenerator");
         handler = rotationEngine.GetComponent<GameManager>();
-        Scrambler(ref mixed);
+        Scrambler();
         // inputsBuffer = mixed;
         StartCoroutine(RotationHandler());
         // inputing = true;
@@ -38,14 +38,15 @@ public class InputsBuffer: MonoBehaviour {
             inputsBuffer.Clear();
             inputsBuffer.AddRange(mixed);
             mixed.Clear();
-            Scrambler(ref mixed);
+            Scrambler();
+            Animation.SetRotationSpeed(6f) ;
             inputing = true;
             // Debug.Log("Done mixing"); // TODO
         }
         if (Input.GetKeyDown(KeyCode.S)) {
             /*un code qui permet d'executer pleins de rotations d'un coup*/
+            Animation.SetRotationSpeed(6f) ;
             inputing = true;
-            //Debug.Log("Done solving"); // TODO
         }
     }
     
@@ -57,11 +58,32 @@ public class InputsBuffer: MonoBehaviour {
         // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
+        int selection = 0; 
         System.Random rnd = new System.Random();
         for (int cmp = 0 ; cmp < 50 ; cmp++) {
-            axis1 = rnd.Next(0,3);
-            while(axis2==axis1)axis2 = rnd.Next(1,4);
-            mixed.Add(new List<object>(){axis1,axis2});
+            axis1 = rnd.Next(0,4);
+            while(axis2==axis1)axis2 = rnd.Next(0,4);
+            List<int> l = new List<int>(0);
+            for(int i = 0 ; i < 4 ; i++){
+                if(i!=axis1 && i!=axis2) {
+                    l.Add(-i);
+                    l.Add(i);
+                }
+            }
+            selection = l[rnd.Next(0,l.Count)];
+            Debug.Log(selection);
+            Debug.Log(axis1);
+            Debug.Log(axis2);
+            GameObject s = GameObject.Find("Puzzle");
+            for(int i = 0 ; i < 8 ; i ++){
+                SelectSticker obj = s.transform.GetChild(i).GetChild(0).gameObject.GetComponent<SelectSticker>();
+                
+                if(obj.GetCoordinates()[Mathf.Abs(selection)] == Mathf.Sign(selection)){
+                    Debug.Log(obj);
+                    mixed.Add(new List<object>(){axis1,axis2,obj});
+                    break;
+                }
+            }            
         }
     }
     /// <summary>
@@ -88,7 +110,6 @@ public class InputsBuffer: MonoBehaviour {
                 yield return null;
             }
             else {
-                handler.rotationSpeed = 6 ;
                 // TODO need reajustement
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
                     InjectInput(inputsBuffer[i]);
@@ -104,7 +125,7 @@ public class InputsBuffer: MonoBehaviour {
                     Animation.SnapToTargets(handler.p, handler.puzzle, targets, toBeRotated);
                 }
 
-                handler.rotationSpeed = 2;
+                Animation.SetRotationSpeed(2f);
                 inputing = false;
                 inputsBuffer.Clear();
             }
