@@ -24,8 +24,6 @@ public class CommandBoard : MonoBehaviour {
         });
     }
 
-    // Update is called once per frame
-    void Update() { }
     /// <summary>
     /// Toggle the selection via the command board.
     /// </summary>
@@ -59,7 +57,7 @@ public class CommandBoard : MonoBehaviour {
     }*/
 
     /// <summary>
-    /// Lanch the selected rotation onClick on the bounded buttons of the command board.
+    /// Launch the selected rotation onClick on the bounded buttons of the command board.
     /// </summary>
     /// <param name="selected">The rotation plane selected by the user.</param>
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
@@ -84,26 +82,20 @@ public class CommandBoard : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Toggles visibility of the CommandBoard.
+    /// Used by a button's trigger method
+    /// </summary>
     public void ToggleCommandBoard() {
         GameObject panel = transform.GetChild(0).gameObject;
         panel.SetActive(!panel.activeSelf);
     }
 
+    /// <summary>
+    /// Sets the currently selected object to Idle state, and sets selection to null
+    /// Used by a button's trigger method
+    /// </summary>
     public void UnselectSticker() {
-        // TODO: actually make the highlights disappear correctly
-        /*GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
-        foreach (Transform cell in handler.puzzle.transform) {
-            cell.GetComponent<Renderer>().enabled = false;
-            foreach (Transform sticker in cell) {
-                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
-            }
-        }
-        foreach (Transform cell in puzzle_UI.transform) {
-            cell.GetComponent<Renderer>().enabled = false;
-            foreach (Transform sticker in cell) {
-                sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
-            }
-        }*/
         if (handler.GetSelection() != null) {
             if (handler.GetSelection().GetComponent<SelectCell>() == null) {
                 handler.GetSelection().GetComponent<SelectSticker>().SetState(SelectSticker.State.Idle);
@@ -115,22 +107,23 @@ public class CommandBoard : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Toggles the mouse hover detection on the stickers on the cells,
+    /// and unselects the currently selected sticker
+    /// Used by a button's trigger method
+    /// </summary>
     public void ToggleSelectMode() {
         GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
         foreach (Transform cell in handler.puzzle.transform) {
             cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
-            //cell.GetComponent<Renderer>().enabled = false;
             foreach (Transform sticker in cell) {
                 sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
-                //sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
             }
         }
         foreach (Transform cell in puzzle_UI.transform) {
             cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
-            //cell.GetComponent<Renderer>().enabled = false;
             foreach (Transform sticker in cell) {
                 sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
-                //sticker.GetComponent<Renderer>().material.color = sticker.GetComponent<SelectSticker>().GetBaseColor();
             }
         }
         UnselectSticker();

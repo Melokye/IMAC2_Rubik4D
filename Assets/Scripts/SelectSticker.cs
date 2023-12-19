@@ -14,6 +14,9 @@ public class SelectSticker : MonoBehaviour {
 
     private static GameManager handler;
 
+    /// <summary>
+    /// Defines the state of the object
+    /// </summary>
     public enum State {
         Idle,
         Hovered,
@@ -37,7 +40,7 @@ public class SelectSticker : MonoBehaviour {
 
     /// <summary>
     /// A Raycasting Function to temporary hover the user's selection.
-    /// Changes the color of hovered sticker. Currently the selection is yellow.
+    /// Changes the state of the hovered sticker.
     /// </summary>
     void OnMouseOver() {
         switch (_state) {
@@ -78,6 +81,10 @@ public class SelectSticker : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Sets a new state to the object, and executes one thing if the new state is different
+    /// </summary>
+    /// <param name="newState"></param>
     public void SetState(State newState) {
         // check if already in the new state
         if (_state == newState)
@@ -116,7 +123,7 @@ public class SelectSticker : MonoBehaviour {
     }
 
     /// <summary>
-    /// Handle the deselection, when clicking away.
+    /// Handle the blinking animation when selected.
     /// </summary>
     void Update() {
         if (_state == State.Selected) {

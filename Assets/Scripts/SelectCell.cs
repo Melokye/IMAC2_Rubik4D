@@ -12,6 +12,9 @@ public class SelectCell : MonoBehaviour {
 
     private static GameManager handler;
 
+    /// <summary>
+    /// Defines the state of the object
+    /// </summary>
     public enum State {
         Idle,
         Hovered,
@@ -74,6 +77,10 @@ public class SelectCell : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Sets a new state to the object, and executes one thing if the new state is different
+    /// </summary>
+    /// <param name="newState"></param>
     public void SetState(State newState) {
         // check if already in the new state
         if (_state == newState)
