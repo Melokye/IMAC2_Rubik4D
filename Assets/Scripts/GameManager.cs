@@ -88,21 +88,7 @@ public class GameManager : MonoBehaviour { // == main
             /*if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
             }*/
-            // For each camera in the scene, toggle both relevant culling masks
-            if (Input.GetKeyDown(KeyCode.P)) {
-                GameObject circleContainer = GameObject.Find("CircleContainer");
-                GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
-                GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
-                SetLayerAllChildren(circleContainer.transform,
-                    (circleContainer.layer + 3) % 6);
-                SetLayerAllChildren(circleContainer_UI.transform,
-                    (circleContainer_UI.layer + 3) % 6);
-                SetLayerDirectChildrenNoRoot(puzzle.transform,
-                    (puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
-                SetLayerDirectChildrenNoRoot(puzzle_UI.transform,
-                    (puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
-                ChangeProjection();
-            }
+            
         }
         // At all times, there are two puzzle game objects.
         // The first is the special projection, the second is the classic projection.
@@ -152,7 +138,7 @@ public class GameManager : MonoBehaviour { // == main
     /// <summary>
     /// Toggle between classic projection and special projection
     /// </summary>
-    private void ChangeProjection() {
+    public void ChangeProjection() {
         switch (cameraRotationMode) {
             case 0:
                 cameraRotationMode = 1;

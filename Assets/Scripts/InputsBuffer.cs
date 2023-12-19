@@ -16,7 +16,7 @@ public class InputsBuffer: MonoBehaviour {
     private bool solving;
     private bool mixing;
     public List<List<object>> inputsBuffer = new List<List<object>>(0);
-    List<List<object>> mixed = new List<List<object>>(0);
+    public List<List<object>> mixed = new List<List<object>>(0);
     // Start is called before the first frame update
     void Start() {
         rotationEngine = GameObject.Find("PuzzleGenerator");
@@ -28,28 +28,7 @@ public class InputsBuffer: MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.R)) {
-            List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelection() };
-            inputsBuffer.Add(Entry);
-            // debugLength(inputsBuffer); // TODO
-        }
-        if (Input.GetKeyDown(KeyCode.M)) {
-            /*un code qui permet d'executer pleins de rotations d'un coup*/
-            inputsBuffer.Clear();
-            inputsBuffer.AddRange(mixed);
-            mixed.Clear();
-            Scrambler();
-            Animation.SetRotationSpeed(6f) ;
-            mixing = true;
-            // Debug.Log("Done mixing"); // TODO
-        }
-        if (Input.GetKeyDown(KeyCode.S)) {
-            /*un code qui permet d'executer pleins de rotations d'un coup*/
-            Animation.SetRotationSpeed(6f) ;
-            solving = true;
-        }
-    }
+    void Update() { }
 
     /// <summary>
     /// Generates a 50 long sequence of rotations.
@@ -135,6 +114,14 @@ public class InputsBuffer: MonoBehaviour {
 
     public bool GetMixingFlag() {
         return mixing;
+    }
+
+    public void SetSolvingFlag(bool b) {
+        solving  = b;
+    }
+
+    public void SetMixingFlag(bool b) {
+        mixing = b;
     }
 
 }
