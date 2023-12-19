@@ -58,32 +58,13 @@ public class InputsBuffer: MonoBehaviour {
         // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
-        int selection = 0; 
+        SelectSticker selection;
+        GameObject p = GameObject.Find("Puzzle"); 
         System.Random rnd = new System.Random();
         for (int cmp = 0 ; cmp < 50 ; cmp++) {
-            axis1 = rnd.Next(0,4);
-            while(axis2==axis1)axis2 = rnd.Next(0,4);
-            List<int> l = new List<int>(0);
-            for(int i = 0 ; i < 4 ; i++){
-                if(i!=axis1 && i!=axis2) {
-                    l.Add(-i);
-                    l.Add(i);
-                }
-            }
-            selection = l[rnd.Next(0,l.Count)];
-            Debug.Log(selection);
-            Debug.Log(axis1);
-            Debug.Log(axis2);
-            GameObject s = GameObject.Find("Puzzle");
-            for(int i = 0 ; i < 8 ; i ++){
-                SelectSticker obj = s.transform.GetChild(i).GetChild(0).gameObject.GetComponent<SelectSticker>();
-                
-                if(obj.GetCoordinates()[Mathf.Abs(selection)] == Mathf.Sign(selection)){
-                    Debug.Log(obj);
-                    mixed.Add(new List<object>(){axis1,axis2,obj});
-                    break;
-                }
-            }            
+            int tmp = rnd.Next(0,8);
+            selection = p.transform.GetChild(tmp).GetChild(1).gameObject.GetComponent<SelectSticker>;
+
         }
     }
     /// <summary>

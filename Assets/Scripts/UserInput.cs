@@ -12,7 +12,7 @@ public class UserInput : MonoBehaviour
     GameManager handler;
     GameObject axis;
     GameObject unselect;
-    List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2),
+    static List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2),
                                                      new Vector2(0,1), new Vector2(0,3),
                                                      new Vector2(1,3), new Vector2(2,3),
 
@@ -64,6 +64,29 @@ public class UserInput : MonoBehaviour
         }
         return nameOfRotations;
     }
+    public List<string> PossibleRotation(SelectSticker selected) {
+        List<string> nameOfRotations = new List<string>();
+
+            List<Vector2> pR = new List<Vector2>(0); ;
+
+            int usefulIndex = 0;
+            for (int i = 0; i < 4; i++) {
+                if (Mathf.Abs(selected.GetCoordinates()[i]) == 1) {
+                    usefulIndex = i;
+                }
+            }
+            for (int i = 0; i < AllRotations.Count; i++) {
+                if (UserInput.AllRotations[i][0] != usefulIndex & UserInput.AllRotations[i][1] != usefulIndex) {
+                    pR.Add(UserInput.AllRotations[i]);
+                }
+            }
+            for (int i = 0; i < pR.Count; i++) {
+                nameOfRotations.Add(new string(new char[] { Geometry.IntToChar((int)pR[i][0]), Geometry.IntToChar((int)pR[i][1]) }));
+            }
+
+        return nameOfRotations;
+    }
+
     /// <summary>
     /// Toggles the possible rotations within the UI. 
     /// </summary>
