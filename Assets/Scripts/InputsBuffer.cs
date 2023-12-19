@@ -10,7 +10,7 @@ using UnityEngine;
 /// Keep trace of all the user or mixer rotations to undo them in case of solving.
 /// Solver and Mixer.
 /// </summary>
-public class InputsBuffer: MonoBehaviour {
+public class InputsBuffer : MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
     private bool solving;
@@ -27,9 +27,6 @@ public class InputsBuffer: MonoBehaviour {
         // solving = true;
     }
 
-    // Update is called once per frame
-    void Update() { }
-
     /// <summary>
     /// Generates a 50 long sequence of rotations.
     /// To be injected next in the inputBuffer.
@@ -39,16 +36,16 @@ public class InputsBuffer: MonoBehaviour {
         int axis1 = 0;
         int axis2 = 1;
         Coords4D selection;
-        GameObject p = GameObject.Find("Puzzle"); 
+        GameObject p = GameObject.Find("Puzzle");
         System.Random rnd = new System.Random();
-        for (int cmp = 0 ; cmp < 50 ; cmp++) {
-            int tmp = rnd.Next(0,8);
+        for (int cmp = 0; cmp < 50; cmp++) {
+            int tmp = rnd.Next(0, 8);
             selection = p.transform.GetChild(tmp).gameObject.GetComponent<Coords4D>();
             List<string> possibleRotations = UserInput.PossibleRotation(selection);
-            string rotation = possibleRotations[rnd.Next(0,possibleRotations.Count)];
+            string rotation = possibleRotations[rnd.Next(0, possibleRotations.Count)];
             axis1 = Geometry.CharToInt(rotation[0]);
             axis2 = Geometry.CharToInt(rotation[1]);
-            mixed.Add(new List<object>(){axis1,axis2,selection});
+            mixed.Add(new List<object>() { axis1, axis2, selection });
         }
     }
     /// <summary>
@@ -76,9 +73,9 @@ public class InputsBuffer: MonoBehaviour {
             }
             else {
                 // TODO need reajustement
-                for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
+                for (int i = inputsBuffer.Count - 1; i > -1; i--) {
                     InjectInput(inputsBuffer[i]);
-                    if(mixing == true){
+                    if (mixing == true) {
                         object tmp = inputsBuffer[i][0];
                         inputsBuffer[i][0] = inputsBuffer[i][1];
                         inputsBuffer[i][1] = tmp;
@@ -86,8 +83,8 @@ public class InputsBuffer: MonoBehaviour {
                     float totalRotation = 0;
                     List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedElement, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
                     List<List<bool>> toBeRotated = handler.p.whosGunnaRotate(handler.selectedElement);
-                    if(Geometry.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)){
-                        while(Mathf.Abs(90f - totalRotation) > Mathf.Epsilon){
+                    if (Geometry.IsBetweenRangeExcluded(handler.rotationSpeed, 0f, 90f)) {
+                        while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
                             totalRotation = Animation.RotateOverTime(handler.p, handler.puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
                             yield return null;
                         }
@@ -95,7 +92,7 @@ public class InputsBuffer: MonoBehaviour {
                     Animation.SnapToTargets(handler.p, handler.puzzle, targets, toBeRotated);
                 }
                 Animation.SetRotationSpeed(2f);
-                if(mixing == false ){
+                if (mixing == false) {
                     inputsBuffer.Clear();
                 }
                 solving = false;
@@ -117,11 +114,10 @@ public class InputsBuffer: MonoBehaviour {
     }
 
     public void SetSolvingFlag(bool b) {
-        solving  = b;
+        solving = b;
     }
 
     public void SetMixingFlag(bool b) {
         mixing = b;
     }
-
 }

@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 /// <summary>
 /// The script that computes all possible rotation.
 /// </summary>
-public class UserInput : MonoBehaviour
-{
+public class UserInput : MonoBehaviour {
 
     InputsBuffer buffer;
     GameManager handler;
@@ -37,13 +37,8 @@ public class UserInput : MonoBehaviour
         if (handler.GetSelection() != null) {
             ApplyRotation();
         }
-        //TODO not sure this is still usefull.
-        if (Input.GetKeyDown(KeyCode.R)) {
-            List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelection() };
-            buffer.inputsBuffer.Add(Entry);
-        }
         if (Input.GetKeyDown(KeyCode.S)) {
-            Animation.SetRotationSpeed(6f) ;
+            Animation.SetRotationSpeed(6f);
             buffer.SetSolvingFlag(true);
         }
         if (Input.GetKeyDown(KeyCode.M)) {
@@ -51,7 +46,7 @@ public class UserInput : MonoBehaviour
             buffer.inputsBuffer.AddRange(buffer.mixed);
             buffer.mixed.Clear();
             buffer.Scrambler();
-            Animation.SetRotationSpeed(6f) ;
+            Animation.SetRotationSpeed(6f);
             buffer.SetMixingFlag(true);
         }
         // For each camera in the scene, toggle both relevant culling masks
@@ -68,7 +63,7 @@ public class UserInput : MonoBehaviour
             handler.SetLayerDirectChildrenNoRoot(puzzle_UI.transform,
                 (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
             handler.ChangeProjection();
-            }
+        }
     }
     /// <summary>
     /// With a selected sticker selected by the user, computes all the 6 rotations possible (3 trigonometric and 3 antitrigonometric).
@@ -99,22 +94,22 @@ public class UserInput : MonoBehaviour
     public static List<string> PossibleRotation(Coords4D selected) {
         List<string> nameOfRotations = new List<string>();
 
-            List<Vector2> pR = new List<Vector2>(0); ;
+        List<Vector2> pR = new List<Vector2>(0); ;
 
-            int usefulIndex = 0;
-            for (int i = 0; i < 4; i++) {
-                if (Mathf.Abs(selected.GetCoordinates()[i]) == 1) {
-                    usefulIndex = i;
-                }
+        int usefulIndex = 0;
+        for (int i = 0; i < 4; i++) {
+            if (Mathf.Abs(selected.GetCoordinates()[i]) == 1) {
+                usefulIndex = i;
             }
-            for (int i = 0; i < AllRotations.Count; i++) {
-                if (UserInput.AllRotations[i][0] != usefulIndex & UserInput.AllRotations[i][1] != usefulIndex) {
-                    pR.Add(UserInput.AllRotations[i]);
-                }
+        }
+        for (int i = 0; i < AllRotations.Count; i++) {
+            if (UserInput.AllRotations[i][0] != usefulIndex & UserInput.AllRotations[i][1] != usefulIndex) {
+                pR.Add(UserInput.AllRotations[i]);
             }
-            for (int i = 0; i < pR.Count; i++) {
-                nameOfRotations.Add(new string(new char[] { Geometry.IntToChar((int)pR[i][0]), Geometry.IntToChar((int)pR[i][1]) }));
-            }
+        }
+        for (int i = 0; i < pR.Count; i++) {
+            nameOfRotations.Add(new string(new char[] { Geometry.IntToChar((int)pR[i][0]), Geometry.IntToChar((int)pR[i][1]) }));
+        }
 
         return nameOfRotations;
     }
@@ -150,7 +145,7 @@ public class UserInput : MonoBehaviour
     /// <summary>
     /// Launching rotations given certain user input (arrow keys or awd keys).
     /// </summary>
-    private void ApplyRotation(){
+    private void ApplyRotation() {
         nameOfRotation = PossibleRotation();
         int axis1 = 0;
         int axis2 = 1;

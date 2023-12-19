@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour { // == main
     public Puzzle p;
     public Camera[] cameraArray;
 
-
     private bool _cubeRotating = false;
 
     [SerializeField]
