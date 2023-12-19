@@ -62,7 +62,7 @@ public class CommandBoard : MonoBehaviour {
     /// <param name="selected">The rotation plane selected by the user.</param>
     public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
         // Extract axis
-        if (!handler.GetRotateFlag() & !buffer.GetInputingFlag()) {
+        if (!handler.GetRotateFlag() & !buffer.GetMixingFlag() & !buffer.GetsolvingFlag()) {
             List<Geometry.Axis> axis = new List<Geometry.Axis>();
             foreach (char letter in selected.name) {
                 axis.Add(Geometry.CharToAxis(letter));

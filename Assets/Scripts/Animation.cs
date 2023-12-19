@@ -69,4 +69,8 @@ class Animation {
             }
         }
     }
+
+    public static void SetRotationSpeed(float f) {
+        Animation.rotationSpeed = f;
+    }
 }

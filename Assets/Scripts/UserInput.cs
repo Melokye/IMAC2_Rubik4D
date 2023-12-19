@@ -12,7 +12,7 @@ public class UserInput : MonoBehaviour
     GameManager handler;
     GameObject axis;
     GameObject unselect;
-    List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2),
+    static List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2),
                                                      new Vector2(0,1), new Vector2(0,3),
                                                      new Vector2(1,3), new Vector2(2,3),
 
@@ -37,6 +37,38 @@ public class UserInput : MonoBehaviour
         if (handler.GetSelection() != null) {
             ApplyRotation();
         }
+        //TODO not sure this is still usefull.
+        if (Input.GetKeyDown(KeyCode.R)) {
+            List<object> Entry = new List<object>() { handler.GetAxis2(), handler.GetAxis1(), handler.GetSelection() };
+            buffer.inputsBuffer.Add(Entry);
+        }
+        if (Input.GetKeyDown(KeyCode.S)) {
+            Animation.SetRotationSpeed(6f) ;
+            buffer.SetSolvingFlag(true);
+        }
+        if (Input.GetKeyDown(KeyCode.M)) {
+            buffer.inputsBuffer.Clear();
+            buffer.inputsBuffer.AddRange(buffer.mixed);
+            buffer.mixed.Clear();
+            buffer.Scrambler();
+            Animation.SetRotationSpeed(6f) ;
+            buffer.SetMixingFlag(true);
+        }
+        // For each camera in the scene, toggle both relevant culling masks
+        if (Input.GetKeyDown(KeyCode.P)) {
+            GameObject circleContainer = GameObject.Find("CircleContainer");
+            GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
+            GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
+            handler.SetLayerAllChildren(circleContainer.transform,
+                (circleContainer.layer + 3) % 6);
+            handler.SetLayerAllChildren(circleContainer_UI.transform,
+                (circleContainer_UI.layer + 3) % 6);
+            handler.SetLayerDirectChildrenNoRoot(handler.puzzle.transform,
+                (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
+            handler.SetLayerDirectChildrenNoRoot(puzzle_UI.transform,
+                (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
+            handler.ChangeProjection();
+            }
     }
     /// <summary>
     /// With a selected sticker selected by the user, computes all the 6 rotations possible (3 trigonometric and 3 antitrigonometric).
@@ -64,6 +96,29 @@ public class UserInput : MonoBehaviour
         }
         return nameOfRotations;
     }
+    public static List<string> PossibleRotation(Coords4D selected) {
+        List<string> nameOfRotations = new List<string>();
+
+            List<Vector2> pR = new List<Vector2>(0); ;
+
+            int usefulIndex = 0;
+            for (int i = 0; i < 4; i++) {
+                if (Mathf.Abs(selected.GetCoordinates()[i]) == 1) {
+                    usefulIndex = i;
+                }
+            }
+            for (int i = 0; i < AllRotations.Count; i++) {
+                if (UserInput.AllRotations[i][0] != usefulIndex & UserInput.AllRotations[i][1] != usefulIndex) {
+                    pR.Add(UserInput.AllRotations[i]);
+                }
+            }
+            for (int i = 0; i < pR.Count; i++) {
+                nameOfRotations.Add(new string(new char[] { Geometry.IntToChar((int)pR[i][0]), Geometry.IntToChar((int)pR[i][1]) }));
+            }
+
+        return nameOfRotations;
+    }
+
     /// <summary>
     /// Toggles the possible rotations within the UI. 
     /// </summary>
