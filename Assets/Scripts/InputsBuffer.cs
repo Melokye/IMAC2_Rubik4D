@@ -21,7 +21,7 @@ public class InputsBuffer: MonoBehaviour {
     void Start() {
         rotationEngine = GameObject.Find("PuzzleGenerator");
         handler = rotationEngine.GetComponent<GameManager>();
-        Scrambler();
+        Scrambler(50);
         // inputsBuffer = mixed;
         StartCoroutine(RotationHandler());
         // solving = true;
@@ -34,14 +34,14 @@ public class InputsBuffer: MonoBehaviour {
     /// Generates a 50 long sequence of rotations.
     /// To be injected next in the inputBuffer.
     /// </summary>
-    public void Scrambler() {
+    public void Scrambler(int it) {
         // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
         Coords4D selection;
         GameObject p = GameObject.Find("Puzzle"); 
         System.Random rnd = new System.Random();
-        for (int cmp = 0 ; cmp < 50 ; cmp++) {
+        for (int cmp = 0 ; cmp < it ; cmp++) {
             int tmp = rnd.Next(0,8);
             selection = p.transform.GetChild(tmp).gameObject.GetComponent<Coords4D>();
             List<string> possibleRotations = UserInput.PossibleRotation(selection);
@@ -76,12 +76,11 @@ public class InputsBuffer: MonoBehaviour {
             }
             else {
                 // TODO need reajustement
+                List<List<object>> mixBuffer = new List<List<object>>();
                 for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
                     InjectInput(inputsBuffer[i]);
                     if(mixing == true){
-                        object tmp = inputsBuffer[i][0];
-                        inputsBuffer[i][0] = inputsBuffer[i][1];
-                        inputsBuffer[i][1] = tmp;
+                        mixBuffer.Add(new List<object>(){inputsBuffer[i][1],inputsBuffer[i][0],inputsBuffer[i][2]});
                     }
                     float totalRotation = 0;
                     List<List<Vector4>> targets = Animation.DefineTargets(handler.p, handler.selectedElement, Geometry.IntToAxis(handler.axis1), Geometry.IntToAxis(handler.axis2));
@@ -95,8 +94,9 @@ public class InputsBuffer: MonoBehaviour {
                     Animation.SnapToTargets(handler.p, handler.puzzle, targets, toBeRotated);
                 }
                 Animation.SetRotationSpeed(2f);
-                if(mixing == false ){
-                    inputsBuffer.Clear();
+                inputsBuffer.Clear();
+                if(mixing == true ){
+                    inputsBuffer = mixBuffer;
                 }
                 solving = false;
                 mixing = false;

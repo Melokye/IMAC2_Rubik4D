@@ -50,7 +50,7 @@ public class UserInput : MonoBehaviour
             buffer.inputsBuffer.Clear();
             buffer.inputsBuffer.AddRange(buffer.mixed);
             buffer.mixed.Clear();
-            buffer.Scrambler();
+            buffer.Scrambler(50);
             Animation.SetRotationSpeed(6f) ;
             buffer.SetMixingFlag(true);
         }
