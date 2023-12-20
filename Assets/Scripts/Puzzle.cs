@@ -72,6 +72,7 @@ public class Puzzle {
             cell.GetComponent<Renderer>().material = cellMat;
             cell.GetComponent<Renderer>().enabled = false;
 
+            // compute the cell's position
             Vector4 cellPosition = Vector4.zero;
             int iCell = Mathf.FloorToInt(i * 0.5f);
             cellPosition[iCell] = 1 - (2 * (i % 2));

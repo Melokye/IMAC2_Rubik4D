@@ -57,10 +57,17 @@ public class DragObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
     /// Determines which camera is going to be affected by the scroll wheel, then zoom in/out
     /// </summary>
     private void ZoomHandler() {
-        Vector3 newCameraPosition = Camera.main.transform.localPosition - 30f * Camera.main.transform.forward * Input.GetAxis("Mouse ScrollWheel");
+        Camera focusedCamera = null;
+        if (_hovered) {
+            focusedCamera = FindCameraByName("UICamera");
+        }
+        else {
+            focusedCamera = FindCameraByName("MainCamera");
+        }
+        Vector3 newCameraPosition = focusedCamera.transform.localPosition - 30f * focusedCamera.transform.forward * Input.GetAxis("Mouse ScrollWheel");
         float newDistance = Vector3.Distance(newCameraPosition, Vector3.zero);
         if (Mathf.Abs(Mathf.Clamp(newDistance, 5f, 200f) - newDistance) < Mathf.Epsilon) {
-            Camera.main.transform.localPosition = newCameraPosition;
+            focusedCamera.transform.localPosition = newCameraPosition;
         } 
     }
 

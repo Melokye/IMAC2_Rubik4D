@@ -6,19 +6,32 @@ public class SelectCell : MonoBehaviour {
     [SerializeField]
     private Coords4D coords4D;
     private Renderer rend;
-    private Color baseColor;
-    private static bool hovered;
     private static Color hoverColor = new Color(0f, 0f, 0f, 0.125f);
+    private Color selectColor;
+    private static Color selectHoverColor = new Color(0f, 0f, 0f, 0.375f);
 
     private static GameManager handler;
-    
-    
+
+    /// <summary>
+    /// Defines the state of the object
+    /// </summary>
+    public enum State {
+        Idle,
+        Hovered,
+        Selected,
+        SelectedHovered
+    }
+
+    private State _state;
+
     // Start is called before the first frame update
     void Start() {
+        _state = State.Idle;
         coords4D = this.gameObject.GetComponent<Coords4D>();
-        SelectCell.handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
+        handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
         rend = GetComponent<Renderer>();
-        baseColor = rend.material.color;
+        selectColor = rend.material.color;
+        rend.material.color = GetBaseColor();
     }
     
     /// <summary>
@@ -26,61 +39,99 @@ public class SelectCell : MonoBehaviour {
     /// Changes the color of hovered sticker. Currently the selection is yellow.
     /// </summary>
     void OnMouseOver() {
-        rend.enabled = true;
-        rend.material.color = hoverColor;
-        SelectCell.hovered = true;
+        switch (_state) {
+            case State.Idle:
+                SetState(State.Hovered);
+                break;
+            case State.Selected:
+                SetState(State.SelectedHovered);
+                break;
+        }
     }
 
     /// <summary>
     /// A Raycasting Function to visually unhover the precedent selection.
     /// </summary>
     void OnMouseExit() {
-        if (handler.GetSelection() != this.coords4D) {
-            rend.material.color = baseColor;
-            rend.enabled = false;
+        switch (_state) {
+            case State.Hovered:
+                SetState(State.Idle);
+                break;
+            case State.SelectedHovered:
+                SetState(State.Selected);
+                break;
         }
-        SelectCell.hovered = false;
     }
 
     /// <summary>
     /// A Raycasting, onClick function to permanently hover the user's selection.
     /// </summary>
     void OnMouseDown() {
-        if (handler.GetSelection() != null && handler.GetSelection().GetComponent<SelectCell>() != null) {
-            SelectCell tmp = handler.GetSelection().gameObject.GetComponent<SelectCell>();
-            tmp.rend.enabled = false;
-            tmp.rend.material.color = tmp.baseColor;
-            handler.SetterSelection(tmp.coords4D);
+        switch (_state) {
+            case State.Hovered:
+                SetState(State.Selected);
+                break;
+            case State.SelectedHovered:
+                SetState(State.Idle);
+                break;
         }
-        rend.enabled = true;
-        rend.material.color = baseColor;
-        handler.SetterSelection(this.coords4D);
-        Coords4D.selectedCoordinates = this.coords4D.GetCoordinates();
+    }
+
+    /// <summary>
+    /// Sets a new state to the object, and executes one thing if the new state is different
+    /// </summary>
+    /// <param name="newState"></param>
+    public void SetState(State newState) {
+        // check if already in the new state
+        if (_state == newState)
+            return;
+
+        Coords4D currentlySelectedCoords = handler.GetSelection();
+        SelectCell currentlySelected = null;
+        if (currentlySelectedCoords != null) {
+            currentlySelected = currentlySelectedCoords.GetComponent<SelectCell>();
+        }
+
+        // calls functions that only fire once on state change
+        switch (newState) {
+            case State.Idle:
+                if (_state == State.SelectedHovered) {
+                    handler.SetSelection(null);
+                }
+                rend.enabled = false;
+                rend.material.color = GetBaseColor();
+                break;
+            case State.Hovered:
+                rend.enabled = true;
+                rend.material.color = hoverColor;
+                break;
+            case State.Selected:
+                if (_state == State.Hovered) {
+                    if (currentlySelected != null) currentlySelected.SetState(State.Idle);
+                    handler.SetSelection(coords4D);
+                }
+                rend.material.color = selectColor;
+                break;
+            case State.SelectedHovered:
+                rend.material.color = selectHoverColor;
+                break;
+        }
+
+        // set the new _state
+        _state = newState;
     }
 
     /// <summary>
     /// Handle the deselection, when clicking away.
     /// </summary>
-    void Update() {
-        if (!SelectCell.hovered && handler.GetSelection() != null) {
-            if (handler.GetSelection() != null) {
-                SelectCell tmp = handler.GetSelection().gameObject.GetComponent<SelectCell>();
-                if (tmp != null) {
-                    tmp.rend.material.color = tmp.baseColor;
-                }
-            }
-            else {
-                rend.enabled = false;
-            }
-        }
-    }
-    
+    void Update() { }
+
     /// <summary>
     /// Getter of the original color of the sticker, before hovering.
     /// </summary>
     /// <returns></returns>
     public Color GetBaseColor() {
-        return baseColor;
+        return selectColor;
     }
 
     /// <summary>
@@ -88,7 +139,7 @@ public class SelectCell : MonoBehaviour {
     /// </summary>
     /// <param name="col"> A Unity.color to set from. </param>
     public void SetBaseColor(Color col) {
-        baseColor = col;
+        selectColor = col;
     }
 
     /// <summary>
