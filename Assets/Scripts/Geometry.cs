@@ -119,7 +119,7 @@ class Geometry {
 
         // Handle projection to infinity
         if (point.w + 1 != 0) {
-            projected = new Vector3(point.x, point.y, point.z) / (point.w + 1f);
+            projected = new Vector3(point.x, point.y, point.z) / (point.w + 1f); // TODO : add it in the presentation
         }
         else {
             projected = new Vector3(

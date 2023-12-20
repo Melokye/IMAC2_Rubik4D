@@ -45,7 +45,7 @@ class Animation {
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
                 if (toBeRotated[i][j] == true) {
-                    puzzle.setSticker(i, j, rotate * puzzle.GetSticker(i, j));
+                    puzzle.setSticker(i, j, rotate * puzzle.GetSticker(i, j)); // TODO presentation
                     sticker.GetComponent<Coords4D>().SetCoordinates(puzzle.GetSticker(i, j));
                 }
             }
