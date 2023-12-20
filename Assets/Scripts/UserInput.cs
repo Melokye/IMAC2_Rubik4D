@@ -39,10 +39,11 @@ public class UserInput : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.S)) {
             Animation.SetRotationSpeed(6f);
+            buffer.st = 0;
             buffer.SetSolvingFlag(true);
         }
         if (Input.GetKeyDown(KeyCode.M)) {
-            buffer.inputsBuffer.Clear();
+            buffer.st = buffer.inputsBuffer.Count - 1;
             buffer.inputsBuffer.AddRange(buffer.mixed);
             buffer.mixed.Clear();
             buffer.Scrambler(50);
