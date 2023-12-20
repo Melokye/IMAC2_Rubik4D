@@ -37,13 +37,13 @@ public class UserInput : MonoBehaviour {
         if (handler.GetSelection() != null) {
             ApplyRotation();
         }
-        if (Input.GetKeyDown(KeyCode.S)) {
+        if (Input.GetKeyDown(KeyCode.S) && !buffer.GetMixingFlag && !buffer.GetsolvingFlag) {
             Animation.SetRotationSpeed(6f);
             buffer.st = 0;
             buffer.SetSolvingFlag(true);
         }
-        if (Input.GetKeyDown(KeyCode.M)) {
-            buffer.st = buffer.inputsBuffer.Count - 1;
+        if (Input.GetKeyDown(KeyCode.M) && !buffer.GetMixingFlag && !buffer.GetsolvingFlag) {
+            buffer.st = buffer.inputsBuffer.Count;
             buffer.inputsBuffer.AddRange(buffer.mixed);
             buffer.mixed.Clear();
             buffer.Scrambler(50);
@@ -51,7 +51,7 @@ public class UserInput : MonoBehaviour {
             buffer.SetMixingFlag(true);
         }
         // For each camera in the scene, toggle both relevant culling masks
-        if (Input.GetKeyDown(KeyCode.P)) {
+        if (Input.GetKeyDown(KeyCode.P)&& !buffer.GetMixingFlag && !buffer.GetsolvingFlag) {
             GameObject circleContainer = GameObject.Find("CircleContainer");
             GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
             GameObject puzzle_UI = GameObject.Find("Puzzle_UI");

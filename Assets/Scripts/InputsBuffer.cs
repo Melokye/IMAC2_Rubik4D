@@ -93,7 +93,7 @@ public class InputsBuffer : MonoBehaviour {
                 }
                 Animation.SetRotationSpeed(2f);
                 if(mixing == true ){
-                    inputsBuffer.RemoveRange(st+1,mixed.Count);
+                    inputsBuffer.RemoveRange(st,mixed.Count);
                     inputsBuffer.AddRange(mixBuffer);
                     mixing = false;
                 }
