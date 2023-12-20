@@ -15,6 +15,7 @@ public class InputsBuffer: MonoBehaviour {
     public GameObject rotationEngine;
     private bool solving;
     private bool mixing;
+    public int st;
     public List<List<object>> inputsBuffer = new List<List<object>>(0);
     public List<List<object>> mixed = new List<List<object>>(0);
     // Start is called before the first frame update
@@ -77,7 +78,7 @@ public class InputsBuffer: MonoBehaviour {
             else {
                 // TODO need reajustement
                 List<List<object>> mixBuffer = new List<List<object>>();
-                for(int i = inputsBuffer.Count-1 ; i > -1 ; i--) {
+                for(int i = inputsBuffer.Count-1 ; i > st-1 ; i--) {
                     InjectInput(inputsBuffer[i]);
                     if(mixing == true){
                         mixBuffer.Add(new List<object>(){inputsBuffer[i][1],inputsBuffer[i][0],inputsBuffer[i][2]});
@@ -94,12 +95,17 @@ public class InputsBuffer: MonoBehaviour {
                     Animation.SnapToTargets(handler.p, handler.puzzle, targets, toBeRotated);
                 }
                 Animation.SetRotationSpeed(2f);
-                inputsBuffer.Clear();
                 if(mixing == true ){
-                    inputsBuffer = mixBuffer;
+                    inputsBuffer.RemoveRange(st+1,mixed.Count);
+                    inputsBuffer.AddRange(mixBuffer);
+                    mixing = false;
                 }
-                solving = false;
-                mixing = false;
+                if(solving == true){
+                    inputsBuffer.Clear();
+                    solving = false;
+                }
+
+                
             }
         }
     }
