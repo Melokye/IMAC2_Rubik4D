@@ -126,10 +126,26 @@ public class CommandBoard : MonoBehaviour {
                 sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
             }
         }
+        GameObject selectModeToggle = GameObject.Find("SelectMode");
+        Transform textObject = selectModeToggle.transform.Find("Text (TMP)");
+        if (textObject.GetComponent<TMPro.TextMeshProUGUI>().text == "Sticker<br>Select Mode") {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Cell<br>Select Mode";
+        }
+        else {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Sticker<br>Select Mode";
+        }
         UnselectSticker();
     }
 
     public void ChangeClock() {
+        GameObject clockToggle = GameObject.Find("Clockwise");
+        Transform textObject = clockToggle.transform.Find("Text (TMP)");
+        if (clockwise) {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Counter-<br>Clockwise";
+        }
+        else {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Clockwise";
+        }
         clockwise = !clockwise;
     }
     // TODO Note for handling the 1-layer rotation:
