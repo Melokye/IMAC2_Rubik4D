@@ -9,8 +9,8 @@ class RingsRepresentation: MonoBehaviour{
     /// <summary>
     /// Render the rings based from the axis on the 3D space
     /// Draw the axis circles on the 3D space
-    /// // TODO add more info
-    /// // TODO need to split into 2 functions :
+    /// /// \todo add more info
+    /// /// \todo need to split into 2 functions :
     ///     - 1 generate ONLY ONE ring
     ///     - 1 generate ALL the rings
     /// </summary>    
@@ -19,22 +19,22 @@ class RingsRepresentation: MonoBehaviour{
         GameObject circleContainer = new GameObject();
         circleContainer.name = name;
 
-        // index for the circle material // TODO move in another function?
+        // index for the circle material /// \todo move in another function?
         List<int> matChoice = new List<int>() { 0, 1, 0, 2, 4, 4, 5, 3 };
         
-        // define the parcours // TODO Geometry.Axis { x, y, z, w, none }
+        // define the parcours /// \todo Geometry.Axis { x, y, z, w, none }
         List<Tuple<int, int>> rotationAxes = new List<Tuple<int, int>>() {
             Tuple.Create(0, 1), Tuple.Create(0, 2), Tuple.Create(1, 0),
             Tuple.Create(2, 1), Tuple.Create(1, 3), Tuple.Create(3, 1),
             Tuple.Create(2, 3), Tuple.Create(0, 3)
         };
 
-        // TODO: make it work for 3x3x3x3 and above
+        /// \todo: make it work for 3x3x3x3 and above
         List<int> stickerChoice = new List<int>() { 0, 3, 5, 6 };
 
         // create circles
         for (int i = 0; i < stickerChoice.Count; i++) {
-            // TODO maybe we don't need the loop i
+            /// \todo maybe we don't need the loop i
             GameObject tempsticker = new GameObject();
             Vector4 stickerReference = p.GetSticker(0, stickerChoice[i]);
 
@@ -50,7 +50,7 @@ class RingsRepresentation: MonoBehaviour{
                     
                     // other rotations draw the circles
                     default:
-                        // TODO part of the code to generate the rings from one plane
+                        /// \todo part of the code to generate the rings from one plane
                         for (int k = 0; k < 90; k++) {
                             // need a loop to gradually reach 360°
                             stickerReference = RingsRepresentation.TraverseAxis(stickerReference, tempsticker, 
@@ -76,7 +76,7 @@ class RingsRepresentation: MonoBehaviour{
     /// <returns></returns>
     static GameObject CreateCircle(Mesh mesh, int plane, int tempstickerIndex) {
         List<string> _circle_materials = new List<string>() {
-        "XY", "XZ", "YZ", "XW", "YW", "ZW" }; // TODO attribute? rename
+        "XY", "XZ", "YZ", "XW", "YW", "ZW" }; /// \todo attribute? rename
 
         // create gameobject
         GameObject circle = new GameObject();
@@ -98,11 +98,11 @@ class RingsRepresentation: MonoBehaviour{
     /// <summary>
     /// Create circle mesh from vertices
     /// </summary>
-    /// // TODO need to split into multiples functions
+    /// /// \todo need to split into multiples functions
     /// <param name="vertices"></param>
     /// <returns></returns>
     static Mesh CreateCircleMesh(List<Vector3> vertices) {
-        // TODO into RingsRepresentation.cs
+        /// \todo into RingsRepresentation.cs
         Mesh mesh = new Mesh();
 
         // add vertices
@@ -173,7 +173,7 @@ class RingsRepresentation: MonoBehaviour{
 
     /// <summary>
     /// Rotate a certain amount around a rotation plane and create vertices
-    /// // TODO rephrase the doc + rename fn?
+    /// /// \todo rephrase the doc + rename fn?
     /// </summary>
     /// <param name="stickers"></param>
     /// <param name="sticker"></param>
@@ -188,7 +188,7 @@ class RingsRepresentation: MonoBehaviour{
         int axis1, int axis2,
         float angle, bool makeVertices = true) 
     {
-        // TODO remove GameManager "attributes"?
+        /// \todo remove GameManager "attributes"?
         sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * stickers);
         if (makeVertices) {
             float vertexX = trailWidth * Mathf.Sin(angle);
@@ -199,7 +199,7 @@ class RingsRepresentation: MonoBehaviour{
             vertices.Add(new Vector3(0, -vertexY, 0) + sticker.transform.position);
         }
 
-        // TODO improve reajustement
+        /// \todo improve reajustement
         return Geometry.RotationMatrix((Geometry.Axis)axis1, (Geometry.Axis)axis2, angle) * stickers;
     }
 }

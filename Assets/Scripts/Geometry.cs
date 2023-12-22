@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO must need to sort again
+/// \todo must need to sort again
 class Geometry {
     
     public enum Axis { x, y, z, w, none }
@@ -19,8 +19,8 @@ class Geometry {
     /// <param name="pos">index to insert the value</param>
     /// <returns> Vector4 with value inserted at index pos </returns>
     public static Vector4 InsertFloat(Vector3 vec, float value, int pos) {
-        // TODO rename the function?
-        pos = Mathf.Clamp(pos, 0, 3); // TODO <- it's for DEBUG : to avoid out of range
+        /// \todo rename the function?
+        pos = Mathf.Clamp(pos, 0, 3); /// \todo <- it's for DEBUG : to avoid out of range
 
         Vector4 result = Vector4.zero;
         switch (pos) {
@@ -69,7 +69,7 @@ class Geometry {
             case 'W': return Axis.w;
             default:
                 Debug.Log(axis + " isn't defined");
-                return Axis.none; // TODO need gestion
+                return Axis.none; /// \todo need gestion
         }
     }
 
@@ -97,11 +97,11 @@ class Geometry {
         }
     }
     public static int AxisToInt(Axis axis) {
-        return (int)axis; // TODO must delete it later
+        return (int)axis; /// \todo must delete it later
     }
 
     public static Axis IntToAxis(int n) {
-        // TODO must delete later?
+        /// \todo must delete later?
         return (Axis)n;
     }
 
@@ -119,7 +119,7 @@ class Geometry {
 
         // Handle projection to infinity
         if (point.w + 1 != 0) {
-            projected = new Vector3(point.x, point.y, point.z) / (point.w + 1f); // TODO : add it in the presentation
+            projected = new Vector3(point.x, point.y, point.z) / (point.w + 1f); /// \todo : add it in the presentation
         }
         else {
             projected = new Vector3(
@@ -138,7 +138,7 @@ class Geometry {
     /// <returns></returns>
     public static Vector4 Projection4DTo3DOrthographic(Vector4 point) {
         // Vector4 point = new Vector4(p.x, p.y, p.z, p.w);
-        // temp = cameraRotation * colorAssignment * temp; // TODO move it outside of the fn
+        // temp = cameraRotation * colorAssignment * temp; /// \todo move it outside of the fn
         Vector3 projected = Vector3.zero;
         projected = new Vector3(point.x, point.y, point.z);
         return projected;

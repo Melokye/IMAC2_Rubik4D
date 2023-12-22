@@ -60,7 +60,7 @@ public class CommandBoard : MonoBehaviour {
     /// Launch the selected rotation onClick on the bounded buttons of the command board.
     /// </summary>
     /// <param name="selected">The rotation plane selected by the user.</param>
-    public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
+    public void ApplyRotation(GameObject selected) { /// \todo maybe a way to not use param?
         // Extract axis
         if (!handler.GetRotateFlag() & !buffer.GetMixingFlag() & !buffer.GetsolvingFlag()) {
             List<Geometry.Axis> axis = new List<Geometry.Axis>();
@@ -148,7 +148,7 @@ public class CommandBoard : MonoBehaviour {
         }
         clockwise = !clockwise;
     }
-    // TODO Note for handling the 1-layer rotation:
+    /// \todo Note for handling the 1-layer rotation:
     // In 2^4n no matter which sticker you select in the cell, it will always rotate the same thing.
     // Only the layer that is the closest to the cell selected will rotate.
     // Rotations possible for each cell:
