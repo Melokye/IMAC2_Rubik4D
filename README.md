@@ -17,3 +17,5 @@ The main goal is to find an aesthetic representation of a 2x2x2x2 Rubik's cube.
 - The [members of the Hypercubers Discord server](https://discord.com/invite/Rrw2xeB3Gb)
 
 ---
+
+[Releases](https://github.com/melokye/IMAC2_Rubik4D/releases)

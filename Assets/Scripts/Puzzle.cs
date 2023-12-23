@@ -11,17 +11,17 @@ public class Puzzle {
     List<string> _materials = new List<string>() {
         "Red", "Orange", "Blue", "Green", "Yellow", "White", "Purple", "Pink" };
 
-    // TODO _stickers can be optimized?
+    /// \todo _stickers can be optimized?
     List<List<Vector4>> _stickers = new List<List<Vector4>>();
     const int _nbCells = 8;
-    private float stickerDistance = 10f; // TODO -> in renderer ?
+    private float stickerDistance = 10f; /// \todo -> in renderer ?
 
     /// <summary>
     /// Generate a 4D Rubik
     /// </summary>
     /// <param name="n">Size of the Rubik (by default it's a 2x2x2x2 Rubik)</param>
     public Puzzle(int n = 2) {
-        // TODO n must be added in parameters -> puzzleSize
+        /// \todo n must be added in parameters -> puzzleSize
         for (int i = 0; i < _nbCells; i++) {
             // Define a cell
             Vector4 cell = Vector4.zero;
@@ -29,7 +29,7 @@ public class Puzzle {
             cell[iCell] = 1 - (2 * (i % 2)); // 1 for i even, -1 for i odd
 
             // Create the stickers at the i-th cell
-            // TODO explain more?
+            /// \todo explain more?
             _stickers.Add(new List<Vector4>());
             for (int j = 0; j < Mathf.Pow(n, 3); j++) {
                 Vector3 temp = new Vector3(0, 0, 0);
@@ -54,7 +54,7 @@ public class Puzzle {
     public GameObject RenderStickers(Mesh mesh, float stickerSize) {
         GameObject puzzle = new GameObject();
         for (int i = 0; i < NbCells(); i++) {
-            // TODO warning : length of _names and _materials may not be the same as the number of points
+            /// \todo warning : length of _names and _materials may not be the same as the number of points
             GameObject cell = new GameObject();
             cell.name = _names[i];
 
@@ -65,7 +65,7 @@ public class Puzzle {
             // add material
             Material cellMat = Resources.Load("_Select", typeof(Material)) as Material;
             cell.AddComponent<MeshRenderer>();
-            // TODO: fix this, not working currently
+            /// \todo: fix this, not working currently
             /*cell.AddComponent<MeshRenderer>().shader.shadowCastingMode = ShadowCastingMode.Off;
             cell.AddComponent<MeshRenderer>().receiveShadows = false;
             cell.AddComponent<MeshRenderer>().allowOcclusionWhenDynamic = false;*/
@@ -115,17 +115,17 @@ public class Puzzle {
     }
 
     /// <summary>
-    /// // TODO explain a little bit this function
+    /// /// \todo explain a little bit this function
     /// </summary>
     /// <returns></returns>
     public List<List<bool>> whosGunnaRotate(Coords4D selectedElement = null) {
         // List<List<bool>> toBeRotated = new List<List<bool>>();
-        if (selectedElement == null) { // TODO need optimisation
+        if (selectedElement == null) { /// \todo need optimisation
             List<bool> sticker = Enumerable.Repeat(true, NbStickers(0)).ToList();
             return Enumerable.Repeat(sticker, NbCells()).ToList();
         }
 
-        // TODO change type of selectedElement?
+        /// \todo change type of selectedElement?
         int discriminator = 0;
         int signOfDiscriminator = 0;
         for (int i = 0; i < 4; i++) {
@@ -151,7 +151,7 @@ public class Puzzle {
     }
 
     // --- Getter and Setter
-    // TODO must have a version more C# like
+    /// \todo must have a version more C# like
     public List<List<Vector4>> GetStickers() {
         return _stickers;
     }

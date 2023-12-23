@@ -60,7 +60,7 @@ public class CommandBoard : MonoBehaviour {
     /// Launch the selected rotation onClick on the bounded buttons of the command board.
     /// </summary>
     /// <param name="selected">The rotation plane selected by the user.</param>
-    public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
+    public void ApplyRotation(GameObject selected) { /// \todo maybe a way to not use param?
         // Extract axis
         if (!handler.GetRotateFlag() & !buffer.GetMixingFlag() & !buffer.GetsolvingFlag()) {
             List<Geometry.Axis> axis = new List<Geometry.Axis>();
@@ -126,13 +126,29 @@ public class CommandBoard : MonoBehaviour {
                 sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
             }
         }
+        GameObject selectModeToggle = GameObject.Find("SelectMode");
+        Transform textObject = selectModeToggle.transform.Find("Text (TMP)");
+        if (textObject.GetComponent<TMPro.TextMeshProUGUI>().text == "Sticker<br>Select Mode") {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Cell<br>Select Mode";
+        }
+        else {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Sticker<br>Select Mode";
+        }
         UnselectSticker();
     }
 
     public void ChangeClock() {
+        GameObject clockToggle = GameObject.Find("Clockwise");
+        Transform textObject = clockToggle.transform.Find("Text (TMP)");
+        if (clockwise) {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Counter-<br>Clockwise";
+        }
+        else {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Clockwise";
+        }
         clockwise = !clockwise;
     }
-    // TODO Note for handling the 1-layer rotation:
+    /// \todo Note for handling the 1-layer rotation:
     // In 2^4n no matter which sticker you select in the cell, it will always rotate the same thing.
     // Only the layer that is the closest to the cell selected will rotate.
     // Rotations possible for each cell:

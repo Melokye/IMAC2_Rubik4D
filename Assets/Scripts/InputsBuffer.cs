@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO delete _attribute used from GameManager.cs
-// TODO reduce dependancies with GameManager
-// TODO rename file into Solver.cs
+/// \todo delete _attribute used from GameManager.cs
+/// \todo reduce dependancies with GameManager
+/// \todo rename file into Solver.cs
 
 /// <summary>
 /// Keep trace of all the user or mixer rotations to undo them in case of solving.
@@ -33,7 +33,7 @@ public class InputsBuffer : MonoBehaviour {
     /// To be injected next in the inputBuffer.
     /// </summary>
     public void Scrambler(int it) {
-        // TODO it is not currently working with the new inputBuffer system (a selected sticker is needed).
+        /// \todo it is not currently working with the new inputBuffer system (a selected sticker is needed).
         int axis1 = 0;
         int axis2 = 1;
         Coords4D selection;
@@ -54,7 +54,7 @@ public class InputsBuffer : MonoBehaviour {
     /// </summary>
     /// <param name="command">A command is a set of three things : two axis to set a rotation and a selectSticker to set the selection.</param>
     public void InjectInput(in List<object> command) {
-        //debugLength(commands); // TODO
+        //debugLength(commands); /// \todo
         handler.axis1 = (int)command[0];
         handler.axis2 = (int)command[1];
         handler.SetSelection((Coords4D)command[2]);
@@ -67,13 +67,13 @@ public class InputsBuffer : MonoBehaviour {
     /// </summary>
     /// <returns>As I recall, nothing eheh.</returns>
     private IEnumerator RotationHandler() {
-        // TODO try to delete this function? just change the rotationSpeed to 6.
+        /// \todo try to delete this function? just change the rotationSpeed to 6.
         while (true) {
             if (!solving && !mixing) {
                 yield return null;
             }
             else {
-                // TODO need reajustement
+                /// \todo need reajustement
                 List<List<object>> mixBuffer = new List<List<object>>();
                 for(int i = inputsBuffer.Count-1 ; i > st-1 ; i--) {
                     InjectInput(inputsBuffer[i]);
