@@ -9,9 +9,4 @@ public class SC_SideMenu: MonoBehaviour {
     public void BackMenuButton() {
         SceneManager.LoadScene("Menu");
     }
-
-    // TODO disable or not the command board option
-    // public void CommandBoardButton() {
-    //     SceneManager.LoadScene("CommandBoard");
-    // }
 }
