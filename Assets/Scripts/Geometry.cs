@@ -43,6 +43,31 @@ class Geometry {
         return result;
     }
 
+    public static Vector3 ExtractVector3(Vector4 vec, int pos) {
+        /// \todo rename the function?
+        pos = Mathf.Clamp(pos, 0, 3); /// \todo <- it's for DEBUG : to avoid out of range
+
+        Vector4 result = Vector4.zero;
+        switch (pos) {
+            case 0:
+                result = new Vector3(vec.y, vec.z, vec.w);
+                break;
+            case 1:
+                result = new Vector3(vec.x, vec.z, vec.w);
+                break;
+            case 2:
+                result = new Vector3(vec.x, vec.y, vec.w);
+                break;
+            case 3:
+                result = new Vector3(vec.x, vec.y, vec.z);
+                break;
+            default:
+                Debug.Log("ExtractVector3: Extract position out of range!");
+                break;
+        }
+        return result;
+    }
+
     /// <summary>
     /// Generate a new rotationMatrix from two axes and an angle
     /// </summary>

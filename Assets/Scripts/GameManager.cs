@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour { // == main
         p = new Puzzle();
 
         // Create a GameObject for each point and link them in the GameObject "Puzzle"
-        puzzle = p.RenderStickers(sphereMesh, stickerSize);
+        puzzle = p.RenderStickers(sphereMesh, stickerSize, 0);
         puzzle.name = "Puzzle";
         puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
 
@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour { // == main
 
         // Creates the dupe puzzle to display the classical view in a UI
         ChangeProjection(); // Swap to classical view
-        GameObject puzzle_UI = p.RenderStickers(sphereMesh, stickerSize);
+        GameObject puzzle_UI = p.RenderStickers(sphereMesh, stickerSize, 1);
         puzzle_UI.name = "Puzzle_UI";
         puzzle_UI.tag = "Puzzle";
 

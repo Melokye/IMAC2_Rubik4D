@@ -14,7 +14,7 @@ public class Puzzle {
     /// \todo _stickers can be optimized?
     List<List<Vector4>> _stickers = new List<List<Vector4>>();
     const int _nbCells = 8;
-    private float stickerDistance = 10f; /// \todo -> in renderer ?
+    private float stickerDistance = 0.1f; /// \todo -> in renderer ?
 
     /// <summary>
     /// Generate a 4D Rubik
@@ -42,7 +42,7 @@ public class Puzzle {
                         (j % n) / (n - 1f));
                 }
                 Vector4 sticker = Vector4.zero;
-                sticker = Geometry.InsertFloat(temp / stickerDistance, cell[iCell], iCell);
+                sticker = Geometry.InsertFloat(temp * stickerDistance, cell[iCell], iCell);
                 _stickers[i].Add(sticker);
             }
         }
@@ -51,7 +51,7 @@ public class Puzzle {
     /// <summary>
     /// Create coordinates for each sticker
     /// </summary>
-    public GameObject RenderStickers(Mesh mesh, float stickerSize) {
+    public GameObject RenderStickers(Mesh mesh, float stickerSize, int mode) {
         GameObject puzzle = new GameObject();
         for (int i = 0; i < NbCells(); i++) {
             /// \todo warning : length of _names and _materials may not be the same as the number of points
@@ -102,13 +102,15 @@ public class Puzzle {
 
                 // add the Select Script
                 sticker.AddComponent<SelectSticker>();
-                sticker.AddComponent<Coords4D>().SetCoordinates(GetSticker(i, j));
+                sticker.AddComponent<Coords4D>().SetCoordinates(GetSticker(i, j)
+                    + Geometry.InsertFloat(Geometry.ExtractVector3(GetSticker(i, j) * mode * 8f, iCell), 0f, iCell));
                 sticker.AddComponent<MeshCollider>().enabled = false;
 
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * GetSticker(i, j));
+                sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * (GetSticker(i, j)
+                    + Geometry.InsertFloat(Geometry.ExtractVector3(GetSticker(i, j) * mode * 8f, iCell), 0f, iCell)));
             }
         }
         return puzzle;
