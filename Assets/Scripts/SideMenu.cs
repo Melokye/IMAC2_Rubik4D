@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SC_SideMenu: MonoBehaviour {
+public class SideMenu: MonoBehaviour {
 
     /// <summary>
     /// Go back to the main menu
