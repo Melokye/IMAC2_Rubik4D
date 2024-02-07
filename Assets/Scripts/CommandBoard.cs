@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class CommandBoard : MonoBehaviour {
     GameManager handler;
@@ -15,10 +15,14 @@ public class CommandBoard : MonoBehaviour {
 
         tmp = GameObject.Find("TrivialSolver");
         buffer = tmp.GetComponent<InputsBuffer>();
-    }
 
-    // Update is called once per frame
-    void Update() {}
+        // Listen for size slider
+        GameObject cameraCanvas = GameObject.Find("CameraCanvas");
+        Slider cameraCanvasSize = GameObject.Find("CameraCanvasSize").GetComponent<Slider>();
+        cameraCanvasSize.onValueChanged.AddListener((value) => {
+            cameraCanvas.GetComponent<RectTransform>().localScale = new Vector3(0.5625f, 1f, 1f) * value;
+        });
+    }
 
     /// <summary>
     /// Toggle the selection via the command board.
@@ -29,12 +33,12 @@ public class CommandBoard : MonoBehaviour {
     }
 
     /// <summary>
-    /// Lanch the selected rotation onClick on the bounded buttons of the command board.
+    /// Launch the selected rotation onClick on the bounded buttons of the command board.
     /// </summary>
     /// <param name="selected">The rotation plane selected by the user.</param>
-    public void ApplyRotation(GameObject selected) { // TODO maybe a way to not use param?
+    public void ApplyRotation(GameObject selected) { /// \todo maybe a way to not use param?
         // Extract axis
-        if (!handler.GetRotateFlag() & !buffer.GetInputingFlag()) {
+        if (!handler.GetRotateFlag() & !buffer.GetMixingFlag() & !buffer.GetsolvingFlag()) {
             List<Geometry.Axis> axis = new List<Geometry.Axis>();
             foreach (char letter in selected.name) {
                 axis.Add(Geometry.CharToAxis(letter));
@@ -54,22 +58,76 @@ public class CommandBoard : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Toggles visibility of the CommandBoard.
+    /// Used by a button's trigger method
+    /// </summary>
     public void ToggleCommandBoard() {
         GameObject panel = transform.GetChild(0).gameObject;
         panel.SetActive(!panel.activeSelf);
     }
 
+    /// <summary>
+    /// Sets the currently selected object to Idle state, and sets selection to null
+    /// Used by a button's trigger method
+    /// </summary>
     public void UnselectSticker() {
-        handler.SetterSelection(null);
+        if (handler.GetSelection() != null) {
+            if (handler.GetSelection().GetComponent<SelectCell>() == null) {
+                handler.GetSelection().GetComponent<SelectSticker>().SetState(SelectSticker.State.Idle);
+            }
+            else {
+                handler.GetSelection().GetComponent<SelectCell>().SetState(SelectCell.State.Idle);
+            }
+            handler.SetSelection(null);
+        }
+    }
+
+    /// <summary>
+    /// Toggles the mouse hover detection on the stickers on the cells,
+    /// and unselects the currently selected sticker
+    /// Used by a button's trigger method
+    /// </summary>
+    public void ToggleSelectMode() {
+        GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
+        foreach (Transform cell in handler.puzzle.transform) {
+            cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
+            }
+        }
+        foreach (Transform cell in puzzle_UI.transform) {
+            cell.GetComponent<MeshCollider>().enabled = !cell.GetComponent<MeshCollider>().enabled;
+            foreach (Transform sticker in cell) {
+                sticker.GetComponent<MeshCollider>().enabled = !sticker.GetComponent<MeshCollider>().enabled;
+            }
+        }
+        GameObject selectModeToggle = GameObject.Find("SelectMode");
+        Transform textObject = selectModeToggle.transform.Find("Text (TMP)");
+        if (textObject.GetComponent<TMPro.TextMeshProUGUI>().text == "Sticker<br>Select Mode") {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Cell<br>Select Mode";
+        }
+        else {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Sticker<br>Select Mode";
+        }
+        UnselectSticker();
     }
 
     public void ChangeClock() {
+        GameObject clockToggle = GameObject.Find("Clockwise");
+        Transform textObject = clockToggle.transform.Find("Text (TMP)");
+        if (clockwise) {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Counter-<br>Clockwise";
+        }
+        else {
+            textObject.GetComponent<TMPro.TextMeshProUGUI>().text = "Clockwise";
+        }
         clockwise = !clockwise;
     }
-    // TODO Note for handling the 1-layer rotation:
+    /// \todo Note for handling the 1-layer rotation:
     // In 2^4n no matter which sticker you select in the cell, it will always rotate the same thing.
-    // Only the layer that is the closest to the cell selected will rotate. 
-    // Rotations possible for each cell: 
+    // Only the layer that is the closest to the cell selected will rotate.
+    // Rotations possible for each cell:
     // In : x , y , z      : up circles
     // Out : x , y , z     : down circles
 

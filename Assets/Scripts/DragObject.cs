@@ -60,12 +60,15 @@ public class DragObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
         Camera focusedCamera = null;
         if (_hovered) {
             focusedCamera = FindCameraByName("UICamera");
-            focusedCamera.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") * 30f;
         }
         else {
             focusedCamera = FindCameraByName("MainCamera");
-            focusedCamera.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") * 30f;
         }
+        Vector3 newCameraPosition = focusedCamera.transform.localPosition - 30f * focusedCamera.transform.forward * Input.GetAxis("Mouse ScrollWheel");
+        float newDistance = Vector3.Distance(newCameraPosition, Vector3.zero);
+        if (Mathf.Abs(Mathf.Clamp(newDistance, 5f, 200f) - newDistance) < Mathf.Epsilon) {
+            focusedCamera.transform.localPosition = newCameraPosition;
+        } 
     }
 
     /// <summary>

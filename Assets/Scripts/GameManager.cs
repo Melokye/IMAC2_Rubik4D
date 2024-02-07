@@ -8,26 +8,25 @@ public class GameManager : MonoBehaviour { // == main
     public Puzzle p;
     public Camera[] cameraArray;
 
-
     private bool _cubeRotating = false;
 
     [SerializeField]
-    public SelectSticker selectedSticker; // TODO private
+    public Coords4D selectedElement; /// \todo private
 
-    // TODO for debug / test purpose?
+    /// \todo for debug / test purpose?
     public int axis1 = 0;
     public int axis2 = 1;
     // ---
 
-    // To customize the Rubik // TODO needs to be added in a Parameter Menu
+    // To customize the Rubik /// \todo needs to be added in a Parameter Menu
     [SerializeField]
     private Mesh sphereMesh;
     private float stickerSize = 0.125f;
 
-    public float rotationSpeed = 2f; // TODO remplace by Animation.rotationSpeed
+    public float rotationSpeed = 2f; /// \todo remplace by Animation.rotationSpeed
 
     // to simplify the camera rotation
-    // TODO move it in another file?
+    /// \todo move it in another file?
     static float s3 = 1f / Mathf.Sqrt(3f);
     static float s6 = (3f + Mathf.Sqrt(3f)) / 6f;
     static float _s6 = 1f - s6;
@@ -56,14 +55,16 @@ public class GameManager : MonoBehaviour { // == main
         GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
 
         // Creates the dupe puzzle to display the classical view in a UI
-        GameObject puzzleDuplicate = Instantiate(puzzle);
-        puzzleDuplicate.name = "Puzzle_UI";
+        ChangeProjection(); // Swap to classical view
+        GameObject puzzle_UI = p.RenderStickers(sphereMesh, stickerSize);
+        puzzle_UI.name = "Puzzle_UI";
+        puzzle_UI.tag = "Puzzle";
 
-        SetLayerAllChildren(puzzleDuplicate.transform, 3); // Change layer for camera view
-        ChangeProjection(); // Change projection to classical view to render the circles
+        SetLayerAllChildren(puzzle_UI.transform, 3); // Change layer for camera view
         GameObject circleContainer_UI = RingsRepresentation.RenderCircles("CircleContainer_UI", p);
-        ChangeProjection(); // Change back projection for the first Update() frame cycle
         SetLayerAllChildren(circleContainer_UI.transform, 3);
+
+        ChangeProjection(); // Change back projection for the first Update() frame cycle
     }
 
     /// <summary>
@@ -86,16 +87,7 @@ public class GameManager : MonoBehaviour { // == main
             /*if (Input.GetKeyDown(KeyCode.R) && axis1 != axis2) {
                 LaunchRotation();
             }*/
-            // For each camera in the scene, toggle both relevant culling masks
-            if (Input.GetKeyDown(KeyCode.P)) {
-                GameObject circleContainer = GameObject.Find("CircleContainer");
-                GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
-                SetLayerAllChildren(circleContainer.transform,
-                    (circleContainer.layer + 3) % 6);
-                SetLayerAllChildren(circleContainer_UI.transform,
-                    (circleContainer_UI.layer + 3) % 6);
-                ChangeProjection();
-            }
+            
         }
         // At all times, there are two puzzle game objects.
         // The first is the special projection, the second is the classic projection.
@@ -119,18 +111,18 @@ public class GameManager : MonoBehaviour { // == main
     /// Handles rotations on each frame.
     /// </summary>
     /// <returns></returns>
-    public IEnumerator RotationHandler() { // TODO directly in Animation.cs?
+    public IEnumerator RotationHandler() { /// \todo directly in Animation.cs?
         while (true) {
             if (!_cubeRotating) {
                 yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
             }else {
-                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedSticker, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
-                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedSticker);
+                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedElement, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
+                List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedElement);
                 if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
-                        // TODO need reajustement?
+                        /// \todo need reajustement?
                         totalRotation = Animation.RotateOverTime(p, puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
                         yield return null;
                     }
@@ -145,7 +137,7 @@ public class GameManager : MonoBehaviour { // == main
     /// <summary>
     /// Toggle between classic projection and special projection
     /// </summary>
-    private void ChangeProjection() {
+    public void ChangeProjection() {
         switch (cameraRotationMode) {
             case 0:
                 cameraRotationMode = 1;
@@ -157,7 +149,7 @@ public class GameManager : MonoBehaviour { // == main
                 cameraRotation = specialProjection;
                 break;
         }
-        // TODO: find a better way to manage cameraRotation
+        /// \todo: find a better way to manage cameraRotation
 
         // Destroy previous circles
         // GameObject circleContainer = GameObject.Find("CircleContainer");
@@ -196,12 +188,12 @@ public class GameManager : MonoBehaviour { // == main
         return _cubeRotating;
     }
 
-    public void SetterSelection(SelectSticker selection) {
-        selectedSticker = selection;
+    public Coords4D GetSelection() {
+        return selectedElement;
     }
 
-    public SelectSticker GetSelection() {
-        return selectedSticker;
+    public void SetSelection(Coords4D selection) {
+        selectedElement = selection;
     }
 
     /// <summary>
@@ -224,6 +216,17 @@ public class GameManager : MonoBehaviour { // == main
         var children = root.GetComponentsInChildren<Transform>(includeInactive: true);
         foreach (var child in children) {
             //Debug.Log(child.name);
+            child.gameObject.layer = layer;
+        }
+    }
+
+    /// <summary>
+    /// Sets display Layer of direct children
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="layer"></param>
+    public void SetLayerDirectChildrenNoRoot(Transform root, int layer) {
+        foreach (Transform child in root) {
             child.gameObject.layer = layer;
         }
     }

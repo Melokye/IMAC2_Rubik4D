@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectSticker : MonoBehaviour {
+public class SelectCell : MonoBehaviour {
     [SerializeField]
     private Coords4D coords4D;
     private Renderer rend;
-    private Color idleColor;
-    private static Color hoverColor = Color.yellow;
-    private Color selectColorStart;
-    private Color selectColorEnd;
-    private static Color selectHoverColor = new Color(1f, 0.6f, 0f, 1f);
+    private static Color hoverColor = new Color(0f, 0f, 0f, 0.125f);
+    private Color selectColor;
+    private static Color selectHoverColor = new Color(0f, 0f, 0f, 0.375f);
 
     private static GameManager handler;
 
@@ -32,15 +30,13 @@ public class SelectSticker : MonoBehaviour {
         coords4D = this.gameObject.GetComponent<Coords4D>();
         handler = GameObject.Find("PuzzleGenerator").GetComponent<GameManager>();
         rend = GetComponent<Renderer>();
-        idleColor = rend.material.color;
-        selectColorStart = rend.material.color;
-        selectColorEnd = new Color(0.8f, 0.6f, 0.2f, 1f);
+        selectColor = rend.material.color;
         rend.material.color = GetBaseColor();
     }
-
+    
     /// <summary>
     /// A Raycasting Function to temporary hover the user's selection.
-    /// Changes the state of the hovered sticker.
+    /// Changes the color of hovered sticker. Currently the selection is yellow.
     /// </summary>
     void OnMouseOver() {
         switch (_state) {
@@ -91,9 +87,9 @@ public class SelectSticker : MonoBehaviour {
             return;
 
         Coords4D currentlySelectedCoords = handler.GetSelection();
-        SelectSticker currentlySelected = null;
+        SelectCell currentlySelected = null;
         if (currentlySelectedCoords != null) {
-            currentlySelected = currentlySelectedCoords.GetComponent<SelectSticker>();
+            currentlySelected = currentlySelectedCoords.GetComponent<SelectCell>();
         }
 
         // calls functions that only fire once on state change
@@ -102,9 +98,11 @@ public class SelectSticker : MonoBehaviour {
                 if (_state == State.SelectedHovered) {
                     handler.SetSelection(null);
                 }
+                rend.enabled = false;
                 rend.material.color = GetBaseColor();
                 break;
             case State.Hovered:
+                rend.enabled = true;
                 rend.material.color = hoverColor;
                 break;
             case State.Selected:
@@ -112,6 +110,7 @@ public class SelectSticker : MonoBehaviour {
                     if (currentlySelected != null) currentlySelected.SetState(State.Idle);
                     handler.SetSelection(coords4D);
                 }
+                rend.material.color = selectColor;
                 break;
             case State.SelectedHovered:
                 rend.material.color = selectHoverColor;
@@ -123,20 +122,16 @@ public class SelectSticker : MonoBehaviour {
     }
 
     /// <summary>
-    /// Handle the blinking animation when selected.
+    /// Handle the deselection, when clicking away.
     /// </summary>
-    void Update() {
-        if (_state == State.Selected) {
-            rend.material.color = Color.Lerp(selectColorStart, selectColorEnd, Mathf.PingPong(Time.time * 1f, 1f));
-        }
-    }
+    void Update() { }
 
     /// <summary>
     /// Getter of the original color of the sticker, before hovering.
     /// </summary>
     /// <returns></returns>
     public Color GetBaseColor() {
-        return idleColor;
+        return selectColor;
     }
 
     /// <summary>
@@ -144,7 +139,7 @@ public class SelectSticker : MonoBehaviour {
     /// </summary>
     /// <param name="col"> A Unity.color to set from. </param>
     public void SetBaseColor(Color col) {
-        idleColor = col;
+        selectColor = col;
     }
 
     /// <summary>
