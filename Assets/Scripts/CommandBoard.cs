@@ -28,9 +28,9 @@ public class CommandBoard : MonoBehaviour {
     /// Toggle the selection via the command board.
     /// </summary>
     /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
-    public void changeSelection(GameObject selected) {
-        handler.SetterSelection(GameObject.Find(selected.name + "_0").GetComponent<SelectSticker>());
-    }
+    // public void changeSelection(GameObject selected) {
+    //     handler.SetterSelection(GameObject.Find(selected.name + "_0").GetComponent<SelectSticker>());
+    // }
 
     /// <summary>
     /// Launch the selected rotation onClick on the bounded buttons of the command board.
