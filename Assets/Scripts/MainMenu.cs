@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// TODO rename file + add it in a directory "Menu"?
-public class SC_MainMenu: MonoBehaviour {
+// TODO add it in a directory "Menu"?
+public class MainMenu: MonoBehaviour {
 
     /// <summary>
     /// Play Now Button has been pressed, here you can initialize your game
