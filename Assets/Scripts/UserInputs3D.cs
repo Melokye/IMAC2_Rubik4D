@@ -3,29 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// The script that computes all possible rotation.
-/// </summary>
-public class UserInput : MonoBehaviour {
-
+public class UserInputs3D : MonoBehaviour
+{
     InputsBuffer buffer;
-    GameManager handler;
+    GameManager3D handler;
     GameObject axis;
     GameObject unselect;
     static List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2),
-                                                            new Vector2(0,1), new Vector2(0,3),
-                                                            new Vector2(1,3), new Vector2(2,3),
+                                                            new Vector2(0,1), 
 
                                                             new Vector2(2,1), new Vector2(2,0),
-                                                            new Vector2(1,0), new Vector2(3,0),
-                                                            new Vector2(3,1), new Vector2(3,2),};
+                                                            new Vector2(1,0)};
 
     List<string> nameOfRotation;
 
 
     // Start is called before the first frame update
     void Start() {
-        handler = GetComponent<GameManager>();
+        handler = GetComponent<GameManager3D>();
         buffer = GameObject.Find("TrivialSolver").GetComponent<InputsBuffer>();
         axis = GameObject.Find("Axis");
         unselect = GameObject.Find("Unselect");
@@ -67,7 +62,7 @@ public class UserInput : MonoBehaviour {
         }
     }
     /// <summary>
-    /// With a selected sticker selected by the user, computes all the 6 rotations possible (3 trigonometric and 3 antitrigonometric).
+    /// With a selected sticker selected by the user, computes all the 3 rotations possible .
     /// </summary>
     /// <returns> A list of the possible rotations. They are string in the form "XY", "WZ", etc...</returns>
     public List<string> PossibleRotation() {
@@ -76,7 +71,7 @@ public class UserInput : MonoBehaviour {
             List<Vector2> pR = new List<Vector2>(0); ;
 
             int usefulIndex = 0;
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 3; i++) {
                 if (Mathf.Abs(handler.GetSelection().GetCoordinates()[i]) == 1) {
                     usefulIndex = i;
                 }
@@ -87,29 +82,29 @@ public class UserInput : MonoBehaviour {
                 }
             }
             for (int i = 0; i < pR.Count; i++) {
-                nameOfRotations.Add(new string(new char[] { Geometry.IntToChar((int)pR[i][0]), Geometry.IntToChar((int)pR[i][1]) }));
+                nameOfRotations.Add(new string(new char[] { Geometry3D.IntToChar((int)pR[i][0]), Geometry3D.IntToChar((int)pR[i][1]) }));
             }
         }
         return nameOfRotations;
     }
-    public static List<string> PossibleRotation(Coords4D selected) {
+    public static List<string> PossibleRotation(Coords3D selected) {
         List<string> nameOfRotations = new List<string>();
 
         List<Vector2> pR = new List<Vector2>(0); ;
 
         int usefulIndex = 0;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             if (Mathf.Abs(selected.GetCoordinates()[i]) == 1) {
                 usefulIndex = i;
             }
         }
         for (int i = 0; i < AllRotations.Count; i++) {
-            if (UserInput.AllRotations[i][0] != usefulIndex & UserInput.AllRotations[i][1] != usefulIndex) {
-                pR.Add(UserInput.AllRotations[i]);
+            if (AllRotations[i][0] != usefulIndex & AllRotations[i][1] != usefulIndex) {
+                pR.Add(AllRotations[i]);
             }
         }
         for (int i = 0; i < pR.Count; i++) {
-            nameOfRotations.Add(new string(new char[] { Geometry.IntToChar((int)pR[i][0]), Geometry.IntToChar((int)pR[i][1]) }));
+            nameOfRotations.Add(new string(new char[] { Geometry3D.IntToChar((int)pR[i][0]), Geometry3D.IntToChar((int)pR[i][1]) }));
         }
 
         return nameOfRotations;
@@ -151,24 +146,15 @@ public class UserInput : MonoBehaviour {
         int axis1 = 0;
         int axis2 = 1;
         if ((Input.GetKeyDown(KeyCode.A) | Input.GetKeyDown(KeyCode.LeftArrow)) & !handler.GetRotateFlag()) {
-            axis1 = Geometry.CharToInt(nameOfRotation[0][0]);
-            axis2 = Geometry.CharToInt(nameOfRotation[0][1]);
-            handler.SetPlane(axis1, axis2);
-            buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
-            handler.LaunchRotation();
-        }
-        if ((Input.GetKeyDown(KeyCode.W) | Input.GetKeyDown(KeyCode.UpArrow)) & !handler.GetRotateFlag()) {
-            axis1 = Geometry.CharToInt(nameOfRotation[1][0]);
-            axis2 = Geometry.CharToInt(nameOfRotation[1][1]);
-
+            axis1 = Geometry3D.CharToInt(nameOfRotation[0][0]);
+            axis2 = Geometry3D.CharToInt(nameOfRotation[0][1]);
             handler.SetPlane(axis1, axis2);
             buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
             handler.LaunchRotation();
         }
         if ((Input.GetKeyDown(KeyCode.D) | Input.GetKeyDown(KeyCode.RightArrow)) & !handler.GetRotateFlag()) {
-            axis1 = Geometry.CharToInt(nameOfRotation[2][0]);
-            axis2 = Geometry.CharToInt(nameOfRotation[2][1]);
-
+            axis1 = Geometry.CharToInt(nameOfRotation[0][1]);
+            axis2 = Geometry.CharToInt(nameOfRotation[0][0]);
             handler.SetPlane(axis1, axis2);
             buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
             handler.LaunchRotation();

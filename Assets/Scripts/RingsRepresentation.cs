@@ -202,4 +202,78 @@ class RingsRepresentation: MonoBehaviour{
         /// \todo improve reajustement
         return Geometry.RotationMatrix((Geometry.Axis)axis1, (Geometry.Axis)axis2, angle) * stickers;
     }
+
+    //Following : add the 3D counter part.
+    public static GameObject RenderCircles(string name, Puzzle3D p) {
+        GameObject circleContainer = new GameObject();
+        circleContainer.name = name;
+
+        // index for the circle material /// \todo move in another function?
+        List<int> matChoice = new List<int>() { 0, 1, 0, 2, 4, 4, 5, 3 };
+        
+        // define the parcours /// \todo Geometry3D.Axis { x, y, z, none }
+        List<Tuple<int, int>> rotationAxes = new List<Tuple<int, int>>() {
+            Tuple.Create(0, 1), Tuple.Create(0, 2), Tuple.Create(1, 0),
+            Tuple.Create(2, 1)
+        };
+
+        /// \todo: make it work for 3x3x3 and above
+        List<int> stickerChoice = new List<int>() { 0, 3, 5, 6 };
+
+        // create circles
+        for (int i = 0; i < stickerChoice.Count; i++) {
+            /// \todo maybe we don't need the loop i
+            GameObject tempsticker = new GameObject();
+            Vector3 stickerReference = p.GetSticker(0, stickerChoice[i]);
+
+            // for all rotations necessary to roam all 6 circles
+            for (int j = 0; j < 6; j++) {
+                List<Vector3> vertices = new List<Vector3>();
+                switch (j) {
+                    // rotation j = 2 and j = 5 => reajust the sticker position to get on the right circle
+                    case 2: case 5:
+                        stickerReference = RingsRepresentation.TraverseAxis(stickerReference, tempsticker, vertices,
+                            rotationAxes[j].Item1, rotationAxes[j].Item2, 90f, false);
+                        break;
+                    
+                    // other rotations draw the circles
+                    default:
+                        /// \todo part of the code to generate the rings from one plane
+                        for (int k = 0; k < 90; k++) {
+                            // need a loop to gradually reach 360°
+                            stickerReference = RingsRepresentation.TraverseAxis(stickerReference, tempsticker, 
+                                vertices, rotationAxes[j].Item1, rotationAxes[j].Item2, 4f);
+                        }
+                        Mesh circleMesh = RingsRepresentation.CreateCircleMesh(vertices);
+                        GameObject circle = RingsRepresentation.CreateCircle(circleMesh, matChoice[j], i);
+                        circle.transform.parent = circleContainer.transform;
+                        break;
+                }
+            }
+            Destroy(tempsticker);
+        }
+        return circleContainer;
+    }
+
+    static Vector3 TraverseAxis(
+        Vector3 stickers, GameObject sticker, 
+        List<Vector3> vertices, 
+        int axis1, int axis2,
+        float angle, bool makeVertices = true) 
+    {
+        /// \todo remove GameManager "attributes"?
+        sticker.transform.position = Geometry3D.Projection3DTo2D(GameManager3D.cameraRotation * stickers);
+        if (makeVertices) {
+            float vertexX = trailWidth * Mathf.Sin(angle);
+            float vertexY = trailWidth * Mathf.Sin(angle);
+            float vertexZ = trailWidth * Mathf.Cos(angle);
+            vertices.Add(new Vector3(vertexX, vertexY, vertexZ) + sticker.transform.position);
+            vertices.Add(new Vector3(-vertexX, vertexY, -vertexZ) + sticker.transform.position);
+            vertices.Add(new Vector3(0, -vertexY, 0) + sticker.transform.position);
+        }
+
+        /// \todo improve reajustement
+        return Geometry3D.RotationMatrix((Geometry3D.Axis)axis1, (Geometry3D.Axis)axis2, angle) * stickers;
+    }
+
 }

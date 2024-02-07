@@ -3,15 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour { // == main
+public class GameManager3D : MonoBehaviour
+{
     public GameObject puzzle;
-    public Puzzle p;
+    public Puzzle3D p;
     public Camera[] cameraArray;
 
     private bool _cubeRotating = false;
 
     [SerializeField]
-    public Coords4D selectedElement; /// \todo private
+    public Coords3D selectedElement; /// \todo private
 
     /// \todo for debug / test purpose?
     public int axis1 = 0;
@@ -44,7 +45,7 @@ public class GameManager : MonoBehaviour { // == main
     /// Awake is called automatically before the function Start
     /// </summary>
     void Awake() {
-        p = new Puzzle();
+        p = new Puzzle3D();
 
         // Create a GameObject for each point and link them in the GameObject "Puzzle"
         puzzle = p.RenderStickers(sphereMesh, stickerSize);
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviour { // == main
         // then projects the stickers for the second, then changes projection back
         // to prepare for the next frame.
         foreach (GameObject puzzle in GameObject.FindGameObjectsWithTag("Puzzle")) {
-            PuzzleProjection4DTo3D(puzzle);
+            PuzzleProjection3DTo2D(puzzle);
             ChangeProjection();
         }
     }
@@ -117,13 +118,13 @@ public class GameManager : MonoBehaviour { // == main
                 yield return null;
                 // == continue; in c, to avoid freeze screen when used in coroutine
             }else {
-                List<List<Vector4>> targets = Animation.DefineTargets(p, selectedElement, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
+                List<List<Vector3>> targets = Animation.DefineTargets(p, selectedElement, Geometry3D.IntToAxis(axis1), Geometry3D.IntToAxis(axis2));
                 List<List<bool>> toBeRotated = p.whosGunnaRotate(selectedElement);
-                if (Geometry.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
+                if (Geometry3D.IsBetweenRangeExcluded(rotationSpeed, 0f, 90f)) {
                     float totalRotation = 0;
                     while (Mathf.Abs(90f - totalRotation) > Mathf.Epsilon) {
                         /// \todo need reajustement?
-                        totalRotation = Animation.RotateOverTime(p, puzzle, totalRotation, toBeRotated, Geometry.IntToAxis(axis1), Geometry.IntToAxis(axis2));
+                        totalRotation = Animation.RotateOverTime(p, puzzle, totalRotation, toBeRotated, Geometry3D.IntToAxis(axis1), Geometry3D.IntToAxis(axis2));
                         yield return null;
                     }
                 }
@@ -149,29 +150,18 @@ public class GameManager : MonoBehaviour { // == main
                 cameraRotation = specialProjection;
                 break;
         }
-        /// \todo: find a better way to manage cameraRotation
-
-        // Destroy previous circles
-        // GameObject circleContainer = GameObject.Find("CircleContainer");
-        // Destroy(circleContainer);
-
-        // Render new circles
-        // RenderCircles();
-
-        // Project all 4D stickers to 3D space
-        // PuzzleProjection4DTo3D(gameObject);
     }
 
     /// <summary>
     /// Projects a GameObject and all its 4D children into 3D
     /// </summary>
     /// <param name="gameObject"></param>
-    private void PuzzleProjection4DTo3D(GameObject gameObject) {
+    private void PuzzleProjection3DTo2D(GameObject gameObject) {
         for (int i = 0; i < gameObject.transform.childCount; i++) {
             Transform cell = gameObject.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Geometry.Projection4DTo3D(cameraRotation * p.GetSticker(i, j));
+                sticker.position = Geometry3D.Projection3DTo2D(cameraRotation * p.GetSticker(i, j));
             }
         }
     }
@@ -188,11 +178,11 @@ public class GameManager : MonoBehaviour { // == main
         return _cubeRotating;
     }
 
-    public Coords4D GetSelection() {
+    public Coords3D GetSelection() {
         return selectedElement;
     }
 
-    public void SetSelection(Coords4D selection) {
+    public void SetSelection(Coords3D selection) {
         selectedElement = selection;
     }
 

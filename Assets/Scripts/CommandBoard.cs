@@ -20,7 +20,7 @@ public class CommandBoard : MonoBehaviour {
         GameObject cameraCanvas = GameObject.Find("CameraCanvas");
         Slider cameraCanvasSize = GameObject.Find("CameraCanvasSize").GetComponent<Slider>();
         cameraCanvasSize.onValueChanged.AddListener((value) => {
-            cameraCanvas.GetComponent<RectTransform>().localScale = new Vector3(0.5625f, 1f, 1f) * value;
+        cameraCanvas.GetComponent<RectTransform>().localScale = new Vector3(0.5625f, 1f, 1f) * value;
         });
     }
 
