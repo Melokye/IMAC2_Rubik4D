@@ -103,14 +103,14 @@ public class Puzzle {
                 // add the Select Script
                 sticker.AddComponent<SelectSticker>();
                 sticker.AddComponent<Coords4D>().SetCoordinates(GetSticker(i, j)
-                    + Geometry.InsertFloat(Geometry.ExtractVector3(GetSticker(i, j) * mode * 8f, iCell), 0f, iCell));
+                    + Geometry.InsertFloat(Geometry.ExtractVector3(GetSticker(i, j) * (mode - 1) * -8f, iCell), 0f, iCell));
                 sticker.AddComponent<MeshCollider>().enabled = false;
 
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * (GetSticker(i, j)
-                    + Geometry.InsertFloat(Geometry.ExtractVector3(GetSticker(i, j) * mode * 8f, iCell), 0f, iCell)));
+                //sticker.transform.position = Geometry.Projection4DTo3D(GameManager.cameraRotation * (GetSticker(i, j)
+                //    + Geometry.InsertFloat(Geometry.ExtractVector3(GetSticker(i, j) * mode * 8f, iCell), 0f, iCell)));
             }
         }
         return puzzle;

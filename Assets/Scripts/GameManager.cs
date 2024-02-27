@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour { // == main
         puzzle = p.RenderStickers(sphereMesh, stickerSize, 0);
         puzzle.name = "Puzzle";
         puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
+        puzzle.AddComponent<ProjectionMatrix>().SetMatrix(specialProjection);
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
         GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
@@ -59,6 +60,7 @@ public class GameManager : MonoBehaviour { // == main
         GameObject puzzle_UI = p.RenderStickers(sphereMesh, stickerSize, 1);
         puzzle_UI.name = "Puzzle_UI";
         puzzle_UI.tag = "Puzzle";
+        puzzle_UI.AddComponent<ProjectionMatrix>().SetMatrix(Matrix4x4.identity);
 
         SetLayerAllChildren(puzzle_UI.transform, 3); // Change layer for camera view
         GameObject circleContainer_UI = RingsRepresentation.RenderCircles("CircleContainer_UI", p);
@@ -95,8 +97,9 @@ public class GameManager : MonoBehaviour { // == main
         // then projects the stickers for the second, then changes projection back
         // to prepare for the next frame.
         foreach (GameObject puzzle in GameObject.FindGameObjectsWithTag("Puzzle")) {
-            PuzzleProjection4DTo3D(puzzle);
-            ChangeProjection();
+            PuzzleProjection4DTo3D(puzzle, 
+               puzzle.GetComponent<ProjectionMatrix>().GetMatrix());
+            //ChangeProjection();
         }
     }
 
@@ -166,12 +169,12 @@ public class GameManager : MonoBehaviour { // == main
     /// Projects a GameObject and all its 4D children into 3D
     /// </summary>
     /// <param name="gameObject"></param>
-    private void PuzzleProjection4DTo3D(GameObject gameObject) {
+    private void PuzzleProjection4DTo3D(GameObject gameObject, Matrix4x4 cameraRot) {
         for (int i = 0; i < gameObject.transform.childCount; i++) {
             Transform cell = gameObject.transform.GetChild(i);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Geometry.Projection4DTo3D(cameraRotation * p.GetSticker(i, j));
+                sticker.position = Geometry.Projection4DTo3D(cameraRot * p.GetSticker(i, j));
             }
         }
     }

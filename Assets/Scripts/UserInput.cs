@@ -63,7 +63,7 @@ public class UserInput : MonoBehaviour {
                 (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
             handler.SetLayerDirectChildrenNoRoot(puzzle_UI.transform,
                 (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
-            handler.ChangeProjection();
+            //handler.ChangeProjection();
         }
     }
     /// <summary>
