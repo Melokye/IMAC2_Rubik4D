@@ -53,7 +53,7 @@ public class GameManager3D : MonoBehaviour
         puzzle.tag = "Puzzle"; // Defines this object as a Puzzle object
 
         // Create GameObjects representing the rotation axes, aesthetic purpose
-        GameObject circleContainer = RingsRepresentation.RenderCircles("CircleContainer", p);
+        GameObject circleContainer = RingsRepresentation3D.RenderCircles("CircleContainer", p);
 
         
 
@@ -64,7 +64,7 @@ public class GameManager3D : MonoBehaviour
         puzzle_UI.tag = "Puzzle";
 
         SetLayerAllChildren(puzzle_UI.transform, 3); // Change layer for camera view
-        GameObject circleContainer_UI = RingsRepresentation.RenderCircles("CircleContainer_UI", p);
+        GameObject circleContainer_UI = RingsRepresentation3D.RenderCircles("CircleContainer_UI", p);
         SetLayerAllChildren(circleContainer_UI.transform, 3);
 
         ChangeProjection(); // Change back projection for the first Update() frame cycle

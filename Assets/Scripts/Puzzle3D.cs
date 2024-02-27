@@ -18,7 +18,7 @@ public class Puzzle3D : MonoBehaviour
     private float stickerDistance = 10f; /// \todo -> in renderer ?
 
     /// <summary>
-    /// Generate a 4D Rubik
+    /// Generate a 3D Rubik
     /// </summary>
     /// <param name="n">Size of the Rubik (by default it's a 2x2x2x2 Rubik)</param>
     public Puzzle3D(int n = 2) {
@@ -33,17 +33,16 @@ public class Puzzle3D : MonoBehaviour
             /// \todo explain more?
             _stickers.Add(new List<Vector3>());
             for (int j = 0; j < Mathf.Pow(n, 2); j++) {
-                Vector3 temp = new Vector3(0, 0, 0);
+                Vector2 temp = new Vector3(0, 0);
                 if (n > 1) {
                     temp.x = Mathf.Lerp(-1f, 1f,
-                        (Mathf.FloorToInt(j / Mathf.Pow(n, 2)) % n) / (n - 1f));
+                        (Mathf.FloorToInt(j / n) / (n - 1f)));
                     temp.y = Mathf.Lerp(-1f, 1f,
-                        (Mathf.FloorToInt(j / n) % n) / (n - 1f));
-                    temp.z = Mathf.Lerp(-1f, 1f,
                         (j % n) / (n - 1f));
+                    
                 }
                 Vector3 sticker = Vector3.zero;
-                sticker = Geometry.InsertFloat(temp / stickerDistance, cell[iCell], iCell);
+                sticker = Geometry3D.InsertFloat(temp / stickerDistance, cell[iCell], iCell);
                 _stickers[i].Add(sticker);
             }
         }
@@ -109,7 +108,7 @@ public class Puzzle3D : MonoBehaviour
                 // place these points in the space
                 sticker.transform.localScale = stickerSize * Vector3.one;
                 sticker.transform.parent = cell.transform;
-                sticker.transform.position = GameManager.cameraRotation * GetSticker(i, j);
+                sticker.transform.position = GameManager3D.cameraRotation * GetSticker(i, j);
             }
         }
         return puzzle;

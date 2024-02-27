@@ -39,6 +39,8 @@ public class Geometry3D : MonoBehaviour
         return result;
     }
 
+
+    //todo : in 3d we only need 1 axis !!!!!!!
     /// <summary>
     /// Generate a new rotationMatrix from two axes and an angle
     /// </summary>
@@ -49,7 +51,7 @@ public class Geometry3D : MonoBehaviour
         int first = (int)axis1;
         int second = (int)axis2;
 
-        Matrix4x4 rotationMatrix = Matrix4x4.identity;
+        Matrix3x3 rotationMatrix = Matrix3x3.identity;
         rotationMatrix[first, first] = Mathf.Cos(angle * Mathf.Deg2Rad);
         rotationMatrix[second, first] = -Mathf.Sin(angle * Mathf.Deg2Rad);
         rotationMatrix[first, second] = Mathf.Sin(angle * Mathf.Deg2Rad);
@@ -108,16 +110,17 @@ public class Geometry3D : MonoBehaviour
     /// <param name="point"></param>
     /// <returns></returns>
     public static Vector2 Projection3DTo2D(Vector3 point) {
-        Vector2 projected = Vector2.zero;
+        Vector3 projected = Vector3.zero;
 
         // Handle projection to infinity
         if (point.z + 1 != 0) {
-            projected = new Vector2(point.x, point.y) / (point.z + 1f); /// \todo : add it in the presentation
+            projected = new Vector3(point.x, point.y,0) / (point.z + 1f); /// \todo : add it in the presentation
         }
         else {
-            projected = new Vector2(
+            projected = new Vector3(
                 Mathf.Sign(point.x) * Int16.MaxValue,
-                Mathf.Sign(point.y) * Int16.MaxValue
+                Mathf.Sign(point.y) * Int16.MaxValue,
+                0
             );
         }
         return projected;
@@ -131,8 +134,8 @@ public class Geometry3D : MonoBehaviour
     public static Vector2 Projection3DTo2DOrthographic(Vector3 point) {
         // Vector4 point = new Vector4(p.x, p.y, p.z, p.w);
         // temp = cameraRotation * colorAssignment * temp; /// \todo move it outside of the fn
-        Vector2 projected = Vector2.zero;
-        projected = new Vector2(point.x, point.y);
+        Vector3 projected = Vector3.zero;
+        projected = new Vector3(point.x, point.y,0);
         return projected;
     }
 }

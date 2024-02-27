@@ -16,7 +16,7 @@ public class Coords3D : MonoBehaviour
     }
 
     /// <summary>
-    /// Setter of the 4D coordinates of the object.
+    /// Setter of the 3D coordinates of the object.
     /// </summary>
     /// <param name="Coordinates"> A Unity.Vector4 to set from. </param>
     public void SetCoordinates(Vector3 Coordinates) {
