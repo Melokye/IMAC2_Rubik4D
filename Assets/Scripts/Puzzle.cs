@@ -102,8 +102,8 @@ public class Puzzle {
 
                 // add the Select Script
                 sticker.AddComponent<SelectSticker>();
-                sticker.AddComponent<Coords4D>().SetCoordinates(GetSticker(i, j)
-                    + Geometry.InsertFloat(Geometry.ExtractVector3(GetSticker(i, j) * (mode - 1) * -8f, iCell), 0f, iCell));
+                sticker.AddComponent<Coords4D>().SetCoordinates(GetSticker(i, j));
+                sticker.GetComponent<Coords4D>().SetCellNumber(iCell);
                 sticker.AddComponent<MeshCollider>().enabled = false;
 
                 // place these points in the space

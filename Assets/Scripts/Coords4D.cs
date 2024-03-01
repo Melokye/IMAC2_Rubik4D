@@ -6,6 +6,7 @@ public class Coords4D : MonoBehaviour
 {
     [SerializeField]
     private Vector4 coordinates;
+    private int cellNumber; // To know which axis the sticker belongs to
 
     /// <summary>
     /// Getter of the 4D coordinates of the object.
@@ -21,5 +22,13 @@ public class Coords4D : MonoBehaviour
     /// <param name="Coordinates"> A Unity.Vector4 to set from. </param>
     public void SetCoordinates(Vector4 Coordinates) {
         coordinates = Coordinates;
+    }
+
+    /// <summary>
+    /// Setter of the cellNumber of the object.
+    /// </summary>
+    /// <param name="cell"> An int to set from. </param>
+    public void SetCellNumber(int cell) {
+        cellNumber = cell;
     }
 }

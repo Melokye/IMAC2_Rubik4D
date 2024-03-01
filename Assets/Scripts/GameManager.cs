@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour { // == main
@@ -99,7 +100,6 @@ public class GameManager : MonoBehaviour { // == main
         foreach (GameObject puzzle in GameObject.FindGameObjectsWithTag("Puzzle")) {
             PuzzleProjection4DTo3D(puzzle, 
                puzzle.GetComponent<ProjectionMatrix>().GetMatrix());
-            //ChangeProjection();
         }
     }
 
@@ -172,9 +172,13 @@ public class GameManager : MonoBehaviour { // == main
     private void PuzzleProjection4DTo3D(GameObject gameObject, Matrix4x4 cameraRot) {
         for (int i = 0; i < gameObject.transform.childCount; i++) {
             Transform cell = gameObject.transform.GetChild(i);
+            int iCell = Mathf.FloorToInt(i * 0.5f);
             for (int j = 0; j < cell.childCount; j++) {
                 Transform sticker = cell.GetChild(j);
-                sticker.position = Geometry.Projection4DTo3D(cameraRot * p.GetSticker(i, j));
+                //sticker.GetComponent<Coords4D>().SetCoordinates((p.GetSticker(i, j) + Geometry.InsertFloat(Geometry.ExtractVector3(p.GetSticker(i, j) * 1f * 4f, iCell), 0f, iCell)));
+                sticker.position = Geometry.Projection4DTo3D(cameraRot * p.GetSticker(i, j) /*+ Geometry.InsertFloat(Geometry.ExtractVector3(p.GetSticker(i, j) * 2f, iCell), 0f, iCell))*/);
+                //Debug.Log((p.GetSticker(i, j) + Geometry.InsertFloat(Geometry.ExtractVector3(p.GetSticker(i, j) * 2f, iCell), 0f, iCell)));
+                //sticker.localScale = 1f * Vector3.one;
             }
         }
     }

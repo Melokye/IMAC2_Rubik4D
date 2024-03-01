@@ -59,11 +59,11 @@ public class UserInput : MonoBehaviour {
                 (circleContainer.layer + 3) % 6);
             handler.SetLayerAllChildren(circleContainer_UI.transform,
                 (circleContainer_UI.layer + 3) % 6);
-            handler.SetLayerDirectChildrenNoRoot(handler.puzzle.transform,
+            handler.SetLayerAllChildren(handler.puzzle.transform,
                 (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
-            handler.SetLayerDirectChildrenNoRoot(puzzle_UI.transform,
+            handler.SetLayerAllChildren(puzzle_UI.transform,
                 (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
-            //handler.ChangeProjection();
+            
         }
     }
     /// <summary>
