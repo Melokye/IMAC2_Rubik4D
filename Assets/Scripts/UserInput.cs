@@ -37,12 +37,12 @@ public class UserInput : MonoBehaviour {
         if (handler.GetSelection() != null) {
             ApplyRotation();
         }
-        if (Input.GetKeyDown(KeyCode.S) && !buffer.GetMixingFlag() && !buffer.GetsolvingFlag()) {
+        if (Input.GetKeyDown(KeyCode.S) && !buffer.GetMixingFlag() && !buffer.GetsolvingFlag() && !handler.GetRotateFlag()) {
             Animation.SetRotationSpeed(6f);
             buffer.st = 0;
             buffer.SetSolvingFlag(true);
         }
-        if (Input.GetKeyDown(KeyCode.M) && !buffer.GetMixingFlag() && !buffer.GetsolvingFlag()) {
+        if (Input.GetKeyDown(KeyCode.M) && !buffer.GetMixingFlag() && !buffer.GetsolvingFlag() && !handler.GetRotateFlag()) {
             buffer.st = buffer.inputsBuffer.Count;
             buffer.inputsBuffer.AddRange(buffer.mixed);
             buffer.mixed.Clear();
@@ -150,14 +150,14 @@ public class UserInput : MonoBehaviour {
         nameOfRotation = PossibleRotation();
         int axis1 = 0;
         int axis2 = 1;
-        if ((Input.GetKeyDown(KeyCode.A) | Input.GetKeyDown(KeyCode.LeftArrow)) & !handler.GetRotateFlag()) {
+        if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && !handler.GetRotateFlag() && !buffer.GetMixingFlag() && !buffer.GetsolvingFlag()) {
             axis1 = Geometry.CharToInt(nameOfRotation[0][0]);
             axis2 = Geometry.CharToInt(nameOfRotation[0][1]);
             handler.SetPlane(axis1, axis2);
             buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
             handler.LaunchRotation();
         }
-        if ((Input.GetKeyDown(KeyCode.W) | Input.GetKeyDown(KeyCode.UpArrow)) & !handler.GetRotateFlag()) {
+        if ((Input.GetKeyDown(KeyCode.W) | Input.GetKeyDown(KeyCode.UpArrow)) & !handler.GetRotateFlag() && !buffer.GetMixingFlag() && !buffer.GetsolvingFlag()) {
             axis1 = Geometry.CharToInt(nameOfRotation[1][0]);
             axis2 = Geometry.CharToInt(nameOfRotation[1][1]);
 
@@ -165,7 +165,7 @@ public class UserInput : MonoBehaviour {
             buffer.inputsBuffer.Add(new List<object>() { axis2, axis1, handler.GetSelection() });
             handler.LaunchRotation();
         }
-        if ((Input.GetKeyDown(KeyCode.D) | Input.GetKeyDown(KeyCode.RightArrow)) & !handler.GetRotateFlag()) {
+        if ((Input.GetKeyDown(KeyCode.D) | Input.GetKeyDown(KeyCode.RightArrow)) & !handler.GetRotateFlag() && !buffer.GetMixingFlag() && !buffer.GetsolvingFlag()) {
             axis1 = Geometry.CharToInt(nameOfRotation[2][0]);
             axis2 = Geometry.CharToInt(nameOfRotation[2][1]);
 

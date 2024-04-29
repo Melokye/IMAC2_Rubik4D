@@ -100,6 +100,33 @@ public class Puzzle {
                 sticker.AddComponent<MeshRenderer>();
                 sticker.GetComponent<Renderer>().material = stickerMat;
 
+                //add a particule component
+                sticker.AddComponent<ParticleSystem>();
+                var ps = sticker.GetComponent<ParticleSystem>();
+                var newMain = ps.main;
+                
+
+                var newShape = ps.shape;
+                newShape.enabled = false;
+
+                var emission = ps.emission;
+                emission.rateOverTime = 500;
+                emission.enabled = false;
+
+                
+                newMain.startSize3D =  true ;
+                newMain.startSizeXMultiplier = 0.8f;
+                newMain.startSizeYMultiplier = 0.8f;
+                
+                newMain.startLifetime = 0.5f;
+                newMain.startSpeed = 0f;
+                newMain.simulationSpeed = 1;
+                newMain.simulationSpace = ParticleSystemSimulationSpace.World;
+                newMain.startColor = stickerMat.color; //new Color(255f,0f,0f);
+
+                var renderer = ps.GetComponent<ParticleSystemRenderer>();
+                renderer.material = Resources.Load<Material>("Particle") as Material;
+
                 // add the Select Script
                 sticker.AddComponent<SelectSticker>();
                 sticker.AddComponent<Coords4D>().SetCoordinates(GetSticker(i, j));

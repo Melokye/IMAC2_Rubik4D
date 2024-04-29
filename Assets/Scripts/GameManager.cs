@@ -127,7 +127,14 @@ public class GameManager : MonoBehaviour { // == main
                         yield return null;
                     }
                 }
-
+                for (int i = 0; i < puzzle.transform.childCount; i++) {
+                    Transform cell = puzzle.transform.GetChild(i);
+                    for (int j = 0; j < cell.childCount; j++) {
+                        Transform sticker = cell.GetChild(j);
+                        var emission = sticker.GetComponent<ParticleSystem>().emission;
+                        emission.enabled = false;
+                    }
+                }
                 Animation.SnapToTargets(p, puzzle, targets, toBeRotated);
                 _cubeRotating = false;
             }

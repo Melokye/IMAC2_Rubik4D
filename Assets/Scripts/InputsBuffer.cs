@@ -13,6 +13,7 @@ using UnityEngine;
 public class InputsBuffer : MonoBehaviour {
     GameManager handler;
     public GameObject rotationEngine;
+    GameObject puzzle;
     private bool solving;
     private bool mixing;
     public int st;
@@ -22,6 +23,7 @@ public class InputsBuffer : MonoBehaviour {
     void Start() {
         rotationEngine = GameObject.Find("PuzzleGenerator");
         handler = rotationEngine.GetComponent<GameManager>();
+        puzzle = GameObject.Find("Puzzle");
         Scrambler(50);
         // inputsBuffer = mixed;
         StartCoroutine(RotationHandler());
@@ -101,8 +103,14 @@ public class InputsBuffer : MonoBehaviour {
                     inputsBuffer.Clear();
                     solving = false;
                 }
-
-                
+                for (int i = 0; i < puzzle.transform.childCount; i++) {
+                    Transform cell = puzzle.transform.GetChild(i);
+                    for (int j = 0; j < cell.childCount; j++) {
+                        Transform sticker = cell.GetChild(j);
+                        var emission = sticker.GetComponent<ParticleSystem>().emission;
+                        emission.enabled = false;
+                    }
+                }
             }
         }
     }
