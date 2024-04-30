@@ -1,6 +1,6 @@
 ![Rubik4D banner](Media/Banner_Rubik4D.png)
 
-# Rubik4D : a puzzle game which represent the 4D Rubik’s cube differently
+# Rubik4D: a puzzle game which represents the 4D Rubik's cube differently
 
 The Rubik4D is a tutored project for [IMAC](https://www.ingenieur-imac.fr/), an engineer course mixing art and science.  
 The main goal is to find an aesthetic representation of a 2x2x2x2 Rubik's cube.
@@ -33,11 +33,12 @@ The main goal is to find an aesthetic representation of a 2x2x2x2 Rubik's cube.
 ---
 ## Releases
 - [Online version](https://oradimi.itch.io/rubik4d)
-- [20/12/2023](https://github.com/melokye/IMAC2_Rubik4D/releases)
+- [22/12/2023](https://github.com/Melokye/IMAC2_Rubik4D/releases/tag/v0.2)
+- [20/12/2023](https://github.com/Melokye/IMAC2_Rubik4D/releases/tag/v0.1)
 
-## More informations
+## More information
 - [English presentation](https://docs.google.com/presentation/d/16wE2KT3kagyLXOzLbjknGPKwpM8OJnVYXlBl63_XFo0/edit?usp=sharing)
 - [French presentation](https://docs.google.com/presentation/d/1nP3Qweg6X0pvGYHloJAECo8k-rPb099s8XzZt5BnPjA/edit?usp=sharing)
 - [Communication strategy (french only)](https://docs.google.com/presentation/d/1scCLsmrbjWIFUcDYEeArdgVq1dVSsxcjWorffJAGEeQ/edit?usp=sharing)
-- Comming soon : a promoting video 
+- Coming soon: a promotion video 
 <!-- []() -->
