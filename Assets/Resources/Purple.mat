@@ -87,11 +87,12 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
-    - _CellDensity: 5
+    - _CellDensity: 10
+    - _CellSpeed: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FlareDensity: 2
+    - _FlareDensity: -1.5
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -108,7 +109,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.14150941, g: 0, b: 0.07835761, a: 0}
-    - _CellColor: {r: 0.3584906, g: 0.055802785, b: 0.23308761, a: 0}
-    - _Color: {r: 0.13286828, g: 0.0060487357, b: 0.16826932, a: 1}
+    - _CellColor: {r: 0.01886791, g: 0.002224989, b: 0.011951369, a: 0}
+    - _Color: {r: 0.1478596, g: 0.0067312056, b: 0.18725489, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

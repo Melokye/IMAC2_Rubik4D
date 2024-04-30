@@ -38,12 +38,14 @@ Material:
     m_Ints: []
     m_Floats:
     - _CellDensity: 5
+    - _CellSpeed: 1
     - _FlareDensity: 2
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
     - _BaseColor: {r: 0, g: 0.051447872, b: 0.6320754, a: 0}
     - _CellColor: {r: 0.01214843, g: 0.1818237, b: 0.8584906, a: 0}
+    - _Color: {r: 0.03297436, g: 0.06023687, b: 0.3679245, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &88272470703352416
 MonoBehaviour:

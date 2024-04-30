@@ -15,14 +15,14 @@ public class MainMenu: MonoBehaviour {
     /// Explain the projet's Menu
     /// </summary>
     public void Explain4DButton() {
-        SceneManager.LoadScene("what's4D");
+        Application.OpenURL("https://www.youtube.com/watch?v=4TI1onWI_IM");
     }
 
     /// <summary>
     /// Show Credits Menu
     /// </summary>
     public void CreditsButton() {
-        SceneManager.LoadScene("Credit");
+        Application.OpenURL("https://github.com/melokye/IMAC2_Rubik4D");
     }
 
     /// <summary>

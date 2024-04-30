@@ -110,7 +110,7 @@ class RingsRepresentation: MonoBehaviour{
 
         // add colors for transparency
         var transparencyValues = vertices.Select(vec => Mathf.Clamp(1f
-            - Vector3.Distance(vec, Vector3.zero) / 20f, 0f, 1f)).ToArray();
+            - Vector3.Distance(vec, Vector3.zero) / 20f, 0f, 0.4f)).ToArray();
         Color[] colorArray = transparencyValues.Select(value => new Color(1.0f, 1.0f, 1.0f, value)).ToArray();
         mesh.colors = colorArray;
 

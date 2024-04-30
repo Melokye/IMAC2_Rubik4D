@@ -6,9 +6,9 @@ public class SelectCell : MonoBehaviour {
     [SerializeField]
     private Coords4D coords4D;
     private Renderer rend;
-    private static Color hoverColor = new Color(0f, 0f, 0f, 0.125f);
+    private static Color hoverColor = new Color(0.05f, 0.05f, 0.05f, 0.125f);
     private Color selectColor;
-    private static Color selectHoverColor = new Color(0f, 0f, 0f, 0.375f);
+    private static Color selectHoverColor = new Color(0.0425f, 0.026875f, 0f, 0.375f);
 
     private static GameManager handler;
 
