@@ -51,6 +51,7 @@ public class InputsBuffer : MonoBehaviour {
             mixed.Add(new List<object>() { axis1, axis2, selection });
         }
     }
+
     /// <summary>
     /// Injects a single command in the GameManager.
     /// </summary>
@@ -114,6 +115,7 @@ public class InputsBuffer : MonoBehaviour {
             }
         }
     }
+
     /// <summary>
     /// Getter of the solving flag.
     /// </summary>

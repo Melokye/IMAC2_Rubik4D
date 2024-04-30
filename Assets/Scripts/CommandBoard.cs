@@ -28,33 +28,9 @@ public class CommandBoard : MonoBehaviour {
     /// Toggle the selection via the command board.
     /// </summary>
     /// <param name="selected">the selected cell by the user by his click on the corresponding button.</param>
-    /*public void changeSelection(GameObject selected) {
-        Debug.Log(selected.name);
-        if (selected.name == "Right") {
-            handler.SetterSelection(GameObject.Find("Right_0").GetComponent<SelectSticker>());
-        }
-        if (selected.name == "Left") {
-            handler.SetterSelection(GameObject.Find("Left_0").GetComponent<SelectSticker>());
-        }
-        if (selected.name == "Up") {
-            handler.SetterSelection(GameObject.Find("Up_0").GetComponent<SelectSticker>());
-        }
-        if (selected.name == "Down") {
-            handler.SetterSelection(GameObject.Find("Down_0").GetComponent<SelectSticker>());
-        }
-        if (selected.name == "Back") {
-            handler.SetterSelection(GameObject.Find("Back_0").GetComponent<SelectSticker>());
-        }
-        if (selected.name == "Front") {
-            handler.SetterSelection(GameObject.Find("Front_0").GetComponent<SelectSticker>());
-        }
-        if (selected.name == "Inside") {
-            handler.SetterSelection(GameObject.Find("Inside_0").GetComponent<SelectSticker>());
-        }
-        if (selected.name == "Outside") {
-            handler.SetterSelection(GameObject.Find("Outside_0").GetComponent<SelectSticker>());
-        }
-    }*/
+    // public void changeSelection(GameObject selected) {
+    //     handler.SetterSelection(GameObject.Find(selected.name + "_0").GetComponent<SelectSticker>());
+    // }
 
     /// <summary>
     /// Launch the selected rotation onClick on the bounded buttons of the command board.

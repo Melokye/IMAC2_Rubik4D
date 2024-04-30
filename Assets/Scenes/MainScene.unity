@@ -37,8 +37,8 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.016103873, g: 0.014637265, b: 0.013840056, a: 1}
+  m_Sun: {fileID: 705507994}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1143,9 +1143,9 @@ GameObject:
   - component: {fileID: 202434126}
   - component: {fileID: 202434125}
   - component: {fileID: 202434124}
-  - component: {fileID: 202434123}
   - component: {fileID: 202434129}
   - component: {fileID: 202434130}
+  - component: {fileID: 202434131}
   m_Layer: 5
   m_Name: Menu
   m_TagString: Untagged
@@ -1153,18 +1153,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &202434123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 202434122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31827e04c5c404140bf27717186d65c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &202434124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1275,6 +1263,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultLayer: {fileID: 434576899}
   _dragLayer: {fileID: 1998333298}
+--- !u!114 &202434131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202434122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ecf6d1b6292af347b9916e72d9736d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &208894264
 GameObject:
   m_ObjectHideFlags: 0
@@ -6722,8 +6722,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 202434123}
-        m_TargetAssemblyTypeName: SC_SideMenu, Assembly-CSharp
+      - m_Target: {fileID: 202434131}
+        m_TargetAssemblyTypeName: SideMenu, Assembly-CSharp
         m_MethodName: BackMenuButton
         m_Mode: 1
         m_Arguments:

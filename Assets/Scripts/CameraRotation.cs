@@ -19,6 +19,7 @@ public class CameraRotation : MonoBehaviour {
         RotateCamera(cameraMain);
         RotateCamera(cameraUI);
     }
+
     /// <summary>
     /// Moves the camera around the puzzles in order to match a mouse drag on the screen.
     /// </summary>
