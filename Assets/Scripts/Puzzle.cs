@@ -99,6 +99,7 @@ public class Puzzle {
                 Material stickerMat = Resources.Load(_materials[i], typeof(Material)) as Material;
                 sticker.AddComponent<MeshRenderer>();
                 sticker.GetComponent<Renderer>().material = stickerMat;
+                
 
                 //add a particule component
                 sticker.AddComponent<ParticleSystem>();
@@ -110,7 +111,7 @@ public class Puzzle {
                 newShape.enabled = false;
 
                 var emission = ps.emission;
-                emission.rateOverTime = 500;
+                emission.rateOverTime = 800;
                 emission.enabled = false;
 
                 
@@ -122,7 +123,16 @@ public class Puzzle {
                 newMain.startSpeed = 0f;
                 newMain.simulationSpeed = 1;
                 newMain.simulationSpace = ParticleSystemSimulationSpace.World;
-                newMain.startColor = stickerMat.color; //new Color(255f,0f,0f);
+                
+                //Debug.Log(stickerMat.shader.FindPropertyIndex("_Color"));
+                Color color = stickerMat.color;//stickerMat.GetColor(stickerMat.shader.PropertyToID(_Color));
+                newMain.startColor = color;
+
+                var col = ps.colorOverLifetime;
+                col.enabled = true;
+                Gradient grad = new Gradient();
+                grad.SetKeys( new GradientColorKey[] { new GradientColorKey(color, 1.0f), new GradientColorKey(color, 1.0f) }, new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.0f, 1.0f) } );
+                col.color = grad;
 
                 var renderer = ps.GetComponent<ParticleSystemRenderer>();
                 renderer.material = Resources.Load<Material>("Particle") as Material;
