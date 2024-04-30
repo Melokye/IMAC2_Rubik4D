@@ -6,7 +6,7 @@ The Rubik4D is a tutored project for [IMAC](https://www.ingenieur-imac.fr/), an 
 The main goal is to find an aesthetic representation of a 2x2x2x2 Rubik's cube.
 
 ## The concept
-![Rubik 3D circle representation](Media/rubiks_3D_circles.mp4)
+![Rubiks_3D_circles](https://github.com/Melokye/IMAC2_Rubik4D/assets/99203967/691417d3-83b7-4d95-a4b5-d7f110476c6a)
 
 Media/rubiks_3D_circles.mp4
 
