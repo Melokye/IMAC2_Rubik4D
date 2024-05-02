@@ -33,8 +33,9 @@ The main goal is to find an aesthetic representation of a 2x2x2x2 Rubik's cube.
 ---
 ## Releases
 - [Online version](https://oradimi.itch.io/rubik4d)
-- [22/12/2023](https://github.com/Melokye/IMAC2_Rubik4D/releases/tag/v0.2)
-- [20/12/2023](https://github.com/Melokye/IMAC2_Rubik4D/releases/tag/v0.1)
+- [2024-05-02](https://github.com/Melokye/IMAC2_Rubik4D/releases/tag/v0.3)
+- [2023-12-22](https://github.com/Melokye/IMAC2_Rubik4D/releases/tag/v0.2)
+- [2023-12-20](https://github.com/Melokye/IMAC2_Rubik4D/releases/tag/v0.1)
 
 ## More information
 - [English presentation](https://docs.google.com/presentation/d/16wE2KT3kagyLXOzLbjknGPKwpM8OJnVYXlBl63_XFo0/edit?usp=sharing)
