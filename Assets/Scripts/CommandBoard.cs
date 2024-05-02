@@ -124,6 +124,40 @@ public class CommandBoard : MonoBehaviour {
         }
         clockwise = !clockwise;
     }
+
+    public void SwapViews() {
+        GameObject circleContainer = GameObject.Find("CircleContainer");
+        GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
+        GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
+        handler.SetLayerAllChildren(circleContainer.transform,
+            (circleContainer.layer + 3) % 6);
+        handler.SetLayerAllChildren(circleContainer_UI.transform,
+            (circleContainer_UI.layer + 3) % 6);
+        handler.SetLayerDirectChildrenNoRoot(handler.puzzle.transform,
+            (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
+        handler.SetLayerDirectChildrenNoRoot(puzzle_UI.transform,
+            (handler.puzzle.transform.GetChild(0).gameObject.layer + 3) % 6);
+        handler.ChangeProjection();
+    }
+
+    public void Scramble() {
+        if (!buffer.GetMixingFlag() && !buffer.GetsolvingFlag() && !handler.GetRotateFlag()) {
+            buffer.st = buffer.inputsBuffer.Count;
+            buffer.inputsBuffer.AddRange(buffer.mixed);
+            buffer.mixed.Clear();
+            buffer.Scrambler(50);
+            Animation.SetRotationSpeed(6f);
+            buffer.SetMixingFlag(true);
+        }
+    }
+
+    public void Solve() {
+        if (!buffer.GetMixingFlag() && !buffer.GetsolvingFlag() && !handler.GetRotateFlag()) {
+            Animation.SetRotationSpeed(6f);
+            buffer.st = 0;
+            buffer.SetSolvingFlag(true);
+        }
+    }
     /// \todo Note for handling the 1-layer rotation:
     // In 2^4n no matter which sticker you select in the cell, it will always rotate the same thing.
     // Only the layer that is the closest to the cell selected will rotate.

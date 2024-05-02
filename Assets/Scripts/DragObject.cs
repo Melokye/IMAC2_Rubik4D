@@ -64,11 +64,27 @@ public class DragObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
         else {
             focusedCamera = FindCameraByName("MainCamera");
         }
-        Vector3 newCameraPosition = focusedCamera.transform.localPosition - 30f * focusedCamera.transform.forward * Input.GetAxis("Mouse ScrollWheel");
+        Vector3 newCameraPosition;
+        if (Input.touchCount == 2) {
+            Touch touchZero = Input.GetTouch(0);
+            Touch touchOne = Input.GetTouch(1);
+
+            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+            Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+            float prevMagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+            float currentMagnitude = (touchZero.position - touchOne.position).magnitude;
+
+            float difference = currentMagnitude - prevMagnitude;
+            newCameraPosition = focusedCamera.transform.localPosition - 0.3f * focusedCamera.transform.forward * difference;
+        }
+        else {
+            newCameraPosition = focusedCamera.transform.localPosition - 30f * focusedCamera.transform.forward * Input.GetAxis("Mouse ScrollWheel");
+        }
         float newDistance = Vector3.Distance(newCameraPosition, Vector3.zero);
         if (Mathf.Abs(Mathf.Clamp(newDistance, 5f, 200f) - newDistance) < Mathf.Epsilon) {
             focusedCamera.transform.localPosition = newCameraPosition;
-        } 
+        }
     }
 
     /// <summary>

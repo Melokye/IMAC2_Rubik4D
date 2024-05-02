@@ -12,6 +12,8 @@ public class UserInput : MonoBehaviour {
     GameManager handler;
     GameObject axis;
     GameObject unselect;
+    GameObject scramble;
+    GameObject solve;
     static List<Vector2> AllRotations = new List<Vector2>(){new Vector2(1,2), new Vector2(0,2),
                                                             new Vector2(0,1), new Vector2(0,3),
                                                             new Vector2(1,3), new Vector2(2,3),
@@ -29,6 +31,8 @@ public class UserInput : MonoBehaviour {
         buffer = GameObject.Find("TrivialSolver").GetComponent<InputsBuffer>();
         axis = GameObject.Find("Axis");
         unselect = GameObject.Find("Unselect");
+        scramble = GameObject.Find("Scramble");
+        solve = GameObject.Find("Solve");
     }
 
     // Update is called once per frame
@@ -51,7 +55,7 @@ public class UserInput : MonoBehaviour {
             buffer.SetMixingFlag(true);
         }
         // For each camera in the scene, toggle both relevant culling masks
-        if (Input.GetKeyDown(KeyCode.P)&& !buffer.GetMixingFlag() && !buffer.GetsolvingFlag()) {
+        if (Input.GetKeyDown(KeyCode.P)) {
             GameObject circleContainer = GameObject.Find("CircleContainer");
             GameObject circleContainer_UI = GameObject.Find("CircleContainer_UI");
             GameObject puzzle_UI = GameObject.Find("Puzzle_UI");
@@ -127,9 +131,11 @@ public class UserInput : MonoBehaviour {
                 if (child.name == rotations[0] | child.name == rotations[1] | child.name == rotations[2]
                 | child.name == rotations[3] | child.name == rotations[4] | child.name == rotations[5]) {
                     child.GetComponent<Button>().interactable = true;
+                    child.GetComponent<Image>().enabled = true;
                 }
                 else {
                     child.GetComponent<Button>().interactable = false;
+                    child.GetComponent<Image>().enabled = false;
                 }
             }
         }
@@ -138,7 +144,16 @@ public class UserInput : MonoBehaviour {
             for (int i = 0; i < 6; i++) {
                 Transform child = axis.transform.GetChild(i);
                 child.GetComponent<Button>().interactable = true;
+                child.GetComponent<Image>().enabled = true;
             }
+        }
+        if (buffer.GetMixingFlag() || buffer.GetsolvingFlag()) {
+            scramble.GetComponent<Button>().interactable = false;
+            solve.GetComponent<Button>().interactable = false;
+        }
+        else {
+            scramble.GetComponent<Button>().interactable = true;
+            solve.GetComponent<Button>().interactable = true;
         }
     }
 
